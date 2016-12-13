@@ -1,0 +1,522 @@
+												Angular JS
+
+-> Javascript is case sensitive language.
+-> Controllers are central keys of angular framework, they are incharge of application. 
+-> Model contains the data to work with. Controller does whatever to grab that data.
+-> controllers  are responsible for building models.
+
+There are 4 basic facts of controllers
+
+1. control info on web page
+   -> controller directive in HTML (ng-controller)
+   -> It is similar to ng-app  it takes control of whatever the name is specified.
+   -> It can only be used when we have ng-app in place. We need to name the controllers.
+2. Controller will be a function that Angular works   
+   -> how does an angular know where does a controller live?  Controller is just a function.
+   -> we will just add a matching name 
+   -> We don't invoke controllers but Angular will invoke these controllers.
+   -> We can have parameters to controllers.
+3. Controller takes a $scope parameter    
+   -> $ tells that the component we are working with is provided by angular, it is sign of model and object but not the model. 
+   -> It thinks that it is attached to the model using scope.
+   -> AngularJS changed and framework will no longer find a controller in global scope.you can use 1.2.25.
+   
+Github API
+==========
+
+1. Available from JavaScript in a abrowser
+2. Return JSON(easy to convert into objects)
+3. No authentication or client key required.
+
+-> If MainController lives in Global namespaceit is bad.. so avoid global space.. controllers should live in modules.
+
+
+ng-src
+======
+
+-> The purpose of ng-src directive is once angular is up and running and once it has evaluated this expression then it will come and set the actual source attribute for that image. The image will be successfully downloaded and 404 errors can be avoided.
+-> So, ng-src is just a directive to set the source of the image when there is a data binding image is involved.
+
+Before Angular loads
+
+<img src = "{{ person.imageSrc }}" >
+
+After Angular loads 
+
+<img src = "../images/Gayathri">
+
+-> The browser will see the img src before Angular loads and throws error in the console and when it tries to download the image it throws error message as (404)Not found.
+-> For this reason angular provides a directive called as "ng-src"
+
+If the name person.firstname in script.js doesn't match with the html name ex: person.firstnam, then 
+
+-> The firstname doesn't display in the output becoz we are trying to refer a property that doesn't exist.
+-> There is no error displayed on the console 
+
+Pros of Angular js
+===================
+
+-> The page doesn't break if something is not available. Ex: typographical error
+-> As per Angular, if a binding expression doesn't work or don't throw error, then just continue. Because, we might be trying to bind the data which doesn't exist yet. it's data that has to be retrieved from web server to make it available.
+
+$http Service
+==============
+
+-> When we are writing code inside a controller, we ususally just don't make up our data. We need to etch the data from web server and web server might need to talk to sql database to send us back th data we need or talk to no sql database for xml files on the servers desk, we really don't casre. 
+
+We just need data from the server. so, we need a way to communicate with the server and this is the job of $http service in Angular.
+
+1. Encapsulated http communication
+
+-> http service in angular provides and the service is just an object, an object with methods we can use to make http calls.
+-> The methods are named after http methods that are commonly used. 
+-> So, the methods on the object are the methods like 
+	GET, POST, PUT, DELETE
+-> GET - used to read information from server.
+-> POST, PUT, DELETE they typically modify data somewhere and save / delete the information from the database.
+
+2.  $hhtp inside a controller
+
+-> How $http service acts inside a controller. Just like scope, we can ask Angular to provide with the $http service. 
+-> Just by having a parameter on my control 
+   var personController  = function($scope, $http){
+		$scope.user = $http.get("/users/1783");
+   }
+   
+-> Once, we have http object we can use methods like .get, .post etc to communicate with the web server. 
+-> The above code is sending http get message to the URL, /users/1783. Now,  the server has enough information to find te data and return to user. 
+-> Every API will be different, so the URL we are going to use may differ from one software to another software.
+
+-> The above code is having flaw, $http.get result is assigned to $scope.user
+-> http communiation methods on these objects never ever return the data you need immediately. Becoz, all communiation is asynchronous.
+-> http methods will always do return an object immediately known as promise. A promise object promises to get some result in the future and that result might be the data we need. The result might be an error if the the server is unavailable. 
+-> The way we can find out is to call the then method on the promise and pass the then method a function  that will be caught in the future. 
+-> we pass one function to other function to do work. The then method will call our function when data is ready in the future and will pass the data into my function as a parameter. 
+-> In the below code, the parameter is response. Becoz the promise for an $http call will pass to me an object that represents the $http response, including the things like the $http status code. 
+-> But in many cases, all you need to look is the data property of this response, because that will contain the data that the web server has returned to you. 
+-> We can take that data and add it to my $scope as a user property.
+-> That makes the data  from my server  available to use from the view.
+
+  var personController  = function($scope, $http){
+		var promise = $http.get("/users/1783");
+		
+		promise.then(function(response){
+			$scope.user = response.data;
+		});
+   }
+-> We can also put in chained functions
+   
+   var personController  = function($scope, $http){
+		$http.get("/users/1783");	
+		.then(function(response){
+			$scope.user = response.data;
+		});
+   }
+	
+Github API
+==========
+
+1. Available from JavaScript in a abrowser
+2. Return JSON(easy to convert into objects)
+	which is easy to consume from javascript. Infact, Angular $http service will automatically convert a JSON response into a Javascript object for me. 
+3. No authentication or client key required.
+
+Get request -> https://api.github.com/users/odetocode
+
+The response for above request is like name of the user, location of the user etc
+
+-> Web server will send data back  in JSON format, Angular will automatically deserialize that data into a javascript object for me.
+-> $scope.user will have the same properties of the response like name, location. 
+-> All we need to tell them that the function to call is, when the $http request is successful, is onUserComplete, and that will put everything we need into our user object.
+
+-> If the URL is not correct, then it will create an errror in the console. the output will be blank as there is no data available. 
+-> onUserComplete function is invoked only if the get call, or post or put or delete is successful and the webservr retuens a successful response.
+-> If there is any error, we can pass a second function to then, that will be called if there's an error.
+-> say OnError function, it contains reason which will get a reason for the error and contains all sorts of technical details about the $http request. 
+
+
+
+Controllers and Modules
+=======================
+
+-> MainController int examples is living in Global namespaceit is bad.. so avoid global space.. controllers should live in modules.
+-> Controllers live inside an Angular module. 
+-> There are 2 meaning for the name module
+1. Module pattern 
+2. Revealing module pattern.
+3. Angular modules
+
+-> All of these are not exactly the same, but all have similar goals.
+-> There should be a container for the code we write, so it has some place to live and it's not in a global space.
+-> Identifiers will leak out and clutter up someone else's code. So, we need to create an Angular module as a home for your conntroller, and then we can have many different controllers in the same module.
+-> Similarly, we can have multiple modules for our application. 	
+
+Working with modules
+====================
+ 
+1. Creating a module
+--------------------------
+
+-> create amodule and give it a name.
+	
+var app = angular.module("githubViewer", []);
+
+angular -> is an object, one single identifier that Angular puts into global namespace. It can be used anywhere where angular.js  is included. It is having several methods like .module.
+angular.module -> module is a method.It will allow to create a module or get a reference to an existing module. 
+githubViewer -> we passed name of the module, that is githubViewer
+[] -> It is an array, denotes the dependencies of the modules as modules can depend on features of other modules. 
+      Here, it is empty array as there is no dependancy.
+
+2. Registering controllers on the module
+--------------------------------------------------
+
+-> There is an API in the module object that will allow us to register the controllers as well as other objects.
+-> The function used to register the controller is 'controller'
+-> The controller name is passed as a string and then the funtion we use for the controller.
+-> That is the function(MainController)  that will take the  $scope and the $http arguments as well as anything that controller needs to do its job.
+
+var MainController = function($scope, $http){
+
+};
+
+app. controller("MainController", MainController);
+                        |                  |                 
+                    Controller name    function used for controller
+					
+
+3. Tell Angular to use your module with ng-app
+------------------------------------------------------
+
+-> We have module, and we have registered controllers, now that we have to tell angular about this module when we bootstrap the application. 
+-> If we have create a module, githubviewer, then when we use ng-app directive as we have to tell angular as below.
+
+<body ng-app = "githubViewer">
+
+</body>
+
+-> Angular will look for "githubViewer" when it lokks for controller, it can look inside the module and everything will work as before but it won't be putting anything in the globalnamespace.
+
+-> One way to keep the things out of global namespace is surround all the code with an IIFE, an immediately invoked function expression.
+i.e., simply apply proper parantheis
+
+(function(){
+	
+}());
+
+Ex:
+
+(function(){
+var MainController  = function($scope, $http){
+		$http.get("/users/1783");	
+		.then(function(response){
+			$scope.user = response.data;
+		});
+   };
+}());
+
+-> Now, when we do this, Angular throws an error saying that it cannot find MainController.
+'MainController' is not a function, got undefined.
+-> The application completely breaks down and in the output we will see just data binding expressions. As, Angular didn't find MainController, it didn't have any way to control that portion of html markup.
+-> Becoz, MainController is not in the globalspace now, it's only available inside of the IIFE.
+-> If Angular wants to use this controller, then we need to create a module. We need to take this controller in the module.
+-> So, in the html just give <html ng-app =  "githubViewer"> , when we do this Angular will complain that it doesn't know what githubviewer is.
+-> It is becoz we didn't create the module yet. But atleast we know that Angular is lookign for that module.
+-> So, in script.js create the module definition. 
+-> Usually people will keep each component that they write in separate .js file. This works becoz, we don't want all javascript code to be in a single file.
+
+	var app = angular.module("githubViewer", []);
+	
+-> Name of module is githubViewer and it is very important to pass the second parameter which is an empty array, becoz otherwise you won't be able to defining a module. 
+-> Instead we would be asking Angular to get a reference to a module called githubViewer, and that would only work if someone else had defined githubViewer. 
+-> Now, registering the controller.
+
+	app.controller("MainController", MainController);
+
+-> In the real world angular applications, most of them do not use the syntax of passing MainController to controller method. 
+-> Most of them will actually pass an array as the second parameter and MainController is the last item in that array.
+
+	app.controller("MainController",[MainController]);
+	
+-> The reason they do this is becoz most production applications, the javascript goes through the process knowm as minification. 
+-> The minifier's job is to make the javascript code as small as possible as we have a smaller download to give to a person who is viewing our web page, the page will load quicker.
+-> The Minifier makes the Javascript smaller because it strips out unneeded white space. 
+-> It will also change the names of local function arguments. 
+-> So, $scope might turn into letter 'n', becoz then instead of using 6 characters, we are only using single character everywhere that we reference $scope.
+-> This becomes n.user, n.error and n.message. 
+-> But, the problem is that the ANgular has to see the name $scope  or it has to know somehow that the first parameter we need here is $scope object and the second parameter is the $http service. 
+-> Becoz, ANgular is responsible in providing specific objects to us. 
+-> One way to tell About that and still run a minifier is to, when we register the controller, we pass in the parameters that it is going to require.
+
+Ex: app.controller("MainController", [ "$scope", "$http", MainController]);
+
+-> Here we are telling that when we create MainController, we need 2 parameters, $scope, $http, to pass those in here regardless of what those actual function argument names are.
+
+-> Working with modules will keep the global namespace clear.
+
+Summary
+=========
+
+-> Controllers can manipulate scope
+   - Thereby avoid interacting with HTML directly. 
+   - Instead, we attach data to $scope object and we use binding to lift the data to view. 
+-> Controllers can live in module
+   - This keeps the conntroller out of global scope.
+-> Controllers can use services like $http
+   - There are many services, but $http is important becoz this is the service used to grab the data fr4om the server. 
+
+
+Directives
+=============
+
+-> The Directives help to build interactive web pages thatnot only display, but also react to the user and become little more dynamic.
+
+Purpose of directives
+---------------------
+
+-> $scope provides the model , we added scope inside the controller
+-> If we want to display the model data on to the web page without the model or controller doing anything about the view i.e., html
+-> The controller is free of the browser, we control the data appearing on the web page using binding expressions 
+   
+   <div>
+		<h3> {{message}} </h3>
+   </div>
+   
+-> Binding expressions are one type of directive in angular called as "Data Binding Directive".
+-> Data binding directive can reach into the model, pull out the data and put the data in the proper location on the screen.
+-> Not only text data, but we can also use images.
+-> Controller will only focus on gathering the data.
+-> Views focus on presenting the data available from the model.
+
+Data from view to model 
+------------------------
+
+<form>
+
+	change the message:
+	<input name = "message" type = "text"/>
+	<input type = "submit" value = "save"/>
+
+</form>
+
+-> we need to put data back into the model	
+-> Directives will let the model and view to work together without having direct interaction.
+-> As we have directives to move data from model to view, we also have directives to move the data from view to model.
+-> Many of the directives work in both directions.
+-> Directives will keep both sides in sync by propagating the changes throught the application.
+
+ng-model 
+========
+
+-> ng-model directive will move the data from view to model
+   ng-model = "username" -> it means username has to be moved from view to model
+-> The username may not be in the script.js, we can even use Data binding directive to display username.	
+-> ng-model can be applied to
+	- inputs
+	- selects
+	- text areas
+-> ng-model will keep data in sync, it will move information that the user types into the model and vice versa.
+
+ng-click
+=========
+
+-> if we want to search a username, we can do it in 2 ways
+
+1. Attaching ng-click directive to <input type = "submit" >
+
+	<input type = "submit" value = "Search" ng-click = "search()">
+	
+	- With ng-click, we can put an expression that's going to be a function call. 
+	- After clicking on button, the Angular has to go to that function that is defined on the model, so it's attached to $scope and then we want Angular to invoke it. 
+	- here in the search function, we write code that gets the username, calls the GithubAPI, and retrieves info about that user. 
+	- We can also include parameters to the method call.
+		
+		ng-click = "search(username)"
+    - We can add http validation attribute 'required', this cannot be handled in ng-click event. But, we can handle ng-submit.
+	- ng-submit directive is used to catch the submit event of the form and then have that call search function and then passing the username parameter
+
+	
+ng-repeat
+=========
+
+-> Information from Github API includes repos_url, if we follow that link, we will find the information about the repositories associated with that user. 
+-> The response starts with [ and a Javascript object notation that is array. We have an array of objects, where each object represents the information about a specific repository like name, stars, language. We will display this info on the screen. 
+-> If we want to display multiple rows of each repository we can use table in the view(html)
+-> In order to have a table row for each repository in Angular, we can use ng-repeat.
+-> ng-repeat is like a for loop or like foreach loop. 
+   <tr ng-repeat = "repo in repos">
+-> repo is a variable that will contain the value of each repository in that collection as we iterate the array of repositories. 
+-> ng-repeat will also take this element(tr) and stamp that out for each repository. 
+-> It also includes any child element inside of that html. Ex: we can have a cell i.e., td
+-> Angular also have the concept of filters. 
+
+Filter
+-------
+
+Basic Format: expression | filtername : parameter
+
+-> A filter is something that we invoke and pipe data through by using the | symbol and then the name of the filter.
+
+Ex: {{repo.stargazers_count | number }}
+
+number is a filter that can take data, count of stargazers and format it.
+
+23,000
+
+-> If we want 1 digit after the decimal.
+
+Ex: {{repo.stargazers_count | number:1}}
+
+-> If we want to order the elements of name/stars/language in alphabetical order, we can use order By
+
+Ex: If we want most number of starts should be appeared first, 
+
+<tr ng-repeat = “ repo in repos | orderBy : ’stargazers_count’ ”>
+
+-> Single quotes denotes that it is a string literal, this is the property to use.
+-> If we don’t use single quotes then Angular would go looking for a property on $scope, a property by the name stargazers_count and then it would use the value of that property to orderBy.
+-> The default sort is ascending order.
+-> To change the order, we can put + or – in front of the property
+
+Ex: orderBy : ’+stargazers_count’ ” --> ascending order
+    orderBy : ’-stargazers_count’ ” --> descending order
+
+->We can also give the sort order explicitely
+
+Script.js
+----------
+
+$scope.repoSortOrder = “-stargazers_count”
+
+Hello.html
+----------
+
+<tr ng-repeat = “ repo in repos | orderBy : repoSortOrder ”>
+
+->To have a user specific sorting 
+
+Order:
+<select ng-model = “repoSortOrder”>
+	<option value = “+name”></option>
+	<option value = “-stargazers_count”></option>
+	<option value = “+language”></option>
+</select>
+
+ng-show & ng-hide
+=================
+
+-> ng-show will first look at the expression is truthy in Javascript, it will allow this markup to show otherwise it is going to hide this markup.
+
+Ex: 
+
+<div ng-show = "user">
+	<h2>{{user.name}}</h2>
+	<img ng-src = "{{user.avatar_url}}" title = "{{user.data}}" /> 
+</div>
+
+-> We can check if a string is truthy or number is truthy in Javascript, in this case user will be an object populated with lots of properties like username, location.
+-> Until we reach the point we don't have user in $scope. User is undefined and in javascript, undefined means false.
+
+Truthiness
+----------
+
+var number = 0; if(number) //false
+var 01 = undefined; if(01) // false
+var 02 = null; if(02) // false
+var 03 = {}; if(03) //true
+var name = ""; if(name) //false
+
+-> Place Order markup inside user div
+
+<div ng-show = "user">
+	<h2>{{user.name}}</h2>
+	<img ng-src = "{{user.avatar_url}}" title = "{{user.data}}" /> 
+	
+	Order:
+	<select ng-model = “repoSortOrder”>
+		<option value = “+name”></option>
+		<option value = “-stargazers_count”></option>
+		<option value = “+language”></option>
+	</select>
+	
+</div>
+
+-> ng-hide will hide a paricular markup if the expression comes out to be truthy. 
+
+Ex: 
+	
+	<table ng-hide = "!user">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Star</th>
+				<th>Language</th>
+			</tr>
+		</thead>
+		<tbody>
+			 <tr ng-repeat="repo in repos">
+			 	<td>{{repo.name}}</td>
+			 	<td>{{repo.stargazers_count | number}}</td>
+			 	<td>{{repo.language}}</td>
+			 </tr>
+		</tbody>
+	</table>
+
+
+-> By using bang user(~user) or negate user(!user), we say to hide the table if we don't have user.
+-> Both ng-show and ng-hide are useful directives when we want to make things appear and disapper from the screen based on some expression or some flag that is in the model.
+
+ng-include
+==========
+
+-> ng-include can bring in HTML from another source, like another file and then we can use that html in current view. 
+-> ng-include is useful becoz we can break up a complex page into pieces.
+-> It is also useful if we have some markup that we can reuse in other views of the application. 
+Ex: user details displayed(name, avatar, list of repos) perhaps we can use them in other areas of the application. In that case we need to ng-include that markup.
+
+-> we can place the markup, which has user details, in separate file(userdetails.html)
+
+
+
+
+
+
+	
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
