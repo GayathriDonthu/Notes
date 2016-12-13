@@ -1,0 +1,67 @@
+Spring
+=======
+
+-> Spring for Enterprise Java.
+-> High performing, easily testable, reusable code.
+-> light weighted(size and transparency)
+-> POJO - based programming.
+
+Benefits
+--------
+
+-> Benefit of using POJO
+-> organized in modular fashion.
+-> Makes use of existing technologies like ORM, Logging, JEE.
+-> Environment dependant code can be moved into spring framework and tested, easy for injecting test data.
+-> Greate alternative to struts framework.
+-> Translates exceptions thrown by JDBC/ Hibernate into consistent unchecked exceptions.
+-> Light weight IOC containers compared to EJB containers, helful for limited memeory and CPU resources.
+
+Dependancy Injection
+--------------------
+
+-> Dependancy Injection is an example of Inversion of Control.
+-> Classes should be independant to reuse and test them independantly. DC helps in keeping classes together and independant.
+-> Dependancy means association between classes. Injection means the dependant class will get injected into other class by IOC.
+-> DC can be happened in 2 ways
+1. passing parameters to constructor.
+2. post- construction using setter methods.
+
+Aspect Oriented Program(AOP)
+---------------------------
+
+-> The functions that span(spread over) multiple points of an application are called cross-cutting concerns, which are different from business logic.
+-> Ex: logging, declarative transactions, security and caching etc.
+-> In OOP, key of modularity is class, whereas in AOP the unit of modularity is aspect.
+-> AOP helps to decouple cross-cutting concerns from the objects they affect.
+-> Allows to define method-interceptors.
+
+Spring Framework
+================
+
+Core Container
+--------------
+
+1. Core -> IOC + Dependancy Injection features
+2. Bean -> BeanFactory, implementation of factory pattern
+3. Context -> Builds on Core and Bean modules, medium to access any objects defined and configured. ApplicationContext interface is tyhe focul point.
+4. spEL -> expression language for querying and manipulating an object graph at runtime.
+
+Data Access/Integration
+-----------------------
+
+1. JDBC -> provides JDBC- abstraction layer that removes JDBC related coding.
+2. ORM -> provides integration layers for object relational mapping APIs, including JPA, JDO, Hibernate and iBatis.
+3. OXM -> provides abstraction layer that supports object/XML mapping implemenations for JAXB, Castor, XMLBeans.
+4. JMS -> contains features for producing and consumting messages.
+5. Transaction -> supports transaction management for classes that implement all interfaces and for all POJOs.
+
+Web
+---
+
+1. Web -> provides multipart file upload functionaity, initializatioj of IOC container using servlet listener and web-oriented application context.
+2. Web-MVC -> contains Spring's model-view-controller(MVC) implementation for web applications.
+3. Web-Socket -> provides support for websocket-based, 2 way communication between client and server in web applications.
+4. Web-Portlet -> provides MVC implemenation to be used in portlet environment and mirrors the functionality of web-servlet module.
+
+
