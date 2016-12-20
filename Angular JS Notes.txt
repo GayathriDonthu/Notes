@@ -1,4 +1,4 @@
-												Angular JS
+﻿												Angular JS
 
 -> Javascript is case sensitive language.
 -> Controllers are central keys of angular framework, they are incharge of application. 
@@ -474,6 +474,25 @@ ng-include
 Ex: user details displayed(name, avatar, list of repos) perhaps we can use them in other areas of the application. In that case we need to ng-include that markup.
 
 -> we can place the markup, which has user details, in separate file(userdetails.html)
+-> ng-include , where we can specify an expression which can be resolved against $scope.
+-> The value which the expression yields should be the location where angular can go and grab the additional markup.
+-> If it is in the same location give "'userdetails.html'"
+
+
+Directives
+==========
+
+-> There's over 50 directives that come with the core library.(Image in PC)
+-> Angular also allows custom directives like to perform drag and drop, wrap bootstrap widgets, media players, wrappers for google maps.
+
+Services
+========
+
+-> In web development service means feature offered by a web browser, like GithubAPI webservice.
+-> In Angular, service means a component that performs a specific job, like providing a timer, or providing the ability to communicate over http. 
+-> $http service is a component. 
+
+
 
 
 
