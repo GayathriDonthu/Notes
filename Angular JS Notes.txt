@@ -522,7 +522,8 @@ Demonstrate timer service:
 -> When the application loads, give only 5 seconds to user to perform user search. Otherwise, the application will search for them using whatever  is in the search textbox. Count down from 5 to 0, when we reach 0 automatic search starts.
 
 -> Create a countdown value and create a decrementfunction which will be called for every second. 
--> Javascript provides some native global functions that we can use with timers. They are:
+
+Javascript provides some native global functions that we can use with timers. They are:
 1. setTimeOut and
 2. setInterval
 
@@ -537,6 +538,19 @@ setInterval -> It is very similar, except setInterval will continue to invoke th
 
 Ex: setInterval(doWork, 2000)
 
+Angular provides a wrap of above two functions 
+1. $timeout service that wraps setTimeout
+2. $interval service that wraps setInterval
+
+Advantages of Angular services over Javascript built-in functions
+
+1. Unit testing -> If we want to unti test the code inside the controller, it's much easier to unit test if we are using Angular services instead of built in javascript objects like setTimeout.
+2. The Angular services will remove the problem of pages not updating properly when the model is updated. 
+
+$interval(method, for_every_no_of_seconds, no_of_intervals)
+
+-> $interval is a function that we can immediately invoke it. 
+-> $http, object API, we can invoke methods that are on the $http service like $http.get
 
 
 
