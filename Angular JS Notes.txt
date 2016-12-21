@@ -552,8 +552,44 @@ $interval(method, for_every_no_of_seconds, no_of_intervals)
 -> $interval is a function that we can immediately invoke it. 
 -> $http, object API, we can invoke methods that are on the $http service like $http.get
 
+The problem in this Gamification program is that, before the count down reaches 0, if we clck on search, the results are retrieved but after the countdown reaches 0 also the search is performed again.
+
+Role of Services
+================
+
+-> The model should contain and retrieve the data it needs, as well as have the methods required to respond to events, events from the user or other events, like a timer event, that might require model to change.
+-> When writing the code of controller we need insulation outside the world, not for testability but also for the sanity of keeping complexity out of controller.
+-> Services are useful in 2 reasons
+1. Angular provides a service that wraps up all the intricate details of $http communication and we can ask Angular to pass the service to us by including $http as on e of the controller arguments. So, we can use services from controllers, but we can also use services inside of directives if you ever write a custom directive, and also oter services.
+2. $internal service is one of many built-in services that angular provides. Each of these services provide a specific feature for an application, a feature that becoz it is wrapped in a service, it can be easily reused throughout the application.
+3. $log service used for debugging and diagnostics if we ever run into trouble with Angular.
+
+Using $log
+==========
+
+-> We can ask Angular to provide $log service. 
+var MainController = function($scope, $http, $interval, $log)
+-> We can have as many services inside of the controller function as we want. Angular will indentify each service and pass in each one that we need.
+-> $log service has methods like
+1. log
+2. info
+3. warn
+4. error
+5. debug
+
+->  We can invoke these methods, pass in a string and that the string will appear in the Developer Tools console tab.
+-> Great feature of Angular is that we can reprogram them, i.e., if we detect an air-condition, we can put $log.error and put a description of that error in the console, but no one can see that error message unless they are actively opening the Developer Tools and looking at the console. 
+-> It is possible to reprogram this built-in $log service to not only add that message to the console, but also to send that message back to the web server via the $http service.  
+-> That way on the server, we can log these messages and find out that clients are having some errors, someone can investigate to see if it's an error in the program logic. 
 
 
+The problem in this Gamification program is that, before the count down reaches 0, if we clck on search, the results are retrieved but after the countdown reaches 0 also the search is performed again.
+
+Solution:
+
+When we call $interval, it's going to return an object to us, and the first thing we need to do is save that object and then use it later to cancel the $interval.
+-> We declare a private variable, it doesn't have to be on $scope, call it countdownInterval.
+-> start it as null, when we call $interval, we will store the return value into that variable.   
 
 
 
