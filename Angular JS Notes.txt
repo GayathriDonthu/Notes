@@ -492,7 +492,7 @@ Services
 -> In Angular, service means a component that performs a specific job, like providing a timer, or providing the ability to communicate over http. 
 -> $http service is a component. 
 
-The venn of Services
+The venn of Services (pic from office desktop)
 --------------------
 
 -> Controllers setup the model on the $scope object by attaching the properties and functions on $scope. 
@@ -507,8 +507,35 @@ The venn of Services
 
 -> Directives sit in between model and view, keeping them separate but allowing them to communicate indirectly and move data back and forth.
 -> If there is a change in input in the view, we can have ng-model directive to push that input value back into model, and changes in model are automatically puches into the presentation of the page, browser's DOM. 
--> Services also allow to separate concerns, becoz we can write service that provodes logic
+-> Services also allow to separate concerns, becoz we can write service that provodes logic not directly related to a module, it might be logic to communicate over HTTP, or it might be an algorithm to compute hash of a string, or it might be code that provides validation checks.
+-> If the logic doesn't fit in a model or view or a directive, then the service is a grab-bag where everything can fit.
+-> Benefit of putting logic into service is that the logic will be easy to use anywhere else in the application. 
+-> Becoz controllers can view services and make that available to use from the model methods attached to our $scope which means that directives can also use Services.
+-> We cannot use service from a view. 
+-> A view is about presentation and directives only, but services can offer functionality some models and directives in a reusable way.
 
+Gamification
+------------
+
+Demonstrate timer service: 
+
+-> When the application loads, give only 5 seconds to user to perform user search. Otherwise, the application will search for them using whatever  is in the search textbox. Count down from 5 to 0, when we reach 0 automatic search starts.
+
+-> Create a countdown value and create a decrementfunction which will be called for every second. 
+-> Javascript provides some native global functions that we can use with timers. They are:
+1. setTimeOut and
+2. setInterval
+
+setTimeOut -> It is worked by passing a peice of code and the number of milliseconds into the future when we want the code to be invoked. 
+
+Ex: we want doWork method to be invoked in 2 seconds
+
+var doWork = function(){}
+setTimeOut(doWork, 2000);
+
+setInterval -> It is very similar, except setInterval will continue to invoke the method everytime the countdown expires. It counts down from 2000  milliseconds to 0, and everytime it hits 0, it invokes that method and resets the timer to 2000 milliseconds. It will continue to do that until we cancel that interval.
+
+Ex: setInterval(doWork, 2000)
 
 
 
