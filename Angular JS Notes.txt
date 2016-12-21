@@ -492,6 +492,23 @@ Services
 -> In Angular, service means a component that performs a specific job, like providing a timer, or providing the ability to communicate over http. 
 -> $http service is a component. 
 
+The venn of Services
+--------------------
+
+-> Controllers setup the model on the $scope object by attaching the properties and functions on $scope. 
+-> We can even have a $scope property reference a complex child object as well as an array of all user's code repositories.
+-> View is a HTML markup for the application, view can consume the model using directives.
+-> Directives serve as an intermediary between the model and view, making sure that neither one knows too much about the other, which gives more maintainable code. 
+-> 2 way data binding and a separation of concerns, the concersn being model logic and presentation logic. 
+
+* Controllers setup the model.
+* view consumes the model.
+* Directives are intermediatery.
+
+-> Directives sit in between model and view, keeping them separate but allowing them to communicate indirectly and move data back and forth.
+-> If there is a change in input in the view, we can have ng-model directive to push that input value back into model, and changes in model are automatically puches into the presentation of the page, browser's DOM. 
+-> Services also allow to separate concerns, becoz we can write service that provodes logic
+
 
 
 
