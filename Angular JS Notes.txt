@@ -591,10 +591,64 @@ When we call $interval, it's going to return an object to us, and the first thin
 -> We declare a private variable, it doesn't have to be on $scope, call it countdownInterval.
 -> start it as null, when we call $interval, we will store the return value into that variable.   
 
+UI related Services(pic from office desktop)
+-------------------
 
+-> In angular, if we want some change in view, we do changes in model.
+-> Directives will make sure that the view and the model stay synchronized.
+-> This keeps model and controller free of UI concerns, but there are some scenarios where we need to use Javascript code to interact with the view in direct fashion than relying on declarative html with directives inside.
+-> Some of the scenarios are:
+1. Forcing the browser to navigate to a new URL 
+2. Popping up a model dialog box to force a user to input some data before we take some other action.
+
+-> SOlution to these scenarios is not to touch UI-related objects directly from the model. Instead, there are services that can wrap these type of functionality.
+Ex: There is location service in angular, if we need to r/w the location in the address bar in browser, the model can talk to the $location service and service can talk directly to UI component. 
+-> This is becoz the service presents a simplified API for the UI component, making it easier to use.
+-> It is also easier for unti testing if a model doesn't touch the UI component directly. 
+
+The UI related services are:
+
+1. $location -> sets the location in the address bar. 
+2. $anchorScroll -> forces a window to scroll to a specific location in the HTML indentified by an element with an ID. 
+
+Scenario:
+
+-> Imagine if the screen is small for the user to see the results, when we click search the user may not find the results. In order to view the results we need to scroll down. 
+-> Instead of that when we click search, Angular can make the results to showup in the small window by
+1. Provide an ID to HTML element that we want it to visible(username)
+2. Use service $anchorScroll which makes the window scroll so that the element is visible.
+-> We donot pass the name or ID of the HTML element to the $anchorScroll service.
+-> Instead we need to change a fragment identifier of the URL.
+-> A fragment identifier is what will appear after the hash sign in the address bar of the browser.
+-> so set the fragment identifier or hash as AngularUIServices_userDetails and call $anchorScroll()
+
+Ex: $location.hash("AngularUIServices_userDetails");
+
+URL:  file:///C:/Users/gayathri.guttikonda/Workspace/AngularJSPrograms/WebContent/WEB-INF/AngularUIServices.html##AngularUIServices_userDetails
+
+Here after ##,  AngularUIServices_userDetails appeared in the URL.
 
 	
-   
+Custom Services:
+----------------
+
+Uses of Services:
+
+1. Create reusable logic 
+	- package reusable logic into container that we can use in different places throughout the application. 
+	- It can be algorithm or piece of logic that we need in different controllers. 
+2. Create shared data
+	- store shared data. 
+	- If we need to share the data between controllers on different views, a service is the great place to store data, becoz angular onyl instantiates a single instance of each service for a given application.
+	- Ex: If we use a service from 3 different controllers, all 3 will get same instance of service even though theay aren't on the screen at the same time.
+3.  Manage complexity
+    - If a controller is getting too difficult to manage, it scrolls off so much data on the screen. So, we need to simplify the code and separate responsibilities.
+	
+A Github Service
+----------------
+
+-> A custom Github service that will make $http calls for us. 
+-> We need 
 
 
 
