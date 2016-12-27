@@ -648,7 +648,75 @@ A Github Service
 ----------------
 
 -> A custom Github service that will make $http calls for us. 
--> We need 
+
+Summary
+-------
+
+-> Service as a barrier.
+-> Service as components.
+-> Service for custom logic.
+
+Routing
+=======
+
+-> Routing allows us to manage multiple views in an application
+-> It's an essential feature for building larger apps, becoz we can allow a user to navigate between different screens
+-> we can pass parameters between the controllers that manage these screens
+-> We can even tap into the browser back and forward buttons so that the browser history is synchronized with the user's location in our application.
+
+What is Routing?
+---------------
+
+1. Routing based on URL
+
+-> We are building an application and we cannot put all the functionality that we need into a single controller in a single view. 
+-> We have different features and we need different areas inside the application. 
+-> That's going to require multiple views, multiple controllers.
+-> Each view and controller is responsible for a specific feature or area of functionality.
+-> As we have functionalities spread around, how do we know where the user is located in our application, how do we know what is supposed to be on the page?
+-> What are they seeing? Are they trying to view the details about a user, or are they trying to view the details about a repository for some user? 
+-> how do we know the location of the user? While the browser is having URL, a Uniform Resource location, that's what appears in the address bar.
+-> We think that URL as a way to reach some resource on the server, but when building an application with Angular, we can also think that URL will locate the resource on the client too.
+-> Every Javascript framework provides routing features uses the URL of the browser.  
+
+2. Routing engine captures request
+
+-> Ex: URL -> /users/odetocode; it means that the customer wants to see the information about the Github user, odetocode.
+-> It is the responsibility of the routing engine to see that URL, capture it and figure out what should happen. 
+-> It will figure out what should happen, becoz we will configure the routing engine with some rules.
+
+3. Routing rules render a response
+
+-> Rules like, when our customer comes to the URL like /users/username, we need to render the user details view, or the user details controller. 
+-> So, the rules we configure allow the routing engine to pass the request off to the right area of the application. 
+-> We'll have a controller find a user, and we will use data binding to put the user information into the display.
+-> Then, a customer might click on a link, one that takes them /users/odetocode/repos, so they want to drill into the details of the repositories available for this user.
+-> Again, the routing engne will see that request, intercept it, capture it, and transfer control over to the proper components to do the work of responding to that request.
+-> And all of this happens on the client, in the browser, in Javascript.
+
+
+Routing with Angular
+--------------------
+
+1. Depends on another module:angular-route.js
+2. Configure rules into $routeProvider 
+-> we describe the URLs for our application. 
+-> We have to tell the routing engine how it should respond to a particular URL that appears in the browser. 
+-> With ng-route, this is done using a component know as $routeProvider. 
+-> It has an API where we describe what the URL looks like and then what to do for that URL.
+-> For each URL we can specify a templateUrl, that is the HTML that Angular has to go and find and load up for that route, and then optionally a controller that should be used to manage that template.
+3. Setup a layout view
+-> default.html file will become a layout view or a shell view. 
+-> A layout view is a view that contains the markup we will use on every page of our application. 
+-> It might include some common features, like a navigation menu at the top that's going to appear everywhere the our application, and perhaps a foot at the bottom that contains links to contact us and a copyright, but there will be space somewhere in the layot view, where the routine engine can load a template that corresponds to the current URL.
+-> 2 templates
+1. User.html -> one to display userDetails
+2. Repo.html -> one to display repository details
+-> We will tell the routing engine where to place these templates using ng-view directive. 
+-> We will use that directive on an HTML element and it is that HTML element where Angular will insert the template when we're at the right URL.
+-> Now, when the user clicks and navigates and enters information and saves information, the routing engine will swap out ont template with another inside the shell view, and our application is now scalable; it can support any number of templates and controllers. 
+-> The routing engine is going to swap them in and out.
+-> When it does that, it will also coordinate with the browser history, so that if the user hits the back button or the forward button, they will still be navigating just inside of our application. 
 
 
 
