@@ -699,12 +699,29 @@ Routing with Angular
 --------------------
 
 1. Depends on another module:angular-route.js
+
+-> This will give us access to a new module, a module that our application module will need to take a dependancy on, this new module is called ng-route.
+-> Using a component in ng-route, we will configure our routing rules into the routing engine. 
+
 2. Configure rules into $routeProvider 
--> we describe the URLs for our application. 
+
+-> This is where we decribe the URLs for our application. 
 -> We have to tell the routing engine how it should respond to a particular URL that appears in the browser. 
 -> With ng-route, this is done using a component know as $routeProvider. 
 -> It has an API where we describe what the URL looks like and then what to do for that URL.
 -> For each URL we can specify a templateUrl, that is the HTML that Angular has to go and find and load up for that route, and then optionally a controller that should be used to manage that template.
+
+Example:
+
+$routeProvider
+	.when("/main",{
+		templateUrl: "main.html",
+		controller: "MainController"
+	))
+
+Here /main is the API 
+
+
 3. Setup a layout view
 -> default.html file will become a layout view or a shell view. 
 -> A layout view is a view that contains the markup we will use on every page of our application. 
@@ -718,7 +735,12 @@ Routing with Angular
 -> The routing engine is going to swap them in and out.
 -> When it does that, it will also coordinate with the browser history, so that if the user hits the back button or the forward button, they will still be navigating just inside of our application. 
 
+(pic from desktop)
 
+1. Create Route
+2. Create template
+3. Create Controller
+4. Have search navigate to new route
 
 
 
