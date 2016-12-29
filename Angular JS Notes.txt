@@ -3,7 +3,7 @@
 -> Javascript is case sensitive language.
 -> Controllers are central keys of angular framework, they are incharge of application. 
 -> Model contains the data to work with. Controller does whatever to grab that data.
--> controllers  are responsible for building models.
+-> controllers are responsible for building models.
 
 There are 4 basic facts of controllers
 
@@ -743,7 +743,15 @@ Here /main is the API
 4. Have search navigate to new route
 
 
+Challenge
+=========
 
+-> After getting output, click on the name of a repository in the table, and drill into details of the repository, even see who are the people who work on the code in this repository. That's what Github referes to as the collaborators. 
+-> To get the details of a repository from Github, we need 2 pieces of information;
+1. Github username -> login and repository name , becoz repositories are unique only within the context of a specific user. So, we need to define a new route with two parameters inside, that we can create a template, then a controller. 
+2. We need 2 http calls. 
+-> 1 call will need to get the details of the repository. From here, we may want to display information about the total number of open issues in the repository. (open_issues_count)
+-> second call is needed to get the collaborators for a project. 	
 
 
 
