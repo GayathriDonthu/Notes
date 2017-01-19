@@ -1,0 +1,153 @@
+												Spring Fundamentals
+												===================
+												
+Spring topics
+=============
+
+1. XML configuration
+2. XML configuration using annotations
+3. Java Configuration.
+4. Reading properties files using Spring framework.
+
+Spring
+======
+
+1. JEE
+------
+
+-> Spring framework started out as just an inversion of control container. 
+-> It was conceived to reduce or replace some of the complex configuration of earlier JEE development.
+-> Spring later built around using Java without EJB's, so its original concept was how to work better with EJB's, and they are not needed in lot of situations.
+-> Spring is a framework built around reducing the complexities around Enterprise Java development, later also providing enterprise development without EJBs.
+-> Spring can be used with or without EJBs, typically no it is used without them. 
+-> Spring enabled us to do enterprise development without using an application server. 
+-> Tomcat isn't an application server, it's just a web sever. That is the reason Tomcat has taken over for the Java development standard container.
+-> Tomcat is easy to use, lightweight. Before spring we either weren't using enterprise features, or we had to use more complex, harder to use application servers.
+
+2. POJO Based
+-------------
+
+-> Spring is POJO based. ( Plain Old Java Object)
+-> Any code we write in spring can be written without spring. 
+-> Spring helps us in writing better, cleaner code, and doing things POJO-based and interface driven.
+
+3. Unobtrusive
+--------------
+
+-> Spring was built out of frustation of J2EE, so its unobtrusive.(attract attention)
+
+4. AOP/proxies
+--------------
+
+-> Spring also uses AOP and proxies to apply things like trasactions to our code, to get the cross cutting concerns out of our code.
+-> So, the code should actually be smaller and more lightweight from using spring.
+
+5. Best practices
+-----------------
+
+-> The appealing part of spring is its best practices. We usually have design paterns in our code, not realizing that we are using them. Things like singletons, factories, abstract factories, all those best practices are built into our code inherintly, just using spring. 
+-> Spring uses the template method pattern a lot, its a more degin based methodology, that's annotation based configuration.
+
+The problem
+===========
+
+Whenever we are going to introduce another framework or tool into the code base,  what is this trying to solve for us?
+
+Spring brings below things
+
+1. Testability 
+2. Maintainability
+3. Scalability
+4. Complexity
+
+-> All the above are properties of our code, it decouples things and makes it so that we can add things like caching and other tools without having to rewrite our code base.
+
+Business Focus
+-------------
+
+-> There would only be 2 lines which are focused by business in the JDBC code, (select stmt and storing result) but we need to write lot of code for connections and other stuff fro closing connections. 
+-> Spring will be handling all this for us. 
+
+Solution
+========
+
+1. We can remove configuration code, or lookup code, 
+2. we can focus on business needs. 
+3. Focus on testing
+4. Spring helps in doing annotation or XML based development. 
+
+
+Below library in spring is enabling us to condense the JDBC code, we don't need any connections or result sets or prepared statements. This is an example of template method and spring uses it a lot to help us clean our code. 
+
+public Car findCar(String id){
+	return getEntiryManager().find(Car.class, id);
+}
+
+How it works
+============
+
+-> Everything in spring is simple POJO. Spring can be thought of as a glorified HashMap.
+-> Spring is creating hashmap and shoving objects in there.
+-> Spring can also be used as a registry, we get benefits from spring by its wiring constructs and using auto-wiring. 
+-> Inside the spring container there are beans and references to them. Some of them are standalone, some of them are referencing other beans. 
+-> If we take the JDBC example, the beans and references may be the connections, prepared statements and entity manager. 
+-> So, all the beans get stored in the little container and then we access them out of the container. That's where the Hashmap comes into play. 
+
+Architechture and basic project setup
+======================================
+
+Why spring was developed in this way?
+
+-> Spring was developed to make existing tasks easier.
+-> Before spring, we used design patterns from the JEE blueprints to help establish better code and repeatable processes. 
+-> These blue prints helped to establish a consistent way of dong things, but often still made code brittle and untestable. 
+-> If we ever need to recompile the code, becoz of the environment then we get through these problems. 
+-> This problem is referred to as "Write Once run everywhere"(WORA)
+-> We need actual implementation instead of hard coded values. This is what spring help us with. 
+
+Java 8
+Spring 4
+Maven
+Eclipse / STS - Spring Tool Suite -> It has some of the common plugins already installed. 
+Tomcat
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

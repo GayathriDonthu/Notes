@@ -753,6 +753,19 @@ Challenge
 -> 1 call will need to get the details of the repository. From here, we may want to display information about the total number of open issues in the repository. (open_issues_count)
 -> second call is needed to get the collaborators for a project. 	
 
+Summary
+-------
+
+1. Angular.js -> a framework for building HTML applications
+-> Controllers
+-> Models
+-> Views 
+-> Services
+
+2. Routing 
+-> Navigation
+-> Smaller pieces
+
 
 
 
