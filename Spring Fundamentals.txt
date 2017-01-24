@@ -111,6 +111,57 @@ Maven
 Eclipse / STS - Spring Tool Suite -> It has some of the common plugins already installed. 
 Tomcat
 
+spring_sample project(maven project)
+=====================
+
+pom.xml
+------
+
+Java compiler dependancy
+
+
+
+
+-> The default constructore in the class is used by the spring, and we are not doing any constructor injection. 
+-> We created stub rather than hibernate repository, becoz we're not goint ot wire it, clear up, to hibernate in the example.
+-> this is a basic stub.method. But to use this inside of spring, we need to code this to interface. So, we need to extract interface out.
+There are 2 ways 
+
+1. Right click on class -> new interface -> write down code
+2. Extract interface out.
+	Right click on application -> click on Refactor -> click on Extract Interface -> provide interface name and methods to include -> OK
+	
+-> when we refer stub.method, we can now do it through the extracted interface. 
+
+source tire -> business logic resides
+
+-> Spring removes the hardcoded objects. 
+-> Spring is all about removing configuration code from your application. 
+-> Configuration code is a bad thing becoz it makes things brittle i.e., hard to move to different environments. 
+-> recompiling code when we need deploy the code in different environment, testing matters. It becomes hard since the configuration is hard. 
+-> It may have reference to JNDI or some other database. 
+-> Wherever we see creating interfaces, and it's tied to a concrete implementation, we should try and abstract that out of out code. So that our application isn't hardcoded anymore. 
+
+Getting Spring
+==============
+
+-> No direct download for the compiled jars. 
+-> Spring wants us to download tools using Maven.
+-> Maven repo has source, javadocs, binaries.
+-> Spring insists Maven becoz of dependencies which are required to run projects. As which jar to use.
+-> Spring Boot can be used to set up our application, but it is like black box. 
+
+Spring Dependancy
+
+browser -> spring.io -> projects -> SPring Framework 
+
+<dependencies>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>4.3.5.RELEASE</version>
+    </dependency>
+</dependencies>
 
 
 
