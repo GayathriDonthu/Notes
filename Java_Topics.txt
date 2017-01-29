@@ -1,0 +1,82 @@
+
+
+Spring - 1 month
+
+1. spring Fundamentals
+2. Introduction to Spring MVC
+3. spring with REST
+4. Spring Boot
+5. spring data JPA
+6. spring security
+7. spring with JPA and Hibernate
+8. Spring AOP
+9. Spring batch
+
+Tools - 6 days
+
+1. JSON - http://tutorials.jenkov.com/java-json/index.html
+2. csv
+
+Angular JS - 6 days
+
+1. Angular JS Fundamentals
+2. Advanced Angular JS
+
+Unit Testing Framework
+
+1. Junit
+2. Mockito - it has limitations, it cannot mock private/ static/ final methods.
+3. PowerMock
+
+Database
+
+1. MongoDB
+
+RESTful webservices
+
+1. Jersey
+2. Apache CXF
+
+Hibernate
+
+1. Hibernate 4.x
+2. Hibernate 5.0
+3. Hibernate validator
+
+Build tools
+
+1. Ant
+2. Maven
+3. Gradle
+
+Design patterns
+
+1. structural
+2. creational
+3. behavioural
+
+CI tools
+
+1. Jenkins
+
+Code coverage tools
+
+1. EclEmma
+2. Cobertura
+3. Jacoco
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

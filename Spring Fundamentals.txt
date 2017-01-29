@@ -166,34 +166,297 @@ browser -> spring.io -> projects -> SPring Framework
 Spring XML Configuration
 -------------------------
 
+-> XML configuration was the first method available in spring. 
+-> Some things are still simpler using XML.
+-> There is separation of concerns that organically happens when configuration code is removed
 
 
+applicationContext.xml
+
+-> XML configuration in spring begins with a file i.e., applicationContext.xml
+-> It really is the root of the application configured using Spring and XML. 
+-> It doesn't have to be named as applicationcontext.xml. Name doesn't matter.
+-> It should be an XML file.
+-> If we use applicationContext.xml, Spring will do things using convention over configuration by default to find and discover pieces of our application on its own.
+-> Spring is just a HashMap of objects and we define that HashMap inside of our applicationContext.
+-> The objects that we have inside of here are like name, value pairs.
+-> This can also be used as a simple registry and we look up those beans that we define in that HashMap out of this applicationContext file. 
+-> XML configuration begins with this file.
+-> We can have other files that this will reference and lookup and pullin. 
+-> There are some namespaces that spring developers have put together that help usin our configuration and validation of files.
+-> Basically, we put an XML snippet at the the top of our applicationContext and it knows what our bean's namespace is to help us configure the rest of our file. 
+
+Spring Tool suite -> Get from Eclipse Market Place -> Install -> Open Perspective.
+-> src -> Right click -> new Spring Bean configuration file -> Name it as applicationContext.xml
+
+-> xml namespace is the default namespace  of beans
+-> xsi is XML schema instance. 
+-> The schemaLocation is added to the xml file gives the context sensitive help inside of our application.
+-> We get contexts like bean, beans, description in the xml. We get those by adding the namespaces in XMl.
+-> This helps to define wellformed and valid XML. Valid in the sense we can out the element in the location in XML.
+-> Ex: bean tag in XML, it throws no errors as we have added namespace.
+-> Ex: context tag if used in xml will throw warning saying that it doesn't know what this is at this location. It says it is well formed, but it is not valid XML.
+->  STS will be adding all namespaces for us, without it we should be writing all manually by creating normal XML.
+-> Creating a normal XML file will not save it as a spring configuration file. But, the by creating with the spring bean configuration file, it creates all other required tabs inside the appplicationContaxt.xml file like beans, bean graph becoz the ID has registered this as a spring configuration file. 
+-> By using STS, it gives lot more features.
+
+Bean namespace
+---------------
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	
+-> Spring created this namespace that simply acts like a dictionary for the properties that we can use to create and inject into a bean. 
+
+XML declaration
+---------------
+
+<bean 
+	name = "customerService"
+	.............
+	<property ........
+</bean>
+
+-> This bean is the customer service bean that represents where we wnat to put our business logic inside of our applciation. 
+-> The XML configuration is composed of beans and beans are basically classes. They're just pojos that we use inside of our applicationContext.
+-> Defining beans can be thought of as replacing the keyword new. 
+-> Ex: CustomerService x = new CustomerServiceImpl(); 
+   We can remove this configuration and place it into an XML file.
+-> We define the class and use the interface. (shown in demo)
+
+Separation of concerns
+-----------------------
+
+-> We can now change the configurations without recompiling the code. We can switch from environments like dev to test and we just use a different configuration file and do not have to recompile pieces of our applciation. This technique is called, separation of concerns.
+
+-> Inside bean tag, we can use name and slo property ID instead of name. Id has to be valid XML, so we can't use some characters that might want to inside of our name. 
+-> class inside bean tag. Out file inside of our file we want to use the implementation but reference the interface. So, as we are defining the bean we use the actual implementation of it as our class. 
+
+Setter Injection
+----------------
+
+-> After defining a bean, we cna use the bean using injection. 
+-> There are 2 types of injection.
+1. Setter Injection -> getters and setters of the bean.
+2. Constructor Injection -> uses the defined constructors.
+
+-> We can use both types of injections together. 
+
+Setter Injection 
+
+Customer ref = new customerImpl();
+ remove the new customerImpl() in the file, and create the setther for the ref.
+ 
+-> property tag inside the bean will wire another bean together by name and we can pass a ref of another bean.
+<property name = "customerRepository" ref = "customerRepository"/>
+-> Thus we done setter Injection wired by name. 
 
 
+ApplicationContext appContext = new ClassPathXmlApplicationContext("applicationContext.xml");
+
+-> This will look on our Class path for us and find our applicationContext.xml file. 
+-> Maven automatically places that file in the right place. 
+src/main/resources -> applicationContext.xml
+-> Maven will compile that into our application at the root of our application.
+-> So, in our classes directory applicationContext.xml will be copied at the toot of that directory structure. So, we don't have to put any path information. 
+
+CustomerService service = appContext.getBean("CustomerService", CustomerService.class);
+
+-> appContext can be used to find the bean. We are using interface instead of concrete class so that we can swap out the implementations behind the scenes without having to recomiple our application. 
+-> getBean(String T, class<T> arg) , we are passing the class type also since it would remove the typecasting. 
+
+3 ways we can read an spring config XML file(Interfaces)
+1. BeanFactory 
+2. ApplicationContext
+3. WebApplicationContext
+
+Implementation classes for above
+
+1. BeanFactory ref1 = new XMLBeanFactory(new FileSystemResource("full file path"));
+   BeanFactory ref2 = new XMLBeanFactory(new ClassPathResource("filename")); -> file should be in class path.
+   
+2. ApplicationContext ref1 = new ClassPathXmlApplicationContext("filename"); -> file     should be in class path.
+   ApplicationContext ref1 = new FileSystemXMLApplicationContext("full file path");
+   
+3. WebApplicationContext ref1 = new XMLWebApplicationContext("xml file"); 
+-> XML file should be in WEB-INF, the name should be according to the servlet-name tag entry in web.xml.
+Ex: <servlet-name> myspring</servlet-name>
+xml file = myspring-servlet.xml
+-> Used only in Spring MVC.
+
+Diff between BeanFactory and ApplicationContext
+-----------------------------------------------
+
+-> BeanFactory lightweight. ApplicationContext heavy weight.
+-> ApplicationContext supports I18N ( internationalization) while BeanFactory doesn't.
+-> ApplicationContext can publish events to beans which are registered as listeners, while BeanFactory doesn't support event handling.
+-> In BeanFactory objects are lazy, while in ApplicationContext objects are not lazy( the objects are created when applicationContext reads the xml file) 
+
+Lazy loading - the objects are created when we call a method on the object or on the use of the object
+
+Constrcutor Injection
+---------------------
+
+-> We have defined contract when we create object. 
+-> A positive and a negative though is that we need to have a constructor defined for each situation. 
+-> Constructor Injection is index based and not named-based, like setter injection is. 
+
+<constructor-arg index = "0" ref="customerRepository"/>
+
+public CustomerServiceImpl(CustomerRepository customerRepository){
+		this.customerRepository = customerRepository; 
+	}
+
+-> index is the argument position.
+Ex: If we have 3 arguments to pass in, then we start with index at position 0, position 1, position 2 and pass those objects into that constructor. 
+-> By Constructor Injection we can know that things initialized the right way. 
+
+We can use both setter and Constructor injection as below
+
+<bean name="customerService" 
+		class="com.spring.service.CustomerServiceImpl">
+		<constructor-arg index = "0" ref="customerRepository"/>
+		<property name="customer" ref="customer"/>
+	</bean>
+
+   
+Autowire
+========
+
+-> Earlier, drawback of spring was having lot of XML configuration. We need to wire up every bean and all the references and everything that went into it. 
+-> To counter this, spring introduced autowiring, for us to autowire beans together. 
+-> There are 4 types of autowiring that we can do on a bean. 
+
+1. by type 
+--------------
+
+-> allows a property to be autowired if exactly one bean of that property type exists withing the container.
+Ex: CustomerRepository is bean of specific type, I we had 2 beans of same class but with different names, we would get an exception using this approach becoz, it couldn't tell which bean to choose. 
+-> it will look at the arguments for the setter. Ex: type of object is customerRepository. 
+-> it doesn't care of the name of the bean and name of the setter. 
+
+2. by name
+-----------
+
+-> By name fixes the problem of by type.
+-> Both are good, becoz by type will allo us to only create 1 instance of that class in our container in our applicationContext.
+-> by name, will allow us to have multiples and choose that specific object based on the name. 
+-> by name looks for the setter of the bean. Ex: customerRepository bean, it checks for setCustomerRepository. If we change the name of customerRepository then it would through exception.
+-> setter injection
+
+3. by Constructor
+-----------------
+
+-> Constrcutor auto-wiring is similar to setter injection by type. 
+-> It looks for an object of that type to inject into the arguments of the constructor. 
+
+4. no/ none for autowiring
+-----------------------------
+
+-> Cannot be autowired at all. 
 
 
+5. default
+------------
+
+-> default = no autowiring
 
 
+-> "property" and "constructor-arg" elements, always override autowiring
+
+Annotation configuration using XML
+==================================
+
+-> Annotation configuration is the second method available in spring to wire up our application. Most of the configuration done in spring is using annotations. 
+-> We need a place to bootstrap the annotation scanner, and we do that in a applicationContext.xml.
+-> The difference is that we just have an annotation scanner in there, and that goes out and looks for specific items. 
+-> So we'll have our configuration to bootstrap an annotation scanner, and then it uses the same conventions as the XML configuration. 
+
+XML declaration
+----------------
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context.xsd">
+
+-> To start up the component scanner, we need to add 2 things to our application context
+1. context namespace
+ -> It has schema defining context and the xsd location. 
+ -> Just like beans specification we can add the context specification and schema to the top of our document. 
+ -> We need to add 2 elements to our schema. 
+ -> We need to tell our application that it is configured using annotations, and then where to start scanning for those annotations. 
+ --> First element says " it is configured with annotations"
+ -> second element says " this is the package that it sould start looking for these annotations in."
+ -> We can drill down to a specific package, and tell it to only load things from that specific location. 
+ -> Adding annotation, configuration and location scanner is easy inside of our application context. 
+ 
+ applicationContext.xml file -> in the bottom tabs select Namespaces -> Select "context" namespace. and then version as spring-context.xsd
+ 
+ -> spring-conext.xsd is choosen non version specific, since it wwould be independant of the spring version. 
+ -> In the xml file, context URi and context xsd are added to our application. 
 
 
+Sterotype annotations
+=====================
 
+-> There are 3 main annotations for core spring that help us to find components, or beans, inside of our application. These are called as stereotype annotations.
+1. @component
+2. @service 
+3. @Repository
 
+-> They are semantically the same. Service and repository both extend component, but really don't add any features or functionality.
+-> Component is used for regular components or beans/ any POJO.
+-> So, anything in our application we want to be a bean, we mark with a component.
+-> Service is where our business logic contains. 
+-> In Spring MVC, we don't put business logic in controllers but we put them in service tier, or a business logic layer, and mark that with @service.
+-> Repository is our data access tier, or DAL layer. It is where we do our interaction with database. 
+-> Spring JDBC/ hibernate/ iBATIS that tier is labeled with @Repository.
 
+Ex: @Repository("customerRepository") -> making it as a repository bean 
 
+Autowire in annotations
+-----------------------
 
+-> Autowiring a method is hidden because it's tied to where we place that annotation at.
+-> We can autowire in 3 places
+1. Member variables
+2. Constructor
+3. Setter Injection
 
+Autowired Memeber variable
 
+@AutoWired
+private CustomerRepository customerRepository;
 
+-> Using component scanner, spring will look for any code marked with the stereotype annotations, and the autowired annotations, and wire up the application properly.
 
+Autowired setter injection
+==========================
 
+private CustomerRepository customerRepository;
+	
+@Autowired
+public void setCustomerRepository(CustomerRepository customerRepository) {
+	System.out.println("using setter Injection");
+	this.customerRepository = customerRepository;
+}
 
+-> We generate setter and then just place an annotation at our method as above.
 
+-> Like memeber variable autowiring, spring using the component scanner looks for any code marked with the stereotype annotations and the autowired annotations and wire up our application appropriately. 
 
+Autowired Constructor Injection
+===============================
 
-
-
-
-
+-> It is similar lo setter approach. 
+-> We create a constructor for the type of object that we want to inject in, and then simply mark that constructor as autowired. 
+-> If we switch back to setter or member injection, becoz we have eliminated our default constructor.
 
 
 
