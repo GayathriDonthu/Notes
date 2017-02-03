@@ -459,6 +459,76 @@ Autowired Constructor Injection
 -> If we switch back to setter or member injection, becoz we have eliminated our default constructor.
 
 
+JSR-330
+=======
+
+-> Due to the benefits of dependancy injection, it was incorporated into its core.
+-> JSR-330 is not as feature-rich as Spring provides.  It is just a simple dependancy injection specification for Java. 
+-> It has simple annotations, but does not provide to us what Spring does. 
+-> Spring provides more libraries that would make things easier.
+
+
+Spring Configuration using Java
+===============================
+
+Java Configuration
+------------------
+
+-> We sould be wiring the sample application with just Java annotations and the Java configuration loader. 
+-> Java Configuration in SPring is the latest method available for wiring up the spring application. 
+-> It was introduced to get rid of mixing XML and source code together for configuration. 
+
+
+No applicationContext.xml
+---------------------------
+
+@Configuration
+public class AppConfig {
+	
+	@Bean(name = "customerService")
+	public CustomerService getCustomerService(){
+		return new CustomerServiceImpl(); 
+	}
+}
+
+
+@Configuration
+-------------
+
+1. applicationContext replaced by @Configuration
+2. @Configuration at class level
+3. Spring beans defined by @Bean
+4. @Bean at method level.
+
+
+-> In Java configuration , there is no ApplicationContext file. 
+-> To replace XML configuration we are using @Configuration annotation. 
+-> The Java files that have the @Configuration annotation replace any XML context files.
+-> Configuration is done at class level annotation.
+-> We can put @Configuration at the top of the class. 
+-> Methods used in conjuction with the bean annotation are used to get instances of spring beans. 
+-> We add a method level annotation for @Bean and it looks similar to this where we are saying what this method returns is an instance of a bean, and that bean is now registered inside of spring and available for us to use in our spring application.
+-> Classes and method names can be anything and spring doesn't care. 
+-> As long as when we create the beans, we need to mark them as a bena in a configuration file. 
+-> Beans naming convention, camelcase.
+
+Setter Injection using Java Configuration approach
+--------------------------------------------------
+
+-> Simple as a method call. 
+-> Mystery of injection goes away with this. 
+-> Setter injection is calling a setter on a bean. 
+-> Spring beans when registered are by default a singleton and will only execute the method the first time it's called and then returning the cached instance after that. 
+
+service.setCustomerRepository(getCustomerRepository());
+
+-> Spring will look into the repository and its context to see if there's any other beans already created with that name or of that instance and inject those of here. 
+-> We are not creating a new instance here every time, we get the power of spring by just having the annotation here. 
+-> Eventhough we call it the same way in our code,  behind the scenes it's looking to see if it is a spring bean and it's already been injected somewhere else. 
+
+
+
+
 
 
 
