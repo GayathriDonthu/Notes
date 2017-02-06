@@ -1,0 +1,155 @@
+													Introduction to Spring MVC
+													==========================
+
+->  Spring MVC is a web application framework for developing applications using Enterprise Java or J2EE.
+
+Which Framework?
+----------------
+
+1. Struts -> standard struts 1, outdated. Struts2 is better than original struts.
+2. Tapestry -> good framework but governed by 1 person and someone at the WIM or whatever project he is working on.
+            -> first heavily object-oriented or POJO-based web frameworks. 
+3. Apache Wicket -> light weight framework, easier to configure than other frameworks.
+4. GWT -> Google Web Toolkit is a very rich user experience framework with a steeper learning curve than other frameworks.
+5. JSF -> JSF from Oracle, true standard framework for the web and J2EE as well, rich user experience. 
+	   -> It comes with libraries like ice faces and rich faces and other third party components for integrating into JSF.
+6. Seam -> Seam is a JSF framework from the JBoss Group that has other things integrated into it but has a little bit of tendancy to have some 		vendor lock-in associated with it. 
+		-> It's nice, tight package but we stuck doing things their way. 
+7. Stripes -> a very lightweight web framework that has very similar features to Spring MVC. It's a view technology framework. 
+8. Spring MVC -> It is very unobtrusive framework. 
+			  -> lightweight, in the sense that there's very little overhead in running it but it's very cabable, heavy duty framework. 
+			  -> It puts a lot of the best practices from all of above frameworks mentioned above and combines it into Spring MVC.
+			  -> Spring MVC integrates very nicely with Spring and all other capabilities that Spring has available for us to use. 
+			  
+What is Spring MVC?
+------------------
+
+-> Spring MVC doesn't try to niche itself for one particular type of web application. 
+-> It can be RESTful-based/ JSP-based. 
+-> We can use other view technologies like FreeMarker or Velocity.
+-> We can use it for headless applications. 
+-> We can use it as a remoting framework. 
+-> All these capabilities are built into Spring MVC. 
+
+-> Spring MVC is a web framework built around the principles od Spring.
+-> interface driven design, it's very POJO based. 
+-> can be unit tested very easily and it's very lightweight, very unobtrusive. 
+-> It is based on a Dispatcher servlet/ Front Controller Pattern. 
+-> MVC stands for Model view Controller. 
+-> It doesn't weigh us down with things we don't need. 
+-> Disadvantage of JSF is that it is very heavy weight and we need to do things their way.
+-> SPring will just take the things we want and just use those. 
+-> Spring MVC is also built from shortcomings of struts1.
+-> It supports for 
+	1. themes, 
+	2. localization, 
+	3. Restful services, 
+	4. annotation based configuration. (No need of using interfaces and their code if don't want to)
+	5. Seamless integration with other spring services/beans.
+	
+
+History
+-------
+
+2003 
+
+-> Spring framework 1st milestone released. 
+-> Focus was on interface-driven development and overcoming the complexities of J2EE development. 
+
+2004 
+
+-> 1.0 release of spring framework.
+-> incorporated spring MVC and focused on other areas.
+-> integration with common tools like Hibernate and .NET
+
+2006
+
+-> 1.26 version, Jolt productivity award, 
+-> SCG/ Spring Securty integrated into the framework.
+-> more spring tools
+
+2006
+
+-> 2.0 release, until here things were backward compatible. 
+
+2007
+
+-> 2.5 version, focus on annotation-driven development. 
+-> Significant release, as all the configuration was done through annotations, before that it was XML heavy. 
+
+2009
+
+-> 3.0 and 3.1 versions, above things carried on. 
+-> Can do configuration using Java, no need of using XML.
+
+
+Architecture
+-----------
+
+-> Spring MVC is built on top of the Java servlet API, implemented using serlvet front controller. 
+-> So, spring MVC/ struts or all otherframeworks are just servlets, they got design patterns and things wrapped around it to make it easier. 
+-> We write our application on top of Spring MVC or using Spring MVC to build this entire stock. 
+
+				CUSTOM APP
+					|
+					|
+					|
+			SPRING MVC/ Spring
+					|
+					|
+					|
+			JAVA SERVLETS/JEE
+
+
+Request/Response life cycle
+-----------------------------
+
+-> We have an incoming request that hits our SERVLET FRONT CONTROLLER, just like Dispatcher servlet inside of Spring. 
+
+Servlet Front Controller
+
+-> It hands off the request, delegates our request over to one of our CONTROLLERS that we've set up.
+
+Dispatcher
+
+-> It is the router that comes in and says 
+"What controller is going to handle it? I am going to delegate this request over to this controller over here."
+
+Controller 
+
+-> Conrtoller just routes traffic to where it's supposed to go, It says
+" I'm going to handle the request and had it over at the backend."
+
+Backend 
+
+-> Backend could be composed of web services or a database or multiple databases
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			  
