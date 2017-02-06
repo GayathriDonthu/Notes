@@ -122,7 +122,7 @@ Controller
 
 Backend 
 
--> Backend could be composed of web services or a database or multiple databases
+-> Backend could be composed of web services or a database or multiple databases or any number of things that we're gathering data from. 
 
 
 
