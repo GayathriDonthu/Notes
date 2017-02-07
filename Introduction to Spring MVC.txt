@@ -123,6 +123,170 @@ Controller
 Backend 
 
 -> Backend could be composed of web services or a database or multiple databases or any number of things that we're gathering data from. 
+-> Backend hands back a model to us. 
+
+Model 
+
+-> Model is our data, what we're trying to represent on our screen. 
+
+-> Once model gets back to the controller, the controller syas, "ok, I am going to let somebody else do the rendering."
+-> rendering is separate from the business logic. 
+-> This is called model-view-controller design pattern. Everything is doing its own specified functionality here. 
+
+-> At the controller, we have model or data that we're going to try and represent the UI. 
+-> So, we go back to out Front Controller and it says, 
+"who's going to handle this? Who's going to render the response? let's pass our model down to some view template."
+-> view template can be JSP, once model goes template/JSP page, the control returns back  to our Front Controller and then return back our response to the browser.
+-> The whole thing is divided into 3 parts: model, view, controller. 
+
+
+  Incoming                     Delegate                       Handle
+  Request                      request                        Request
+-------------->   Front      ------------>   Controller    -----------------> Backend
+<-------------- Controller   <---Model-----                <-----------------
+  Return           ^  |       Delegate                      Create
+  response         |  |       rendering                      Model
+				   |  |
+                   |  Model
+                   |  |
+                   |  |
+     Return        View            Render
+	 Control      Template         Response
+
+
+
+Vocabulary
+----------
+
+1. Dispatcher Servlet -> The entry/ configuration point for the application. 
+                   -> It is also the Front Controller 
+	
+2. Controller -> Command pattern object that handles the request and determines which view to route to and what model we should get and handles that information and hands it back and forth.
+			-> Controllers are simple POJOs.
+
+3. Request Mapping -> The url and request type that our method is tied to. 
+                   -> If we accept posts or we accept gets or puts or deletes, those type of HTML protocol requests, then the Request mapping can say, "I only accept posts, I only accept gets."
+
+4. View Resolver -> used to locate the JSP pages or whatever view technology we are using. 
+				 -> We configure a view resolver and that's how Spring MVC knows when we ask for the hello page, where to actually find the hello page at.
+
+5. Servlet-config -> it is a configuration file per DispatcherServlet.
+				  -> This is where Spring knows to configure things and wire our application up.
+
+6. POJO -> Plain Old Java Object
+        -> has no arguments constructor and private member variables, exposed through getters and setters.
+
+7. Bean -> A Spring configured POJO.
+        -> It's a POJO that we've instantiated through Spring, in the Servlet-config and it's wired up to be used inside of our framework. 
+			  
+
+Summary
+-------
+
+1. J2EE based
+2. Built around best practice patterns.
+3. Stable release cycle.
+4. Backwards/forwards compatible.
+5. Very active community.
+6. Lightweight and unobtrusive
+7. Flexible to use with web services, Javascript UI, standard html etc
+
+
+Building an Application
+========================
+
+Prerequisites:
+--------------
+
+1. JAVA ( version >= 5)
+2. Maven ( version = 3)
+3. Spring STS
+4. Tomcat
+
+
+What we are building
+-------------------
+
+-> Building app to track the minutes that you have exercised in a day. 
+
+App feautures
+
+1. Allow for entering minutes exercising
+2. Show total minutes
+3. Set goal for the day
+4. Notify when gal is reached.
+
+Getting Spring MVC
+-------------------
+
+-> Spring Web flow and Spring web services are not the same thing. 
+-> Web flow is a framework built on top of web MVC. 
+-> Download spring framework
+
+spring-franework-4.3.3.RELEASE-dist.zip
+
+Maven
+-----
+
+-> Using Maven we need only 3 dependencies:
+
+Dependencies
+
+1. spring-webmvc
+2. servlet-api
+3. jstl
+
+Get the dependencies and use it in pom.xml
+
+While adding dependencies in the pom.xml, 
+
+-> scope for spring-webmvc is compile.
+-> scope for servlet-api is provided( provided means don't package it with the WAR file, becoz they are already provided with tomact)
+-> scope for jstl is provided.
+
+After adding the dependencies in pom.xml, we get jar files under the Maven dependencies, those are called as transdependencies. 
+
+Spring MVC Configuration
+------------------------
+
+There are 4 basic parts we need to configure to utilize Spring MVC in our application.
+
+1. Configure web.xml
+2. Configure servlet-config.xml
+3. Add Controller
+4. Add View
+
+Controller -> is a simple Java class that's annotated
+
+Tomcat
+------
+
+-> Tomcat is just a web container. 
+-> It doesn't have app server functionality like Oracle, WebSphere. 
+-> For most web applications though Tomcat is just fine. 
+-> We setup Tomcat server and then FitnessTracker.war will actually reside on top of that. 
+
+			FitnessTracker.war
+					|
+					|
+					|
+				 Tomcat 
+			  Web Container
+
+
+			  
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
