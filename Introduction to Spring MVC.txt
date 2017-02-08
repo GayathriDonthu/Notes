@@ -273,37 +273,172 @@ Tomcat
 				 Tomcat 
 			  Web Container
 
+Standards
+---------
 
-			  
-
-
-
-
-
-
-
-
-
-
-
+src
+	-> main
+		-> webapp
+			-> WEB-INF
+				-> jsps
+					-> addTime.jsp
+					-> index.jsp
+				-> web.xml
 
 
 
+-> For views, we put jsp pages or any other view technology under the WEB-INF directory. 
+-> The reasons are :
+
+1. security -> don't want people to know what my filename is, we can serve with whatever filename we want. 
+2. Control user experience -> don't want people to directly navigate to us. If we force them to go through my controller and through my routing, 
+						      we can control their user experience, insuring that their session was set up correctly or that they are logged in,etc.
+3. bookmarking/deeplinking -> these are called as breadcrumbs
+
+-> We do this by using InternalResourceViewResolver
+
+InternalResourceViewResolver
+
+-> It says " when I ask for this jsp page, I am goingto find it in this directory and serve it up to them"
 
 
+addTime.jsp = http://localhost:8080/fitness/addTIme 
 
 
+Controllers
+-----------
+
+1. Annotation based
+	-> @Controller
+2. Named whatever we want
+	-> typically named around business domain.
+3. Path set using annotation.
+	-> @RequestMapping
+4. TimeController.java -> example 
+
+Example URLs associated with Controller
+
+http://localhost:8080/fitness/time
+http://localhost:8080/fitness/addTime
+http://localhost:8080/fitness/updateTime
 
 
+web.xml
+-------
+
+<servlet></serlvet> -> this is the Spring MVC dispatcher servlet. 
+
+<init-param>
+
+-> tells exact location of the configuration file, i.e., servlet-config.xml
+-> By default it creates fitTracker.xml or fitTrackerServletconfig.xml
+-> It won't create for us, In web.xml we want to specify where it is and what we want it named just to be clear
+
+<param-name>
+
+-> The param name is contextConfigLocation in CamelCase.  
+
+<param-value>
+
+-> the param value is WEB_INF( caps), config and servlet-config.xml
+
+<servlet-mapping> -> this is what routes traffic through. 
+
+-> The servlet-name inside the <servlet-mapping> tag should be same as the servlet-name in the <servlet> tag
+
+<url-pattern>
+
+-> This specifies what file extensions or what path we're going to accept for our Dispatcher servlet. it is *.html. 
 
 
+Namespace
+---------
+
+-> When configuring servlet-config, specifically our bean configuration or bean definitions, there's notation of namespaces.
+
+Example: 
+mvc namespace
+
+<mvc:annotation-driven/>
+<context:
+>
+
+-> This means that we are asking for specific functionality out of that MVC schema, and it's going to go through and replace theis code with more complex definition. 
+-> Spring did this to simplify their configuration files, becoz it was alwyas copy and paste code. 
+->  We can add these namespaces from the namespaces tab inside the servlet-config.xml by using Spring Bean configuration file in Spring Tool Suite.
+-> For servlet-config.xml we have 3 namespaces
+
+1. beans
+2. context
+3. mvc
+
+-> When we select them new tabs are created with respective namespaces
+
+<mvc:annotation-driven/>  -> this means we are going to use annotations to configure our application. 
+
+<context:component-scan> -> this means where should we start looking for annotations at? we keep all our controllers underneath the controller
+						    package. 
+							com.spring.controller
+							
+Controller
+----------
+
+-> Add @Controller at the top of the class.
+-> Add @RequestMapping at the top of the method and provide a value. We add @RequestMapping to tie this to the URL. 
+Ex: @RequestMapping(value = "/greeting") -> it is tied to /greeting
+-> That's what says what our URL is going to be and what method it's going to tie to.
+
+https://localhost:8080/fitnessTracker/greeting is going to tie to this page. 
+
+moel.addAttribute(key, value)
+model.addAttribute("wish", "Hi") -> we want to shove/push some things in the model and have that displayed in our UI.
+
+-> We need to put JSP page and the mapping for our JSP page to our controller. 
+-> Model is a hash map, basic map structure, it does more than that. 
+-> jsp pages are put under WEB-INF directory. 
+-> When we create jsp, Spring provides the standard EL language to extract values out of our request parameters.
+
+${greeting} -> points to the key inside the model.addAttribute
+
+-> Those are what tied those together and that's how it knows what to grab out of the model to display on the page. 
+
+-> We need to tell our controller which JSP page to display. So, we need to add bean in servlet-config.xml. 
+
+There are 2 ways to configure the bean.
+
+1. servlet-config.xml
+
+	
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name = "prefix" value = "/WEB-INF/jsp"></property>
+		<property name = "suffix" value = ".jsp"></property>
+	</bean>
 
 
+-> suffix says where my jsp page is located at and what suffix we are looking for. (value = ".jsp")
+
+2. In the servlet-config.xml, go to namespaces tab and click 'p' - for the property namespace. 
+
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" 
+	 p:prefix="/WEB-INF/jsp" p:suffix=".jsp"></bean>
+	 
+	 This is just shothand for calling getters and setters for prefix and suffix. 
 
 
+Summary:
+--------
 
-
-
+1. COnfigured web.xml, In web.xml we added the servlet, the dispathcer servlet and told it where our configuration was at and we mapped all of our incoming requests to .html.
+2. We created servlet config.xml. We added namespaces which are convinient methods for us. We also told it that we wanted to do annotation driven and set up our context component scanner. 
+3. A context component scanner tells it where to start scanning and for what clases for those annotations. 
+4. The first one tells us that we're doing annotation driven. 
+5. The second one tells us where those annotations are at. 
+6. We created internal resource which syas" where are our jsp pages at?" whenever controller asks for jsp pages, it tells where that file is located at. 
+7. We created controller: added source folders, source main java and created controller under com.spring.controller. 
+8. HelloController is having controller annotation and a request mapping annotation. Request mapping annotation syays what URL am I going to tie to? 
+9. Inside that a method can named whatever we want.We added model object, as an incoming parameter. 
+10. Inside of our model we added an attribute for greeting that's going to tie to our jsp page. And then our retun, we told it to go to the hello jsp page. 
+11. we created a hello.jsp page and we pulled model here. 
 
 
 
