@@ -526,6 +526,165 @@ service.setCustomerRepository(getCustomerRepository());
 -> We are not creating a new instance here every time, we get the power of spring by just having the annotation here. 
 -> Eventhough we call it the same way in our code,  behind the scenes it's looking to see if it is a spring bean and it's already been injected somewhere else. 
 
+Constructor Injection
+---------------------
+
+-> Constrcutor Injection is like setter injection. 
+-> We call the defined constructor that we have for that instance. 
+-> We have this stored in the container and we're not passed around objects. 
+-> We can pull them from the framework using the bean and the getBean aliases with these bean names that we have defined on our objects. 
+
+AutoWired
+---------
+
+-> To autowire the application using Java configuration, we need to add the @ComponentScan annotation at the top of our configuration file.  
+
+@ComponentScan({"com.spring"})
+
+-> the text "com.spring" says that we should be looking for @Atowired annotations.
+-> We can mark autowired annotations by name or by type.
+-> We can define one bean and autowire another bean into it. 
+
+for constructor autowired place the @Autowired above the instance. 
+
+@Autowired
+private CustomerRepository customerRepository;
+
+for setter autowired place the @Autowired above the setter method.
+
+
+	@Autowired
+	public void setCustomerRepository(CustomerRepository customerRepository) {
+		System.out.println("We are using setter injection");
+		this.customerRepository = customerRepository;
+	}
+	
+
+Bean scopes
+===========
+
+Patterns
+----------
+
+-> scope != pattern
+-> patterns avoid lot of mistakes and pitfalls 
+
+scopes
+------
+
+-> There are 5 scopes in spring application for us to configure a bean for us. 
+1. Singleton -> it is valid in any configuration, which is default. 
+2. Prototype
+3. Request   ------
+4. session         |-----> valid only in web-aware spring projects
+5. Global    ------
+
+
+Singleton 
+---------
+
+-> The singleton design pattern restricts the instantiation of a class to one object.
+-> It is default bean scope in spring. If we don't give any scope, it will automatically be assigned to the default scope. 
+-> This means there is only one instance per spring container or context.
+-> It is not always one instance per JVM, since JVM can have more than 1 spring container. 
+
+-> @scope - to configure the scope.
+-> Requires AOP jar separately without using Maven. 
+
+-> Instead of giving text strings in the annotations, we can provide the enums/ string constants.
+-> Spring have a public static final string called the ConfigurationBeanFactory. 
+
+Ex: ConfigurableBeanFactory.SCOPE_SINGLETON
+
+Singleton - XML Config 
+----------------------
+
+-> We need to add the attribute for scope to the xml declaration. 
+scope="singleton"
+-> AOP jar is not required in the XML declaration, but spring keeps it as a transit of dependancy in Maven.
+
+
+Prototype Design Pattern
+------------------------
+
+-> Prototype design pattern guarentees a unique instance per request.
+-> Each time you request a bean from the container, we get a unique instance. 
+-> It is opposite o singleton. 
+-> The configuration of prototype is identical to singleton. 
+
+Web scopes
+----------
+
+1. Request scope -> which returns a bean per HTTP request, which sounds a lot like a prototype, except it's for the life cycle of a request, which is short but longer than the prototype, where it's one instance per every time I ask the container for a bean. 
+2. Session scope -> just returns a single bean per HTTP session, and that will live as long as that user session is alive, 
+3. Global session -> it will return a single bean per application, and it will be shared across all users on that application.
+
+Properties 
+==========
+
+-> Properties are a great way to abstract out values that can change with each environment i.e., configuration information. 
+
+XMl config
+----------
+
+-> The XML configuration for loading a properties file is simpler than its Java configuration equivalent. 
+-> To load a properties file, we need to declare a property placeholder in our XML. 
+
+<context: property-placeholder location="app.properties"/>
+
+-> This creates a property placeholder configurer that is loaded from the location attribute. 
+-> To use these properties, we use (${) to inject that value into our bean. 
+-> ${dbusername} is used to pull a property out of our properies file. 
+-> @value annotation is used to load the property , and inject into a field inside of code. 
+
+Java Config
+-----------
+
+-> The Java configuration for loading a property file is similar to XMl configuration.
+-> To load it we need to add below code
+
+@PropertySource("app.properties")
+
+-> PropertySourcesPlaceholderConfigurer is a bean that Spring uses to return an instance of this PropertySourcesPlaceholderConfigurer.
+-> This is equivalent to property-placeholder XMl element. So it creates an instance of a bean, to store those values in. 
+-> PropertySourcesPlaceholderConfigurer takes all those propertiesthat were loaded in from the property's source location, and puts them in this class and makes them available in the context for our application to use. 
+
+@Value("${dbUsername}") -> used to inject into our code.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
