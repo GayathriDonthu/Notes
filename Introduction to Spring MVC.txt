@@ -410,7 +410,7 @@ There are 2 ways to configure the bean.
 
 	
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name = "prefix" value = "/WEB-INF/jsp"></property>
+		<property name = "prefix" value = "/WEB-INF/jsp/"></property>
 		<property name = "suffix" value = ".jsp"></property>
 	</bean>
 
@@ -420,7 +420,7 @@ There are 2 ways to configure the bean.
 2. In the servlet-config.xml, go to namespaces tab and click 'p' - for the property namespace. 
 
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" 
-	 p:prefix="/WEB-INF/jsp" p:suffix=".jsp"></bean>
+	 p:prefix="/WEB-INF/jsp/" p:suffix=".jsp"></bean>
 	 
 	 This is just shothand for calling getters and setters for prefix and suffix. 
 
@@ -440,10 +440,20 @@ Summary:
 10. Inside of our model we added an attribute for greeting that's going to tie to our jsp page. And then our retun, we told it to go to the hello jsp page. 
 11. we created a hello.jsp page and we pulled model here. 
 
+Architecture
+------------
 
+-> Architecture of Spring MVC.
+-> how Spring MVC fits into the overall framework of spring.
 
+-> Parts of an application can be discussed based around the architecture or design patterns that it's using, and everybody can be on the same page without even having developed on that application before. 
 
+MVC
+----
 
+Standard MVC pattern (image)
+
+-> A request comes in through the view based off of soem user event and then interpreted by the controller. 	
 
 
 
