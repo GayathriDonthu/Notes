@@ -453,7 +453,150 @@ MVC
 
 Standard MVC pattern (image)
 
--> A request comes in through the view based off of soem user event and then interpreted by the controller. 	
+-> A request comes in through the view based off of some user event and then interpreted by the controller.
+-> The controller can change the model or not and then it will select the view based off our action. 
+-> From here, the model can update the view with database off of the user's actions. 
+-> The graphic stemmed from rich client applications that were more event-based or using a design pattern called observer, observable or a subscriber-listener type design pattern. 
+-> This is not applied to all software development, we usually don't have our model updating our view becoz we've gone to a page at that point. 
+
+
+MVC Web 
+
+	 -------> C <-----------
+	|						|
+	|						|
+	|						|
+	|						|
+   \|/					   \|/
+	M						V
+
+-> This graphic is seen in our web applications. 
+-> Our view can access our model but it usually does so through a controller. 
+-> We still make a request even if it is a lightweight request through our controller to access our model. 
+-> We don't have our view typically going directly against our database or our model.
+
+Tiered Applications
+--------------------
+
+Presentation layer
+ |          /|\
+ |         	 |
+\|/			 |
+ Business Logic
+ |			/|\
+ |			 |
+\|/			 |
+   Data Layer
+
+
+
+-> We try to build applications in tiers more now in enterprise languages, 
+
+Reasons are:
+
+1. Separation of concerns
+
+-> It means that each layer is only concerned with the task that it is assigned to do. So, presentation layer is only going to have presentation type things in it, business logic will be contained in a layer, and data/ data access is going to be contained in its own separate layer. 
+-> Separation of concerns is not about reuse, its about having things in the right layer so that we can re-architect them later.
+
+2. Reusable layers.
+
+-> It sounds similar to separation of layers but its focus is different. 
+-> If we have business logic in Presentations tier, we can't easily change the presentation tier or expose a web service for example without recreating some of that logic. 
+-> If we have extracted it into its appropriate tier then we are not duplicating that logic. 
+-> If we do copy paste in our application then it's not in correct tier.  
+-> Reusable layer means that we have a purpose and a point that we're trying to drive of - we can expose the same data in multiple ways without having to worry about it, or we can replace the presentation tier without having to re-architect the application. 
+
+3. Maintanence/ Refactoring
+
+-> It's the ability to change things without having those changes ripple through all of the code. 
+-> If we have hibernate and we have to chnage something in UI based on a change made in hibernate. Ex: table structure. 	
+-> If this is done correctly, we can change our code and not have to retest everything rather than the pieces we changed. 
+
+Application Layers
+------------------
+					View
+					(JSPs)
+					  |
+					  |
+					  |
+				  Controller
+				 (@Controller)
+					  |
+					  |
+					  |
+			Data MOdel / Database
+			     (Model object)
+
+
+-> Data model - we would access using hibernate/JDBC or Spring JDBC. This layer represents the data or model of our application. 
+-> Controller - interprets the user's request and selects the appropriate view based on what we've requested or what information we got back from data model. 
+-> VIew - it can be JSP/ FreeMarker or Velocity.
+
+Myth - Spring MVC is nothing to do with the database. 
+
+-> It has model associated with this. Is model talking about database or model talking about what is framework going represent to JSP page? 
+-> It's actually referring to what we are representing in our JSP page but we always have to get that information from somewhre. 
+
+Components
+----------
+
+
+
+														-------------------> Repository
+													   |	 
+													   |		
+		Controller  ----------------------> Service    --------------------> Repository
+					<-----------------------								   |		
+													   |
+													   --------------------> Repository
+
+
+
+
+We represent the tiers with Spring/ Spring MVC using 3 components.
+
+1. Controller
+2. Service
+3. Repository													   
+
+
+Controller  -> Route where we are going and interpret the user's request. 
+Service -> where our business logic goes, where our transactions will probably start  if we're accessing more than one database table as well. 
+Repository -> Repository is referred to as DAO or Data Access Object. They usually have a 1-1 mapping with out database table. 
+
+Controller
+---------
+
+-> they handle our incoming request and bulding the response. 
+-> the business logic may/ may not be handled here. 
+-> This is where our request and response object should stop.  We dhoulsn;t hand those off to separate tiers.
+-> It should grab information from the request and the response and handed over to the business logic. 
+-> Works with service and repository tier for business logic and data gathering.
+-> Annotated with @Controller. 
+-> There are some classes that we can extend but we wither have to wire them up or annotate with controller still. 
+-> Handles exceptions and routes the view accordingly. 
+
+Service
+-------
+
+-> Annotated with @Service.
+-> It describes the verbs (actions) of a system. This is what we are trying to do inside of our application. 
+-> where the business logic should reside. It shouldn't bleed into repository tier. 
+-> It ensures that the business object is ina valid state. 
+-> where transactions often begin(2-phase commits) Ex: roll back or access web services 
+-> It often has the same methods as the repository but a different focus. 
+Ex: we have method 'find user by lastname' in service tier, and we have same method in repository but what we do if we do't find the user or how many people will return or what state we might return those objects in is controlled by the service tier , whereas the repository tier is just going to get that data. 
+
+Repository
+----------
+
+-> Annotated with @Repository
+-> It describes the nouns(data) of a system. focus is different from service(verbs/ actions) vs Repository(nouns/data)
+-> Focused on persisting and interacting with database or basic CRUD functions.
+-> One-to-one mapping with an object. 
+-> Often one-to-one mapping with database table. (not always, may break into multiple tables but have only 1 object in application)
+ 
 
 
 
@@ -461,4 +604,23 @@ Standard MVC pattern (image)
 
 
 
-			  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
