@@ -596,16 +596,140 @@ Repository
 -> Focused on persisting and interacting with database or basic CRUD functions.
 -> One-to-one mapping with an object. 
 -> Often one-to-one mapping with database table. (not always, may break into multiple tables but have only 1 object in application)
+
+Controllers
+-----------
+
+-> Controllers  are really heart and soul of SPring MVC.
+-> They are a gateway or a proxy into everything else that happens in our Spring MVC application. 
+
+What is a controller?
+
+-> In Spring MVC, the controller is the central concept or part of the framework. (doesn't sense like nouns/ verbs)
+-> With Restful services, we begin to think of controllers in the sens of verbs or what we can do within an application. 
+-> Need to think controllers as choosing what to do based on user's action or request and then the view, or the actual web page, is just a result of doing some action. 
+
+Architecture that makes up the controller
+-----------------------------------------
+
+
+				Request
+			------------------------->      			----------------------> 
+											Controller 								Service Tier/Business Logic
+            <-------------------------					<----------------------								      
+				Response
+
+
+
+-> The request comes in, it goes to a particular controller based on what the user's request was, and it will interact with some business logic.
+-> The business logic is going to produce some data. 
+-> It can be a web service or it could be a database or just be business logic tier, and it's going to produce some output. 
+-> The output can be considered as model for UI, and service tier eventually return that model back to out UI on the response. 
+-> As we come out of the web service, we're going to hand that back to the controller. 
+-> COntroller decided which view is appt based on what information is returned or what happenend out of the request, and we hand it back to the user. 
+
+
+Responsibilities of controller
+------------------------------
+
+1. Interpret user input and transform that input into a model
+   -> So to take that info that's going to come back from business logic, service tier and build that into a model to hand back to UI.
+2. Provides access to business logic 
+   -> it is the gateway to business logic.
+3. Determines the correct view based on the logic.
+4. Interprest exceptions from the business logic / service tier and how to handle and navigate correctly from there. 
+   -> If there is a business logic exception, like invalid date/ database is down, so it is send to error page rather than requesting that we add this information or correct this information on the screen. 
+
+@Controller
+----------
+
+-> Controllers in spring MVC are very lightweight, no need of implementing an interface/ extending a class.
+
+-> We only need 2 parts. 
+
+1. @Controller annotation -> tells Spring MVC that this is a controller and it should be included in the available controllers for it to route the information to.
+2. @RequestMapping annotation -> tells Spring which method is going to handle which request. 
+
+-> Spring have older concrete classes that we can extend and the URL will map the class based on the controller name. It works fine and not deprecated. 
+-> Controller and request mapping approach used mostly in Restful services. 
+
+@Controller
+public class HelloController {
+	@RequestMapping(value="/greeting")
+	public String sayHello(Model model)
+}
+   
+Example
+------
+
+-> Creating controller in Fitness Tracker project to display the result page. 
+-> A controller that will interpret our application's request called the "Minutes Controller".
+-> When we go to the Minutes controller, a page should be displayed, it should allow us to enter minutes exercised and show us what the total is already. 
+
+<context:component-scan that tells to start looking for controller underneath that directory, underneath that package. 
+
+@Request mapping just says what URL we are going to intercept this with, what's going to tell spring MVC to drive to this method. 
+
+http://localhost:8080/FitnessTracker/addMinutes.html
+
+-> when we click on thi link, we got to addMinutes.html page and it wants to go though web.xml and web.xml says send everything that is *.html to our dispatcher servlet. 
+
+  <servlet-mapping>
+  	<servlet-name>fitTrackerServlet</servlet-name>
+  	<url-pattern>*.html</url-pattern>
+  </servlet-mapping>
+  
+-> Dispatcher servlet is configured using the servlet config. 
+-> Servlet config says, I want to scan for all of my controllers at this location. I wan to be annotation-driven. 
+
+<context:component-scan base-package="com.spring.controller"/>
+
+-> Since our controller is annotative to @Contoller, it says ok, I'm going to handle that. And since, we put request mapping, it syays the method that's going to handle that. 
+
+console output:
+
+Mapped "{[/greeting],methods=[],params=[],headers=[],consumes=[],produces=[],custom=[]}" 
+Mapped "{[/addMinutes],methods=[],params=[],headers=[],consumes=[],produces=[],custom=[]}" 
+
+-> when server started, we have mappings for greetings and mappings for add minutes to our serlvet. So that means our Spring MVC configuration picked it up. 
+-> It means that our annotations and stuff are working right, since we got mappings for this file here. 
+
+-> From the request mapping it returns to view. (return "addMinutes";)
+
+-> In servlet config, there is internal resource viewer that says look for JSP pages in WEB-INF directory and look for a suffix of JSp. 
+
+<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" 
+	 p:prefix="/WEB-INF/jsps/" p:suffix=".jsp"></bean>
+
+-> (return "addMinutes";) So, we look for addMinutes.jsp underneath the directory. 
+-> we go to addMInutes.jsp page and display our information here. 
+
+
+Passing params
+-------------
+
+
+			Request   -------------------> Controller 
+			(Params)						(Model)
+											  |
+											  |
+											  |
+											  |
+											  |
+											  |
+											  |
+			Response <--------------------------
+			
+			
+-> TO be able to pass data from our JSP page to our controller, tag libraries are used, which are provided by SPring MVC.
+-> We can use standard HTML input tags, but Spring provides us a tag library making it easier to interact with our controllers. 
+-> We always passed HTTP parameters that have gone on the HTTP request, and those parameters can then be accesses much similar to like a hash map, where we can grab a aparameter based on its name, so every HTML element would be named. 
+-> The tags that Spring provides to us take these values from our input page and either make them available to our controller through the model hash map, bind them to a specified object, or just be able to grab them off the request.
+-> So, we can always pass in the HTTP servlet request into our method and access them. 
+-> The model is used for both gets and posts to out web page. 
+-> When we're retrieving data and setting data to it, so that incoming and outgoing are often confuses. 
+
  
-
-
-
-
-
-
-
-
-
 
 
 
