@@ -492,7 +492,7 @@ Services
 -> In Angular, service means a component that performs a specific job, like providing a timer, or providing the ability to communicate over http. 
 -> $http service is a component. 
 
-The venn of Services (pic from office desktop)
+The venn of Services (image from office desktop)
 --------------------
 
 -> Controllers setup the model on the $scope object by attaching the properties and functions on $scope. 
@@ -591,7 +591,7 @@ When we call $interval, it's going to return an object to us, and the first thin
 -> We declare a private variable, it doesn't have to be on $scope, call it countdownInterval.
 -> start it as null, when we call $interval, we will store the return value into that variable.   
 
-UI related Services(pic from office desktop)
+UI related Services(image from office desktop)
 -------------------
 
 -> In angular, if we want some change in view, we do changes in model.
@@ -735,7 +735,7 @@ Here /main is the API
 -> The routing engine is going to swap them in and out.
 -> When it does that, it will also coordinate with the browser history, so that if the user hits the back button or the forward button, they will still be navigating just inside of our application. 
 
-(pic from desktop)
+(image from desktop)
 
 1. Create Route
 2. Create template

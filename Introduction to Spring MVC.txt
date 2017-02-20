@@ -729,13 +729,130 @@ Passing params
 -> The model is used for both gets and posts to out web page. 
 -> When we're retrieving data and setting data to it, so that incoming and outgoing are often confuses. 
 
- 
+Exception:
+
+java.lang.IllegalStateException: Neither BindingResult nor plain target object for bean name 'command' available as request attribute
+
+<td><form:input path="minutes"/></td>
+
+-> It means it doesn't know what bean to tie that minutes attribute to. 
+
+We created a POJO i.e., 'Exercise' bean and added minutes attribute inside that as a member variable.
+
+-> how this model attribute is mapped to the addMinutes.jsp ? 
+It is using @ModelAttribute. Inside the controller, we pass model as for the method. 
+
+public String addMinutes(@ModelAttribute ("exercise") Exercise exercise){
+
+<form:form commandName="exercise">
+
+The modelattribute exercise is now bound to the commandName
+
+Views
+=======
+
+-> Views are how we display the results of what we request middle tier using Spring MVC. 
+-> Restful service results is also a type of view but it not necessaily have a UI component ot it. 
+-> Views are what we see in SPring MVC. Ex: jsp/jsf (spring has an api to replace the model portion of JSF, it integrates well with Spring)
+
+Conventions
+-----------
+
+-> jsp pages placed under WEB-INF directroy ( not mandatory) so that they cannot be deep linked or bookmarked to. 
+-> This way, all the requests must be directed though our application and we guarentee the user experience. 
+-> We can add more subdirectories under WEB-INF, this also enables us to secure our application easier becoz we are controlling all access to it rather than to allow people to go directly to a page, we make them navigate though our framework. 
+-> To find a page in the subdirectory, we use an internal resource view resolver to find that page based on the name that we return. 
+
+
+Resolving a view
+----------------
+
+@Controller
+public class MinutesController {
+	
+	@RequestMapping(value = "/addMinutes")
+	public String addMinutes(@ModelAttribute ("exercise") Exercise exercise){
+		
+		System.out.println("exercise:"+ exercise.getMinutes());
+		
+		return "addMinutes";
+	}               |
+}					|
+					|-------------------> return string that is used by the view resolver to find the JSP page named and in the location specified 
+										  with our view resolver. 
+
+-> We can also return a view object that wraps a string that is the view name as well. 
 
 
 
 
+		Controller -------------------------------------------> View Resolver  -------------------------> View
+                                 Model 
 
 
+-> The controller can build a model, if necessary, and return that to our view resolver with the data it needed in the view.
+-> We can have multiple view resolvers as well as multiple view types in the application. 
+
+View Resolvers
+--------------
+
+image from desktop
+
+-> There are some view resolvers provided by Spring, we can slo create custom view resolver since they just extend view resolver interface. 
+-> Some view resolvers are for using teplating tools like FreeMarker or Velocity for UI. 
+-> It just configures where it should be looking for those templates and then executes the binding and writes the output to them.
+-> The resource bundle view is used for internationalization purposes and the tiles view is used for tiles templated layout architecture. Ex: struts
+-> Content negotiating view resolver is used when returning content types from the same application. 
+-> We can have multiple view resolvers configured in the app at the same time. We just need to order which one gets fired first. 
+
+
+using jsp -> addMinutes.jsp -> placed under jsp subdirectory under the WEB-INF
+using FreeMarker template Library(FTL) -> addMinutes.ftl -> placed under ftl folder under the WEB-INF 
+
+-> FTL is same as JSP. 
+
+so the return string "addMinutes" doesn't mean that it's the eact file, but it's a key yo that file. By following below convention we can find our location. 
+
+<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" 
+	 p:prefix="/WEB-INF/jsps/" p:suffix=".jsp"></bean>
+
+We can do 2 types of chaining
+
+1. Basic chaining
+
+addMinutes
+
+return "forward:addMoreMinutes";
+
+addMoreMinutes
+
+Error: HTTP Status 404 - /FitnessTracker/addMoreMinutes
+
+The link broke at the forward.  Since, it doesn't know what addMoreMinutes is. It should be addMoreMinutes.html
+
+-> This goes outside the framework and comes back in.  It goes to web.xml <url-pattern>*.html</url-pattern>, so it looks for *.html. 
+
+-> Now, it went in one method ourside our framework and came back in and hit that method again. 
+
+MinutesController.java -> addMinutes() -> return "forward:addMoreminutes.html" --------------------> web.xml -------------------> addMoreMinutes()
+																					went outside				came back and hit method
+
+-> By including "forward:" in front of addMoreMinutes.html, it actually bypassed our view resolver that first time and went back though as a request and then went to our view resolver on this time. 
+
+exercise: 14
+adding exercise: 14
+
+-> We can also do redirect 
+return "redirect:addMoreMinutes.html";
+
+exercise:14
+addingExercise: 16
+
+-> Becoz on the redirect, it had closed our request and created a new request. So we went through once with our original request, it finished that request and came in as another request and so it had lost its exercise information. 
+
+uses of redirect:
+
+1. don't press back button as the credit card info can be charged twice -> redirect can stop this by stopping the backing up of info as it is already redirected. 
 
 
 
