@@ -729,7 +729,32 @@ Passing params
 -> The model is used for both gets and posts to out web page. 
 -> When we're retrieving data and setting data to it, so that incoming and outgoing are often confuses. 
 
+@ModelAttribute
+---------------
+
+-> Model Attribute annotation is used whenever we want to send data to our controller or retrieve data from our controller that's bound to an object or represented by an object. 
+-> Spring MVC does all these things by using POJOs and not using a class that's only specific to our UI, like in some other frameworks such as struts or webwork. 
+
+1. Used with an HTTP GET -> to get data back, ex: drop down data 
+2. Used with an HTTP POST -> to send data back, ex: filling form 
+3. Works with POJOs -> not specifically bound with UI tier, we can use it anywhere in the code. 
+4. It can also be validated with a binding result. 
+
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+
+-> tag libraries aren't dowonloaded every time by Java, uri is just an index into jars - to know to go download that. Downloaded in Maven dependencies.
+
+<form:form> -> Spring form allow us to bind an object t our data that we're submitting back to our controller. 
+
+<form:input path="minutes"/>
+
+-> minutes is going to tie to an object with path of minutes on it. 
+>>>>>>> origin/master
+
+<td><form:input path="minutes"/></td>
+
 Exception:
+---------
 
 java.lang.IllegalStateException: Neither BindingResult nor plain target object for bean name 'command' available as request attribute
 
