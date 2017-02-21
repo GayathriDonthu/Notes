@@ -873,16 +873,65 @@ return "redirect:addMoreMinutes.html";
 exercise:14
 addingExercise: 16
 
+And the URL changes to 
+
+http://localhost:8080/FitnessTracker/addMoreMinutes.html;jsessionid=A1479E3B08955152CC20B4BF8895C054
+
 -> Becoz on the redirect, it had closed our request and created a new request. So we went through once with our original request, it finished that request and came in as another request and so it had lost its exercise information. 
 
 uses of redirect:
 
-1. don't press back button as the credit card info can be charged twice -> redirect can stop this by stopping the backing up of info as it is already redirected. 
+1. websites where it is instructed as don't press back button as the credit card info can be charged twice -> redirect can stop this by stopping the backing up of info as it is already redirected. 
+2. They'r actually a URL sitting ona different page on a different browser/ diff location which makes sure that they don't resubmit that page easily.
+
+Static views
+------------
+
+-> there are methods in Spring MVC for displaying static data. 
+
+static view -> pdfs/ images
+
+<mvc:resources location="pdfs" mapping="/pdfs/**"/>
+
+pdfs -> folder name
+/pdfs/** -> ** means inside the foler pdfs look recursively
+
+http://localhost:8080/FitnessTracker/pdfs/Divya_LIC_Receipt.pdf
+
+pdf file is opened
+
+-> This bypassed the controller and sets up a controller behind the scenes. 
+-> It's a file resolver controller that just goes out and looks for files on our path and uses the location information in servlet-config.xml to find the file and serve it to back up for us without having to go through and confiigure a view resolver and set up a controller. 
 
 
+Tags
+=====
 
+-> Tag libraries are used to make interacting with data easier in our pages. 
+-> Spring MVC tag libraries are written on the java standard tag library specification and are included as part of the spring web jar. 
+-> There aer 2 tag libraries in sPRING mvc, 
 
+1. Spring.tld
+2. Spring-form.tld
 
+spring.tld -> The spring tag library provides some tags for evaluating errors, setting themes, and outputing internationalized messages. 
+
+spring-form.tld -> The spring-form tag library is based around processing form data. 
+				-> Most of the form tags are similar to html form tags but have binding for working with a backing object as well as validating  its data. 
+ 
+
+spring.tld(image from desktop)
+
+-> The spring tags are more about working with the application rather than processing information like the form tags are. 
+
+hasBindErrors ->  used to see if we have returned errors from the controller or from our backing tier. 
+url tag -> used to invoke a url and builds the path accordingly escaping characters that would normally break a request. 
+
+-> some of these characters might be things like spaces or &. Things like that it needs to build into out URL for us. So these tags will effectively escape that for us in our application.
+
+message tag -> used for externalizing strings out of the jsp pages
+
+create a properties file, now maven work is to add anything in src/main/resources automatically to our class path. 
 
 
 
