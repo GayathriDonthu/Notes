@@ -933,8 +933,62 @@ message tag -> used for externalizing strings out of the jsp pages
 
 create a properties file, now maven work is to add anything in src/main/resources automatically to our class path. 
 
+<spring:message
 
+code is an attribute of spring:message, it is a key for the string that we want to pull out of message.properties file
 
+code = goal.text
+
+We need to create a bean for resource bundles to look up our resource bundles. 
+
+<bean id="messageSource"></bean>
+
+messageSource is referenced by spring message tags. 
+
+p:basename="message" -> it ties to what we named our properties file
+
+Interceptors
+--------------
+
+-> Interceptors are not part of the tag libraries but they are commonly used with tag libraries.
+
+1. Registered and part of request life cycle -> involed with intercepting data that comes from jsp page and data that goes to controller.
+2. Have the ability pre-handle and post-handle web requests. -> so they can intercept thinhs on the way to controller and vice versa.
+3. Have callback methods that are used to override or change values.
+4. Commonly used for Locale changing.
+
+<bean>
+</bean>
+
+-> This bean is used when we want to intercept a request to change the locale that our web application is using for things like messages bundle.
+
+<a href ="?language=en">English</a> 
+
+when we click on the link, the URL is added with ?language=en
+
+http://localhost:8080/FitnessTracker/addMinutes.html?language=en
+
+Registering Interceptor:
+
+<mvc:interceptors>
+		<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" p:paramName="language"></bean>
+</mvc:interceptors>
+
+p:paramName="language" -> tied to language in the href link, this what intercepting
+
+-> We had to register an interceptor and we had to set up a locale resolver so it would look and know where to look for what locale wh're currently using.
+
+-> In the example, the interceptor is intercepting the language that we're passing thriough and binding that to our page.
+
+Spring-form.tld(image from desktop)
+
+-> form tags are all about working with html forms.
+-> Their names a re similar to html options that they are meant to be representing.
+-> The reason why we want to use these over standard html elements is that form tags are meant to bind to objects from our model as well as carry error information on required fills.
+-> They also take a CSS class for changing their display from normal to error status. 
+-> They're also javascriptive attributes and other things that we can tie to as well. 
+-> Some of the events like on focus, on click, key press events.
+-> They reduce the amount of code that we have on JSP pages.
 
 
 
