@@ -990,6 +990,214 @@ Spring-form.tld(image from desktop)
 -> Some of the events like on focus, on click, key press events.
 -> They reduce the amount of code that we have on JSP pages.
 
+Example: GoalController
+
+-> Spring will pass in the backing model to the method addGoal and since it's passed by reference instead of passed by value, this is a pointer back to our actual object. 
+-> It's not just go away at the end of the method becoz it's going to be absorbed back into the framework as part of the interceptor as part of the requestlifecycle.
+-> So, the object(model) will be available to use and it will actually return data back to our jsp page for us.
+
+@RequestMapping(value="/addGoal", method=RequestMethod.GET)
+
+RequestMethod.GET -> This method handles http requests of GET so the http request GET is all that this method is goingt o handle. If we try to
+					 post to it, it's actually going to error out.
+				  -> Reason we want to add this is that, as we're setting up our page, we only want certain things to go this method.
+
+http://localhost:8080/FitnessTracker/addGoal.html
+
+-> We receive error after clicking submit button, 
+Error: HTTP Status 405 - Request method 'POST' not supported
+
+When we remove method=RequestMethod.GET, from the code and try to click submit, it's not doing anything becoz new Goal() is created every time.
+
+-> If we want to store any info in our session, use @sessionAttributes annotation. We just tell it which attribute we want to store our session. 
+-> In the example, it is "goal"
+@SessionAttributes("goal")
+-> The goal attribute ties to goal in the model.addAttribute
+model.addAttribute("goal", new Goal());
+
+-> We can check if the goal object is saved int he session by displaying it in jsp page.
+
+<h1>Goal for the day is: ${goal.minutes}</h1>
+
+-> It pulled that value out of the session and redisplayed it for us in that page. 
+
+Summary: 
+-> We redirected out of the page, addGoal.jsp, the first time we request it, it comes into our goalController and it returns us to addGoal which goes back and displays the addGoal.jsp page, binds us to the goal object (by unsing commandName="goal), we submit back up to that so we actually do a post back up to our controller and it will bund us to the goal object that we created. Once it's bound and it's updated everything, it redirects us back to addMinutes.html.
+
+Validation
+==========
+
+-> Using tag libraries and the model object in SPring MVC, we can easily validate data passed to our controller in a potomatic way. 
+-> 2 types of validation
+
+1. Constraint validation
+2. Business logic validation
+
+Constraint validation
+
+-> Constraint validation is when you are expecting a field like name not to be null/ password and re-enter password must match, those type of requirements.
+
+Business logic validation
+
+-> Business logic validation are what Spring MVC has built in mechanisms to help us validate againt. It should be handled in service tier, not the controller.
+-> This type of validation is guarenteeing things like an entity is valid in the database or a username isn't already taken in our LDAP server/db.
+
+Tags
+----
+
+-> All form tags have an error class for setting a specific color, font or combination of both for displaying errors.
+-> There is a specific error tag for displaying validation errors.
+<form:errors path="firstname"/>
+-> In the above, errors tag is used to look at the path firstname, which is a member variable inside of the object that we bound to display errors that might have occured on firstname.
+
+Validator Interface
+-------------------
+
+2 ways to handle validation in Spring MVC
+
+1st way
+-------
+
+->  to use the validator interface and the validation utils helper class. This is used with simple form controller and don't deal with annotations much.
+
+Validator class
+---------------
+
+-> implement the validator interface and implement all logic in the implementation of this interface.
+
+validation utils Class
+-----------------------
+
+-> validation utils helper class helps us to look whether a field is empty or if it just contains white space.
+
+Binding result class
+---------------------
+
+-> comparing password or email field to make sure that they've entered the email twice correctly, it can compare these types of things and it does this using the binding result class.
+-> We can use it in service tier to do things outside of Spring MVC.
+
+SimpleForm Controller
+---------------------
+
+-> Simple form controller, which is a kind of pre-annotation way of setting up controllers and it's kind of a narrow focus controller. 
+-> The simple form controller is just dealing with forms and kind of a single post to that form. So, we can't do multiple things inside the controller. 
+-> It is not commonly used anymore.
+
+These validations are falling short now since new JSR specification is there for validation. 
+
+JSR-303
+=======
+
+1. specification standard for validation ->  Java standard, not spring standard or a spring API.  
+										 -> SPring MVC integrates with JSR-303 for its validation process and reporting errors. 
+										 -> Good things is that we can use this in any application or across multiple tiers.
+2. Annotation based -> can be extended to use our own custom validation rules we well
+					-> can be used to build our own JSR-303 compliant rules and have those implemented inside of our actions as well.
+3. Hibernate validator -> The reference and limitation is actualyl called Hibernate validation. 
+					   -> the hibernate validator has nothing to do with Hibernate.
+					   -> Hibernate validation started as part of ORM tool but they separated out to a completely, its own specification.
+					   -> Other than the hibernate ORM tool we can use the JSR-303 defined objects and rules to validate code against back end, but nothing to do with hibernate.
+4. POJO based -> Since it is annotation based that measn it works with POJO.
+              -> no need of implementing interfaces or things that we have to bind to, to get these rules to be applied.
+			  
+Adding JSR-303 validation to out FitnessTracker application.
+
+We need to add the Maven dependancy for hibernate validator in pom.xml
+
+<dependency>
+    	<groupId>org.hibernate</groupId>
+    	<artifactId>hibernate-validator</artifactId>
+    	<version>4.2.0.Final</version>
+</dependency>
+
+Below jars are imported in the Maven Dependencies
+
+-> hibernate-validator-4.2.0.Final.jar
+-> validation-api-1.0.0.GA.jar
+
+-> validation-api is a transitive dependancym it's Java X validation so it is a Java specification.
+
+@Range-> we can put a range on a field with min and max values in the POJO (Goal)
+
+	@Range(min=1, max=120)
+	private int Minutes;
+	
+	
+@Valid -> used in Controller, it validates the model attribute 
+
+BindingResult result -> the result object will contain response from validation off of @valid 
+					 -> when the method gets called and it checks to see its valid, the result object will contain whether or not it is valid and has any errors.
+					 result.hasErrors()
+					 -> this performs validation with the range given ( i.e., min 1 and max 120)
+					 
+If number of minutes entered is negative, We can get result.hasErrors()= true, but what error can be found in jsp page. 
+
+<form:errors path="*"></form:errors> -> * means we want all errors 
+
+Summary: Goes through our object, adding a range and going in our controller and saying that's valid. We grab the binding result so that we can put some logic about where the page should go based on those errors. 
+
+Ajax
+====
+
+-> Ajax and Restful services using Spring MVC.
+-> Spring MVC has the ability to produce different content based on our request type.
 
 
+REST
+----
 
+-> Restful services have taken SOA world by storm.
+-> They are easy to work than SOAP and more consumable across applications. 
+-> SInce they are built on top of the http specification and can produce JSON they are a great match for Javascript Mashups.
+-> Spring MVC framework allows us to return JSON just as easily as html by simply using a different view resolver.
+-> No need of using diff frameworks like jersey or axis or cxf  to expose a restful service. 
+-> The rest services of Spring MVC are not as feature rich as Jersey but support most of the features that Jersey has and don't require a separate tool of framework.
+
+Verbs
+-----
+
+1. CRUD
+
+-> Restful services are all about what we can do against a domain object. 
+-> The verbs or actions are the interface that we can interact with against this domain object. 
+-> domain object means CRUD functions.
+-> CRUD - Create, read, update and delete.  -> 4 functions we do against database.
+-> REST is built with same notion.
+
+2. POST
+
+-> same as Create, we do post when we want to create an object through a RESTFUL service.
+-> Post is used for both create and update.
+
+3. GET
+
+-> it is a synonymn with read.
+-> Parameters can be passed on a URL or part of the path of the url. 
+
+4. PUT
+
+-> Put is supposed to be used with updates but is usually overridden and sent using a post instead.
+
+5. DELETE
+
+-> used for deleting
+
+
+ContentNegotiatingViewResolver
+------------------------------
+
+1. Accepts XML, JSON, HTML
+
+-> The ContentNegotiatingViewResolver is what makes it possible to return various content types from our application based on the request.
+-> It uses the except header that is sent using http headers t determine the content that it will host up.
+-> It can aslo look at the file extension that is sent as well.
+
+2. Multiple View Resolvers
+
+-> This can be cobined with other view reolvers, they just need to have an order that is associated with them.
+-> We can return xml and JSON as part of the view order, as long as it's ordered before internal resource view resolver.
+
+3. Additional jars needed for the Marshaller
+
+-> for the various output types that we want within the application.
+-> Jackson is used in the example to martial our data to JSON.
