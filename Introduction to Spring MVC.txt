@@ -1201,3 +1201,35 @@ ContentNegotiatingViewResolver
 
 -> for the various output types that we want within the application.
 -> Jackson is used in the example to martial our data to JSON.
+
+Example:
+
+Add Maven dependency for ContentNegotiatingViewResolver
+
+2 ways we can add:
+
+1. adding in pom.xml -> source tab
+2. adding in pom.xml -> dependency tab
+
+<dependency>
+	<groupId>org.codehaus.jackson</groupId>
+	<artifactId>jackson-mapper-asl</artifactId>
+	<version>1.4.1</version>
+</dependency>
+
+<dependency>
+	<groupId>com.thoughtworks.xstream</groupId>
+	<artifactId>xstream</artifactId>
+	<version>1.3.1</version>
+</dependency>
+
+<dependency>
+	<groupId>org.springframework</groupId>
+	<artifactId>spring-oxm</artifactId>
+	<version>3.2.0.RELEASE</version>
+</dependency>
+
+spring-oxm -> spring-object xml mapper, it is a tool that xtreme uses when it's marshaling stuff out of xml.
+
+-> In the servlet-config.xml, Internal resources view resolver had to be the last view resolver that gets called. 
+
