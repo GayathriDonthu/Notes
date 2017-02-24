@@ -1233,3 +1233,102 @@ spring-oxm -> spring-object xml mapper, it is a tool that xtreme uses when it's 
 
 -> In the servlet-config.xml, Internal resources view resolver had to be the last view resolver that gets called. 
 
+
+org.springframework.web.accept.PathExtensionContentNegotiationStrategy
+
+-> This tells it which path types we're going to accept. 
+
+Property - defaultViews -> it is basically what we want to use, what framework do we want to use based on the view type that's coming through so inside we have a list.
+
+servlet-config.xml
+------------------
+
+
+<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+	<property name="order" value ="1"></property>
+	<property name="contentNegotiationManager">
+		<bean class="org.springframework.web.accept.ContentNegotiationManager">
+			<constructor-arg>
+				<bean class="org.springframework.web.accept.PathExtensionContentNegotiationStrategy">
+					<constructor-arg>
+						<map>
+							<entry key="json" value="application/json"/>
+							<entry key="xml" value="application/xml"/>
+							
+						</map>
+					</constructor-arg>
+				</bean>
+			</constructor-arg>
+		</bean>
+	</property>
+	
+	<property name="defaultViews">
+		<list>
+			<bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView" />
+			<bean class="org.springframework.web.servlet.view.xml.MarshallingView">
+				<constructor-arg>
+					<bean class="org.springframework.oxm.xstream.XStreamMarshaller">
+						<property name="autodetectAnnotations" value ="true" />
+					</bean>
+				</constructor-arg>
+			</bean>
+		</list>
+		
+	</property>
+</bean>
+
+
+-> The above configuration in servlet-config.xml, sets up to be able to handle those views based on JSON requests or xml requests and there's other types of requests which can be done.
+
+@ResponseBody -> It says what you return is the actual content that I want to expose.
+
+
+Web.xml
+-------
+
+1. The dispatcher servlet that needs to be configured to allow the various request types through. 
+2. HTML -> We used, internal resource view resolver to look up our jsp pages. 
+3. PDFs -> We used MVC resources
+4. JSON -> We used content negotiating view resolver 
+5. XML -> We used content negotiating view resolver, to allow xml content through.
+
+-> Add things to servlet-mapping to let these other file types come through. 
+
+http://localhost:8080/FitnessTracker/activities.json
+
+-> [{"desc":"Run"}, {"desc":"Bike"}, {"desc":"Swim"}]
+
+JQuery
+------
+
+-> Javascript framework with multiple plugins
+-> Easily consume JSON, can create html on fly.
+-> Download Jquery from http://docs.jquery.com/Downloading_jQuery
+-> Jquery is just a file that we drop into our project so we don't download it using Maven.
+minimilist version ( all white spaces condensed)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
