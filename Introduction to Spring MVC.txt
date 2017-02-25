@@ -896,7 +896,8 @@ static view -> pdfs/ images
 pdfs -> folder name
 /pdfs/** -> ** means inside the foler pdfs look recursively
 
-http://localhost:8080/FitnessTracker/pdfs/Divya_LIC_Receipt.pdf
+http://localhost:8080/FitnessTracker/pdfs/Divya_LIC_Receipt.pd
+
 
 pdf file is opened
 
@@ -1296,7 +1297,7 @@ Web.xml
 
 http://localhost:8080/FitnessTracker/activities.json
 
--> [{"desc":"Run"}, {"desc":"Bike"}, {"desc":"Swim"}]
+JSOn response -> [{"desc":"Run"}, {"desc":"Bike"}, {"desc":"Swim"}]
 
 JQuery
 ------
@@ -1307,14 +1308,67 @@ JQuery
 -> Jquery is just a file that we drop into our project so we don't download it using Maven.
 minimilist version ( all white spaces condensed)
 
+https://jquery.com/download/
+
+-> 2 types 
+
+1. production view
+2. development view
+
+-> download development view as it is more readable, it is not the minimal version, human readable form.
+
+<form:select id = "activities" path="activity"></form:select>
+
+-> dynamically building the activities
 
 
+-> Using Jquery, we can cash some things, and if we are using hibernate we can do hcash on the backend to have the list returned not as part of model object.
+
+$(document).ready() -> It means when the document is ready to start being manipulated, when the dom is available
 
 
+Creating functions to build the options on fly, so provide the url which renders the JSON response.
 
+$.getJSON('http://localhost:9092/FitnessTracker/activities.json') 
 
+or
 
+$.getJSON('<spring:url value="activities.json"/>'
 
+var html = '<option value="">--Please select one--</option>'; -> for manipulating on the fly (dynamically)
+
+data.length -> length of the resultsetthat came back which has 3 elements in there ( JSON activities response)
+
+$('#activities').html(html); -> replaces old html with the dynamically created html
+
+Extra pieces for Spring MVC Application
+---------------------------------------
+ 
+-> Removing business logic from Contrler andputting in service layer(where we write our business logic, adding actvities stuff) 
+
+class -> ExerciseServiceImpl.java
+Right click -> Refactor -> Extract Interface -> ExerciseService.java
+
+-> Autowire the ExerciseService Interface in the MinutesController.java
+-> When using controllers, those which are autowired are looked automatically out of servlet-config.xml. That is becoz of the component-scan
+
+broadening scope from com.spring.controller to com.spring
+<context:component-scan base-package="com.spring"/>
+
+  
+-> We can have different config files for Controller, service and repositories. i.e, 
+
+@Range(min=1, max =120)
+private int minutes;
+
+@NotNull
+private String activity; 
+
+-> For this validation to work, we need to split the method similar to the GoalCOntroller.java, by writing RequestMethod for GET and POST.
+
+-> We can put validations on the Exercise object as well
+
+-> We can create repository package and create database stff inside our application.
 
 
 
