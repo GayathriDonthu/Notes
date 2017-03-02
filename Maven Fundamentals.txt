@@ -1,0 +1,452 @@
+Maven fundamentals
+
+Ant Vs Maven
+
+
+Ant code snippet
+
+<target name="clean" description="clean up">
+	<delete dir="${build}"/>
+</target>
+
+-> here we are cleaning the build directory, it is a variable passed and it is evaluated at run time.
+
+3. We have to define everything that we want to do it. 
+-> like clean, clear, cleanup etc are not having standard notation, so for very file we need to know the standard notation for clean, and we need to call that. 
+-> By this each organization ends up having a large repository of these scripts that are unique to them. 
+-> Nothing will carry over from one job to another or even from one project to another. 
+
+-> There is not a lot of reuse, ther is no inheritance, there is no strcuture.
+
+-> Maven is more than the scripting tool. 
+
+Maven
+
+-> Maven is a full fledged build tool
+-> A lot of implicit functionality. Maven clean is Maven clean(standard).
+-> Consistency across projects. 
+-> Capable to achieve inheritance in projects by using parent POMs or inherited POM through composition.
+-> Transitive dependency( cna be achieved using Ivy with Ant though) means if we need to pull one jar, it's going to pull in all the jars that it needs to work within our application.
+-> Built around versioning(key goal) - It handles things, calling something at a snapshot inside of Maven actually has some context behind it. 
+
+Pros and cons of Maven
+----------------------
+
+Pros     																			
+
+1. Maven can be a black box															
+   -> It means we don't necessarily see where all the stuff is defined at. 
+2. Steeper learning curve.																	
+3. Convention over configuration													
+   -> It means if we follow Maven's convention, it works really well for us. But if we try to step outside their boundaries, things start crumble a bit.
+4. Better IDE integration.
+   -> lot better IDE integration with Maven than Ant.
+   -> In Ant, we call goals from IDE, but Maven has a much better, much richer integration with IDE like Eclipse.
+5. Less overhead through use of repos
+   -> Usually Ant and Maven require us to download the files multiple times.
+   -> But Maven started usign local repositories so no need to download the same file multiple times becoz we have multiple projects using it.
+6. Different mindset, steepest learning curve is not making Maven act like Ant.
+   -> Maven is build tool Ant is script tool.
+
+
+Cons
+
+1. We can trace through Ant files easily.
+2. Quicker to learn, but copy-paste intensive.
+3. Larger project size in SCM, artifacts stored with project.
+
+Maven Installation best practices
+---------------------------------
+
+-> https://maven.apache.org, click on download Maven 
+-> set the environment variables for Maven and also JAVA_HOME
+
+MAVEN_HOME = C:\Users\gayathri.guttikonda\Desktop\Gayathri\Softwares\apache-maven-3.3.9-bin\apache-maven-3.3.9
+
+PATH = %PATH%;%MAVEN_HOME%\bin
+
+Command to check if Maven is installed correctly 
+
+mvn -version 
+
+It shows maven and java versions.
+
+MavenHelloWorld Example:
+--------
+
+-> pom.xml is the file that Maven looks for when it's building the application.
+-> pom stands for project object model. It is an xml document so it has to be well-formed and well-structured. It's a valid and verified XML file.
+-> pom.xml will put the closing tags for us. 
+
+<groupId> -> this is what differentiates us from other companies.
+
+Ex: com.accenture
+org.hibernate
+
+-> It is the company's web address. It's the same thing that our package should be inside of the Java code.
+
+<artifactId> -> is the name of our application.
+
+Ex: MavenHelloWorld
+
+<version> -> version of our application(similar to versions of jars we usually download)
+
+Ex: 1.0-SNAPSHOT/ 1.0/ 1.0-RELEASE
+
+anything would work since we didn't keep versioning in Maven.
+
+<modelVersion> -> it is just the version of the XML that we're using. It helps Maven know what to do and how to process things.
+
+Ex: 4.0.0
+
+POM.XML
+
+<project>
+	
+	<groupId>com.practice</groupId>
+	<artifactId>MavenHelloWorld</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<modelVersion>4.0.0</modelVersion>
+	<packaging>jar</packaging>
+
+</project>
+
+-> Maven expects a standard folder structure, following their convention rather than configuring everything.
+
+Create folder -> src -> main -> java and put all the java files inside the src/main/java folder, Maven already knows to start compiling any class that's underneath that directory.
+
+Write helloworld java file
+
+open command prompt 
+
+> mvn clean 
+
+-> This command is going out to the Maven repo and downloading a bunch stuff. 
+-> Clean just deletes and cleans up anything, and it actually sets up any structure it needs for us to run the other stuff-- parts of our application.
+-> we don't have to run it everytime.
+
+> mvn compile
+
+-> It downloads a bunch more things. It downloads all the plugins it needs to run these things.
+
+-> Now, we should have a target directory inside the project(maven creates) and classes directory. Inside the classes directory MavenHelloWorld.class file is created.
+
+-> Run the application
+
+> java HelloMaven
+
+output displayed.
+
+-> run maven package. We put a packaging of type jar in the pom.xml, If we run maven package, it's going out and download the rest of plugins it needs to build the application, it's going to compile those classes, and then it's going to bundle them up in a jar for us in the target folder.
+
+>mvn package
+
+-> HelloMaven-1.0-SNAPSHOT.jar is created
+
+Maven Structure
+===============
+
+-> By structure, we are referring to the folder and file structure and location of files and how code gets compiled.
+
+Folder structure
+----------------
+1. src/main/java
+
+	-> By default Maven looks for a source main Java directory underneath our project. 
+	
+2. target
+	
+	-> It compiles all our code to a target directory. 
+	
+3. pom.xml
+
+	-> It does thid by referencing our defaults and whatever things we've overridden in our pom.xml file.
+	-> src, target and pom.xml are all at the top level of our application.
+	
+	
+	HelloWorld 
+		-> src
+			-> main
+				-> java
+		-> target
+		-> pom.xml
+		
+		
+src/main/java -> is where we store all of our Java code and it is the beginning of our package declaration.Ex: com.accenture
+
+If we are using Groovy then src/main/groovy.
+
+Testing -> src/text/java
+
+2 reasons for setting another directory for testing
+
+1. we can keep test codes separate from production code. But, we can have them reference the same package.
+2. It is automated test for unit testing, not for integration testing or other types.
+
+target
+
+-> target directory is where wverything gets compiled to.
+-> It is where all our unit tests get ran from.
+-> contents in this directory gets packaged into jar, war, ear etc.
+
+mvn -package creates below folders
+
+classes
+maven-archiver
+surefire
+test-classes
+HelloWorld-1.0-SNAPSHOT.jar
+
+maven-archiver -> it is what we are referring to for our package.
+surefire and test-classes -> how our code gets unit tested.
+
+
+pom.xml
+---------
+
+<project>
+	
+	<groupId>com.practice</groupId>
+	<artifactId>MavenHelloWorld</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<modelVersion>4.0.0</modelVersion>
+	<packaging>jar</packaging>
+
+</project>
+
+-> The above pom.xml file doesn't say anything about directory structure, becoz we're assuming all of the defaults that are associated with our application.
+-> pom.xml file can be divided into 4 parts.
+
+1. project information
+	-> groupId -> what our package is inside of our application. Ex: com.accenture
+	-> artifactId -> name of the application, it should be same.
+	-> version -> 1.0 
+	-> packaging -> how we want to distribute our application.
+
+2. Dependencies
+	-> Dependencies are the actual artifacts that we wnat to use inside of our application.
+	-> Direct dependencies used in our application.
+
+3. Build
+	-> It refers to what plug-ins that we want to use.
+	-> It referes to what we need to do bbuild our code,.
+	-> directory strcuture , names of target or location,or where to find resources, or some xml files.
+	
+4. Repositories
+	-> Respositories are where we want to download artifacts from.
+	-> As of now we're relying everything being downloaded from the central Maven repo as it is for internal.
+	
+	
+Dependencies
+------------
+
+-> Dependencies are what we want to use inside of our application.
+-> they are imported by their naming convention, we need to know artifactId, groupId and vresion which we wnat to use.
+-> Good thing is that it will pull the transitive dependencies for us.
+-> These are added in the dependencies section in the pom.xml file.
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>3.2.0.RELEASE</version>
+		</dependency>
+	</dependencies>
+-> List the dependencies that we want and transitive dependencies are pulled in by Maven automatically.
+-> Need min 3 things
+	1. groupId
+	2. artifactId
+	3. version
+-> Maven will download that paricular jar file.
+
+Goals
+-----
+
+-> Goals are what we expect to have just from basic functionality that we would add in here by ourselves.
+-> But the defaults are already defined for us.
+
+1. Clean
+	-> clean goal deletes the target directory and any of its generated resources.
+	
+2. Compile
+	-> Compiles all source code, generates any files, copies resources to classes directory.
+	
+3. package
+	-> Runs the compile command first, runs any tests, packages the app based on its packaging type.
+	
+4. install
+	-> Runs the package command and then installs it in our local repo.
+	
+5. deploy
+	-> Runs the install command and then deploys it to a corporate repo. It copies from internal repository.
+	
+install - install locally
+deploy - will copy to a remote file location.
+
+Local repo 
+----------
+
+1. where Maven stores everything it downloads.
+	-> Installs in our home directory\.m2
+	Ex: c:\Users\username\.m2\repository
+	-> no need of changing this setting
+	
+2. Stores artifacts using the information that we provided for artifactId, grupId, version.
+	-> jar files are stored under c:\Users\username\.m2\repository
+	
+3. Avoids duplication by copying it in every project and storing it in our SCM. 
+	-> we can access them from a central repository.
+	
+Defaults
+--------
+
+-> how to override the basic defaults offered by MAven?
+We have some legacy code, that we have to conform Maven to build to that structure or get it to produce an artifact of a certain name.
+1. Build section
+	-> it is where we override a specific nature.
+
+Example: changing the final artifact name 	
+In the pom.xml -> add build section
+
+<build>
+	<firstName>HelloGayathri</finalName>
+</build>
+
+run below command
+
+>mvn clean package
+
+
+Maven Dependencies
+==================
+
+Dependency
+----------
+
+-> Dependencies are simply other resources that we want to use inside of our application.
+-> Maven will pull in transitive dependencies based on the dependencies we list.
+-> To use a dependency just list that we want.
+-> Need 3 things to use dependency
+1. groupId
+2. artifactId
+3. version
+
+Versions
+--------
+
+-> Versions are the release number of the artifact that we want to use. 
+
+1. Development start off as a SNAPSHOT.
+
+	-> If we want to pull any latest code from the third party, then we can pull it down as a SNAPSHOT.
+	-> SNAPSHOT alllows us to push new code up to repository or a development team to push new code up to a repository and have our IDE or the command line automatically check for changes every time.
+	-> Everytime we compile, it wil check for new code that it should pull and use.
+	-> Except SNAPSHOT, everything else as of naming convention is left to the user.
+
+	a) Ex: myapp-1.0-SNAPSHOT.jar
+
+		myapp -> artifactId 
+		1.0 -> version, of type SNAPSHOT. so,
+		1.0-SNAPSHOT
+
+		-> SNAPSHOT should be all caps, doesn't work if it is lower case.
+
+	b) CHanges always donloaded
+	c) Saves us from releasing versions for development.
+	d) Never deploy to production with a SNAPSHOT.
+		-> becoz we cannot reproduce or recreate that code.
+		-> Next time we compile it, the functionality could be different underneath for us.
+		
+2. A release doesn't have a specific naming convention
+
+	-> myapp-1.0.jar , common naming convention
+	-> myapp-1.0.1.jar , bug fix, no new functionality
+	-> myapp-1.1.jar
+	
+3. Industry common terms, don't affect Maven
+	
+	-> myapp-1.0-M1.jar , milestone releases
+	-> myapp-1.0-RC1.jar , Release candidate
+	-> Thease are for releases which are not stable yet.
+	
+	-> myapp-1.0-RELEASE.jar , final release
+	-> myapp-1.0-FINAL.jar , final release
+	
+	
+Types
+-----
+
+-> Types refer to the type of resource that we want to include inside of our application.
+-> Most of the time, we want to incluse a jar but there are few others also.
+
+1. Current core packaging types are:
+	
+	-> jar, maven-plugin, ejb, war, ear, rar, par - these are zip files for all intensive purposes.
+	-> pom
+	-> default packaging type is jar
+	
+2. The type of pom is referred to as dependency pom.
+	-> downloads dependencies from that pom.
+	-> Ex: if we have webservices, and to group all these dependencies, Jersey libraries/ Metro/ XML dependencies, we can put those like a RESTFul services pom and reference that pom and it will download that into our applciation.
+	-> types refere to packaging inside of our application.
+	-> If we are building an artifact for other people to consume, we specifically refer what our packaging is there. 
+	Ex: <packaging>jar</packaging>
+	i.e., the artifact we want to use has a pom and its pom has a packaging set on it, of jar, war, war etc and that's waht gets pulled into our application.
+	-> packaging and the type that someone is going what our artifactId is are the same thing.
+	
+	
+Transitive Dependencies
+-----------------------
+
+1. Main reason people using Maven
+2. If we add a dependency, like hibernateit will goahead and pull any and all transitive dependencies that the hibernate needs.
+	-> If we have any conflicts, it'll also resolve those too by always choosing the newer version. 
+	-> We don't know from where all these transitive dependencies are coming from.
+	-> People who program the code know very well as what dependencies are needed for a perticular jar. So, the pom that we downloaded from them actuallydefines the dependencies that it's looking for.
+	
+	
+Scopes
+------
+
+-> There are 6 scopes available for dependencies:
+
+1. compile - default scope, artifacts available everywhere
+	-> If we omit it, it'll compile just fine. that's what default is.
+	-> It's available - it means all our resources are available everywhere inside our application.
+
+2. provided - like compile, means the artifact is going to be provided where it is deployed.
+	-> It means that the artifact is going to be available throughout my entire build cycle.
+	-> There are different phases and one of that is test, when we go to package, our artifact is going to be available through out all of that but it's not going to package it up at the end.
+		-> Ex: servlet-api or xml-apis.
+		-> Available in all phases, but not included in final artifact.
+
+		
+3. runtime - not needed for compilation, but needed for execution
+	-> dynamically loaded libraries or like jdbc jars, we need a driver that's loaded dynamically loaded at runtime.
+	-> Ex: we are using jdbc to connect to a database. class.forName or driver manager which are dynamically loaded. We need that bundled for our application. 
+		
+
+
+
+
+
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
