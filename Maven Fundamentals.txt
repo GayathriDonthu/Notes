@@ -125,7 +125,7 @@ Pros
 Cons
 
 1. We can trace through Ant files easily.
-2. Quicker to learn, but copy-paste intensive.
+2. Maven Quicker to learn, but copy-paste intensive.
 3. Larger project size in SCM, artifacts stored with project.
 
 Maven Installation best practices
@@ -206,9 +206,24 @@ open command prompt
 
 -> Run the application
 
-> java HelloMaven
+> mvn exec:java
 
-output displayed.
+output displayed. ..
+
+If output is not displayed, add below plugin to pom.xml
+
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.codehaus.mojo</groupId>
+			<artifactId>exec-maven-plugin</artifactId>
+			<version>1.5.0</version>
+			<configuration>	
+				<mainClass>com.practice.HelloMaven</mainClass>
+			</configuration>
+		</plugin>
+	</plugins>
+</build>
 
 -> run maven package. We put a packaging of type jar in the pom.xml, If we run maven package, it's going out and download the rest of plugins it needs to build the application, it's going to compile those classes, and then it's going to bundle them up in a jar for us in the target folder.
 
@@ -388,6 +403,8 @@ run below command
 
 >mvn clean package
 
+HelloGayathri.jar is created.
+
 
 Maven Dependencies
 ==================
@@ -496,16 +513,108 @@ Scopes
 3. runtime - not needed for compilation, but needed for execution
 	-> dynamically loaded libraries or like jdbc jars, we need a driver that's loaded dynamically loaded at runtime.
 	-> Ex: we are using jdbc to connect to a database. class.forName or driver manager which are dynamically loaded. We need that bundled for our application. 
-		
-
-
-
-
-
+	-> It don't need it for testing/compiling/packaging but needed for application to run.
+	-> not included in final artifact.
 	
+4. test - only available for the test compilation and execution phase.
+	-> It does nothing for compiling/ packaging.
+	-> It is also not included in final artifact.
 	
+5. system - similar to provided, we specify a jar on the file sstem.
+	->  very brittle, breaks the purpose of maven.
+	-> we are going to hard code a path to a jar on the file system.
+	
+6. import - deals with dependency management sections.
+	-> sharing resources across multple poms.
 
 
+Example:
+
+The transitive dependencies can be seen in the depedency hierarchy tab in the pom.xml
+
+
+Maven Repositories
+==================
+
+-> Repositories	are where Maven looks at to download code and other artifacts from, so that we can use them inside of our application.	
+
+
+Local repo
+----------
+
+1. where maven stores everything it downloads. So, it looks locally to see if we have this code. ANd if it doesn't, it will go and download that from a remote repository.
+	-> when it downloads it, it install it in our home directory/m2.
+	-> This changes wrt to windows xp/vista/7
+	c:\users\username\.m2\repository
+	-> default location, but can be overriden.
+	
+2. Stores artifacts using the information that we provided  for artifactId, groupId and version.
+
+3. Avoids duplication by copying it in every project and storing it.
+
+
+-> Repositories are http accessible location that we download files from. Often they don't have security wrapped around them. For internal repository we can add it.
+-> default location is defined in the file, super pom.xml. It is located inside of our Maven installation. We generally don't want to go at it and edit it. But we can override it, either though global parent file or through our project's pom.xml
+-> default location that it is pointing is http://repo.maven.org.apache.org/maven2
+-> This has 95% of what we want to download.
+-> maven repo has all of the open source projects.
+-> we don't upload our company's internal resource libraries to repo.maven.apache.org.
+-> multiple repositories are allowed and encouraged. 
+-> corporate repository.
+1. Nexus ( this is what the default repo is built on)
+2. Artfactory
+
+Dependency Repository
+---------------------
+
+1. where we download all of our dependencies from.
+	-> can contain just releases and/or snapshots.
+	-> common to have them in separate repositories.
+	
+2. defining is similar as how we specify our own repository.
+	-> snippet of xml in the repository section of pom, has to have an ID, name, URL to our repository, enable snapshots/releases.
+
+refer: http://repo.springsource.org/libs-snapshot/
+
+<repositories>
+	<repository>
+		<id>spring-snapshot</id>
+		<name>Spring Maven SNAPSHOT Repository</name>
+		<url>http://repo.springsource.org/libs-snapshot</url>
+		<snapshots>
+			<enabled>true</enabled>
+		</snapshots>
+		<releases>
+			<enabled>false</enabled>
+		</releases>
+	</repository>
+</repositories>
+
+
+-> we can find this under Maven dependencies spring-core-5.0.0.BUILD-SNAPSHOT.jar
+
+
+Plugin repository
+----------------
+
+-> identical to dependency repository, but they just deal with plug-ins.
+-> they are downloaded similar to dependencies.
+-> by design they usually be in seperate repository.
+-> they are defined very similar to repositories except we have a different xml element that's plug-in repositories instead of just plain repositories.
+-> we can have snapshots, releases here.
+
+Releases/ Snapshots
+-------------------
+
+-> Releases and snapshots can come from the same repository. 
+-> why we don't want  projects to upload everything in the central repo.
+1. snapshots
+2. milestones
+3. Release candidates
+4. Release policies 
+-> It's all hectic.
+
+-> So, we will define a repository to handle just snapshots and host it on our own corporate website.
 
 
 
