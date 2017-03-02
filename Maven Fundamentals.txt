@@ -1,6 +1,79 @@
-Maven fundamentals
+										Maven Fundamentals
+										-------------------
+										
+1. Introduction to Maven
+2. Structure
+3. Dependencies
+4. Repositories
+5. Plugins
+6. IDE Integration
 
-Ant Vs Maven
+
+Introduction to Maven
+------------------------
+
+What is Maven?
+
+-> Maven is a build tool, to build source code and produce an artifact.
+-> Artifact can be a component or a jar or zip file.
+-> Maven helps us manage dependencies i.e., it can download transitive dependdecies.
+-> Maven can be used as a project management tool as it handles versioning and releases.
+-> Maven has a version number associated with each component, we only produce one version of an artifact.
+-> It helps to describe things like what source code module is, where documentation is stored, like meta information about project.
+-> we can produce Java docs, source as a jar file.
+-> It can generate the stuff when we publish a library whereas it is done manually in other tools. 
+
+-> Maven is managed by Apache Software foundation.( maven.apache.org to download)
+-> Maven sites are built with maven.
+
+Why do we want to use Maven?
+
+1. Repeatable builds
+
+-> For source control management/ configuration management/ dev appa/ web apps/ dev operations/ web operations , it is the ability for us to be able to recreate our build for any environmetn as well as to not change our settings for each environment.
+-> So maven let us externalize a lot of our settings to where we can develop on windows, test it on a linux box and deploy to a different env in production and build shouldn't care anymore.
+-> We have all those properties externalized to where our code isn't dependant on the environment that it's being built in.
+
+
+2. Transitive dependencies
+
+-> Downloading a dependency will also pull other items it needs in. 
+
+3. Contains eveything it needs for our environment.
+
+-> whether we are building from IDE/ command line, it contains all the information we need to build our code and reproduce our code.
+
+4. Works with local repo.
+
+-> If we always download the jars and keep them with the project, and we have 20 projects, then we have the same jar downloaded 20 times becoz it needs it for each one of those environments.
+-> Maven works for the local repo, just a local follow structure that enables us to download once and then just reference it from there and use it from there. 
+-> It saves on disc space, saves an overhead. It would be helful when we do lot of builds.
+
+5. Works well with IDE and standalone. 
+
+-> IDE can be Netbeans, IntelliJ or Eclipse.
+-> It can also be standalone, we can build from the command line and the same functions that we call from the command line are also being called by our IDE.
+-> It doesn't have a different path into it, like setting up different java build environment variables. It's all derived from maven files. 
+
+6. 	Maven is the preferred choice for working with build tools like Jenkins/ Cruise control or Hudson, Bamboo or any other automated build tools present for doing continous integration.
+
+-> There are lot of additional plugins  d witthat we can use which are also integration tools. 
+
+
+Ant vs Maven
+------------
+
+-> Ant and Maven can be used in conjunction with each other, they solve 2 different problems.
+
+Ant
+
+-> Ant was developed originally to be a replacement for a build tool called Make( Make is a cross platform tool).
+-> Ant was built on top of Java and using XML, both tools that were meant to be used across cross platform. 
+-> So, whether it is windows or Mac or linux, we can build things and have them be able to transfer from one environment to another.
+-> Make was built around unix environment, somewhat brittle and ran into problems like whitespace, hidden characters. It is very powerful but not very cross platform.
+-> Ant is procedural,it is har to inherit anything. Complex things like doing different peices in the ant scripts is doen manually. 
+-> Ant isn't really a build tool as it is a scripting tool.
+-> We have to do explicitely everything inside of Ant. We have to call out what our targets are.
 
 
 Ant code snippet
@@ -431,6 +504,7 @@ Scopes
 
 	
 	
+
 
 
 
