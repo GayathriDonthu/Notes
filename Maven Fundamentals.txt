@@ -616,7 +616,39 @@ Releases/ Snapshots
 
 -> So, we will define a repository to handle just snapshots and host it on our own corporate website.
 
+Maven plugins
+=============
 
+-> plugins are what maven uses to build and package our application as well as do anything outside of just downloading and storing artifacts for us. 
+
+Goals
+-----
+
+1. The default goals are plugins configured in the maven install.
+	-> clean, compile, test, package, install, deploy.
+	
+2. super pom has these goals defined in it, which are added to your effective pom
+	-> clean plugin is a very basic plugin but we may want it ot run during certain phases or always. we can change which phase it is tied to.
+	
+3. GOals are tied to a phase.
+
+Phases
+-------
+
+1. validate phase
+	-> validate the project is correct and all necessary information is available.
+	-> it has all the plugins that it needs. 
+	-> it has all the artifacts downloaded, all of our structures in place. 
+	-> it has permissions to create these directories or do things like that. 
+	
+2. compile phase
+	-> compile the source code of the project.
+	-> it's where we compile our service code out. 
+	-> it is not where testing code gets compiled. 
+
+3. test phase 
+	-> test the compiled source code. 
+	-> makes sure of all resources are in line with our package.
 
 
 
