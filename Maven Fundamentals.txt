@@ -650,8 +650,122 @@ Phases
 	-> test the compiled source code. 
 	-> makes sure of all resources are in line with our package.
 
+4. Package phase
+	-> packages the code in its defined package, such as JAR.
+	-> It makes sure that verything is in the proper order that it should be. 
+	-> Ex: generating resources or Javadoc are tied to this phase.
+	
+5. integration-test phase
+	-> allows us to deploy and run integration test. 
+	-> new phase in maven life cycle.
+	
+6. verify phase
+	-> Run chekcs against package to verify integrity. 
+	-> it makes usre that the package meets all the requirements that it should , before we install it inout local repository or we deploy it to a remote repository.
+	
+7. install phase
+	-> install and package it in local repository.
+	
+8. deploy phase
+	-> copy final package to a remote repository.
+	
+	
+Compiler plugin
+---------------
 
+-> Used to compile source code and test code. It runs in different phases for each.
+-> Invokes Javac, but with the classpath set from the dependencies from our application. 
+-> The compiler plugin will build our class path based on what those dependencies are and their classification of scope.
+-> compiler plugin defaults to Java 1.5, regardless of what JDK is installed. 
+-> Compiler plugin is the most overwritten plugin as per the customization of all the plugins.
+-> We can customize this plugin by defining the configuration section.
+   -> Inclues/Excludes
+   -> Fork
+   -> Memory
+   -> source/target
+-> we define the plugins in build section.
 
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-compiler-plugin</artifactId>
+	<version>3.3</version>
+	<configuration>
+		<source>1.7</source>
+		<target>1.7</target>
+	</configuration>
+</plugin>
+>mvn compile
+   
+-> demo of compiler plugin to override the source and target version og JDK.
+
+	
+Jar plugin
+----------
+
+-> Used to package code into a jar.
+-> Tied to package phase of our build life cycle.
+-> Configuration section will allow us to do customization.
+	-> Includes/Excludes
+	-> Manifest
+
+-> demo to configure the jar plugin
+
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-jar-plugin</artifactId>
+	<version>3.0.2</version>
+	<configuration>
+		  <archive>
+			<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+		  </archive>
+	</configuration>
+</plugin>
+
+Manifest file is created 
+
+Manifest-Version: 1.0
+Built-By: gayathri.guttikonda
+Build-Jdk: 1.8.0_111
+Created-By: Maven Integration for Eclipse
+
+Source plugin
+-------------
+
+-> Used to attach source code to a jar.
+-> This plugin generates our source code for us in a jar.
+-> Tied to the package phase. 
+	-> Often overriden to a later phase. like intsall or verify
+	
+<execution> -> to check how the plugin is going to run.
+<id> -> attach-sources -> this hekps with the output that goes on our screen.
+<phase> -> overriding phase. 
+
+mvn package -> id attach sources is not visible
+
+mvn install -> id attach sources is visible, becoz we changed it ot verify phase
+			-> it makes sure that everything is compiled and then it will take and download the sources plugin if we don't already installed, and build those sources for it.
+			-> giving an id helps us in the logs 
+			
+Javadoc plugin
+--------------
+
+-> Identical to source plugin, takes our javadocs and package them to our jar file when we upload them to our repository.
+-> Tied to package phase.
+	-> often overriden to a later phase. i.e., we can use verify phase also.
+-> Usually we use defaults, but many customization  options for javadoc format.
+-> plugin definition is also similar to source pluigin
+
+mvn install
+
+-> the javadocs are generated
+
+C:\Users\gayathri.guttikonda\.m2\repository\com\practice\MavenHelloWorld\0.0.1-SNAPSHOT\MavenHelloWorld-0.0.1-SNAPSHOT-javadoc.jar is available
+
+Maven Eclipse/SPring STS Integration
+------------------------------------
+
+-> Eclipse/ Spring STS can be configured using Maven.
+		
 
 
 
