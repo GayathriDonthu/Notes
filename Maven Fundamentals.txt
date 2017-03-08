@@ -765,7 +765,41 @@ Maven Eclipse/SPring STS Integration
 ------------------------------------
 
 -> Eclipse/ Spring STS can be configured using Maven.
+-> Eclipse/ Spring STS doesn't use registry.
+-> IDEs include a bundled version of Maven.
+
+Converting existing Projects
+----------------------------
+
+-> If we have a pom.xml file then we can convert the project to a Maven project.
+-> Right click on the project containing pom.xml file -> configure -> Convert to Maven project. 
+-> Once converted the project will set the classpath and automatically build the project.
+
+POM Viewer(Overview tab in pom.xml)
+----------
+
+-> It is the default view when we open the Pom file.
+-> Pom overview shows the higher level elements of your project.
+-> Chnages made here are directly changing the source. 
 		
+Dependencies(Dependencies tab in pom.xml)
+-----------
+
+-> Dependencies -> Add button -> add any portion of the dependency we want, the search results are displayed.
+
+Dependency hierarchy tab in pom.xml
+--------------------
+
+-> Displays complete dependency tree, including transitive dependencies as well as overriden dependencies.
+-> scope of resource is also displayed.
+
+Effective Pom tab in pom.xml
+-------------
+
+-> The complete pom with everything inherited from the project pom, (if we have the parent pom) and the default pom. 
+-> it is a debugging tool, to see what pom is doing.
+-> It has everything about the defaults about repositories, plugins and all those type of things that we're using inside of our application.
+
 
 
 

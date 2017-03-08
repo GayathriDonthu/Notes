@@ -57,8 +57,8 @@ Spring brings below things
 
 1. Testability 
 2. Maintainability
-3. Scalability
-4. Complexity
+3. Scalability 
+4. Complexity 
 
 -> All the above are properties of our code, it decouples things and makes it so that we can add things like caching and other tools without having to rewrite our code base.
 
@@ -114,13 +114,22 @@ Tomcat
 spring_sample project(maven project)
 =====================
 
+-> When we create a maven project, default Java version will be 1.5, so we need to change the version of Java to 8 in the pom.xml by using maven-compiler plugin.
+
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-compiler-plugin</artifactId>
+	<version>3.3</version>
+	<configuration>
+		<source>1.8</source>
+		<target>1.8</target>
+	</configuration>
+</plugin>
+
 pom.xml
 ------
 
 Java compiler dependancy
-
-
-
 
 -> The default constructore in the class is used by the spring, and we are not doing any constructor injection. 
 -> We created stub rather than hibernate repository, becoz we're not goint ot wire it, clear up, to hibernate in the example.
