@@ -358,6 +358,13 @@ Output:
 	</activity>
 </activities>
 
+@XmlRootElement
+----------------
+
+-> Only for XML 
+MessageBodyWriter not found for media type=application/xml
+-> Jersey doesn't know how to marshal POJOs to XML.
+	-> Need to define what the XmlRootElement is.
 
 
 
