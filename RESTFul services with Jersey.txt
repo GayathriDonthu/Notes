@@ -1,0 +1,379 @@
+									RESTFul services using Jersey
+									=============================
+									
+What is Jersey?
+
+-> Jersey is an implementation of the JAX-RS specification.
+-> It is Java's implementation of REST. 
+-> It is used to create and consume web services according to the representational state transefer, or REST Architectural pattern. 
+-> Jersey is one of the implementation, it is default and it should run on any J2EE compliant container.
+
+Topics:
+
+1. Build first application
+2. Architecture
+3. JSON/XML
+4. CRUD functions
+5. Client code
+6. Error handling
+
+
+-> Jersey lacking point is its security model. Only basic autthentication s provided. We can run REST over SSL which guarentees that the integrity of our data doesn't get compromised.
+
+REST Overview
+-------------
+
+-> REST was built with the pains of SOAP.
+-> REST was built on top of the principles of HTTP(POST, GET, PUT, DELTE)
+-> Services can return formats like XML, JSON, HTML, simple plain text, and binary octect(images/pdfs).
+
+RESTFul URLs
+------------
+
+1. Always centered around nouns but never centered around verbs.
+	-> We have concreate objects which say what the URL is.
+	-> Ex: http://localhost:8080/car-rental/cars this means that we want to retreive all cars in the car-rental application.
+	
+2. The last element in the URl, i.e., cars in the above example are nouns.
+3. Verbs are expressed through the protocol
+	-> PUT
+	-> POST
+	-> GET
+	-> DELETE
+	
+4. Path is used to get a specific instance
+	-> Ex: http://localhost:8080/car-rental/reservations/1334 -> specific instance/ reservation
+
+Build first application
+=======================
+	
+Prerequisites
+-------------
+
+1. Java 7
+2. Maven (download Jersey through Maven)
+3. Spring STS/ Eclipse
+4. Tomcat
+
+What are we building
+----------------------
+
+-> Building services for an exercise application.
+-> Goal of the application is to track minutes exercised in a day. 
+
+Service features
+----------------
+
+1. Retrieve all activities that user has done.
+2. Retrieve a specific activity.
+3. Create a new activity
+4. update a new activity
+5. delete an activity
+
+Tomcat
+-------
+
+-> RESTFul services are ran out of a basic war file.
+-> Tomcat is a very lightweight web container.
+
+
+Downloading Jersey
+------------------
+
+-> As recommended on Jersey's website, we are going to use Maven.
+-> Jersey has an archetype to hep start things. 
+Archetype - It is just a preset of files that are put together in a structure that makes sense for us, and usually some boilerplate code that's eleimnated for us. It's got dependecnies we need included in our project already configured and a basic folder structure setup for us.
+
+Type below Archetype on the Maven command line and it will go through  and download our resounces and help us setup our project. 
+
+mvn archetype:generate -DarchetypeGroupId=org.glassfish.jersey.archetypes -DarchetypeArtifactId=jersey-quickstart-webapp -DarchetypeVersion=2.25.1
+
+-> First time we run this, it will pull all the resources that it has, it needs, and it verifies our local repository against the central repository.
+
+It will ask for
+
+groupId: com.rest
+artifactId: exercise-services
+version: 1.0-SNAPSHOT (default)
+Package: com.rest
+
+press Y -> Build successful
+
+
+-> Import the existing maven project in SPring STS
+
+Project Layout
+--------------
+
+1. Standard Maven structure
+	-> src/main/java - Java code
+	-> src/main/reources - property file/ xml 
+	-> src/main/webapp - web.xml, WEB-INF folder
+	
+2. Libraries are pulled in throug Maven in the dependencies section. (pom file has dependency section that lists what we are pulling)
+
+3. web.xml is already configured with Jersey servlet.
+
+web.xml configuration
+---------------------
+
+-> Using the Maven archetype, it sets up our web.xml for us.
+-> web.xml is present in src/main/webapp/WEB-INF directory and it contains the servlet configuration named as Jersey web Application
+
+
+ <servlet>
+	<servlet-name>Jersey Web Application</servlet-name>
+	<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+	<init-param>
+		<param-name>jersey.config.server.provider.packages</param-name>
+		<param-value>com.rest</param-value>
+	</init-param>
+	<load-on-startup>1</load-on-startup>
+</servlet>
+
+-> Jersey needs to be bootstrapped, or started up and this is how we do it.
+-> It creates an instance of this class as the Server starts up.
+
+<param-value>com.rest</param-value> -> This is where our servlet will start looking for our classes that are marked as RETFul services. So, we are annotating things, it goes through as says which directory should be looked ?, param-value tells that it the package to start looking in, com.rest.
+
+-> We have a servlet mapping called Jersey Web application that maps to our servlet, and its URL pattern is webapi, which means anything with webapi in our URL is going to get directed to this servlet.
+-> We can change this if we want to, but by default this is what they've set for us.
+
+<servlet-mapping>
+	<servlet-name>Jersey Web Application</servlet-name>
+	<url-pattern>/webapi/*</url-pattern>
+</servlet-mapping>
+
+<web-app version="2.5" -> the version should be 2.5 or greater. 
+
+Creating a service
+------------------
+
+->  The most basic service needs 3 things
+	1. @path - the path to access our service
+	2. @GET - the request method ( we use HTTP method GET)
+	3. @Produces - the response type from the service (need to know what type of data it produces)
+	
+Ex: @Path("myresource")
+	public class MyResource {
+		
+		@GET
+		@Produces(MediaType.TEXT_PLAIN)
+		public String getInt(){
+			return "Got it";
+		}
+	}
+
+-> In the project, under src/main/java -> com.rest package is created by Archetype and under that MyResource.java service is also created by Archetype. The above code snippet is present in that file.
+-> It produces plain text.
+
+Now add our application to tomcat server, start server and in the console we can see that it initialized Jersey application.
+
+http://localhost:8080/exercise-services/webapi/myresource 
+
+output: Got it!
+
+We created a RESTFul service, the URL is tied to an object(myresource), we have path to it, and it produces a GET from it. The return type was plain text, 
+In the output plage -> Rght click -> view page source -> it is plain text, there is no html
+
+
+RESTFul Architecture
+====================
+
+-> REST is not an adhoc web service development. It's not a means of just throwing whatever service we want to get the job done.
+-> There are some standards to develop RESTFul services.
+-> Roy Fielding found REST, HTTP specification is the backbone of RESTful services.
+
+Richardson Maturity Model
+-------------------------
+
+
+4 levels of Maturity - focusing on level2
+
+Level 0: The swamp of POX 
+
+-> sending plain old XML
+-> focused on 1 endpoint.
+
+Level 1 : Resources
+
+-> Services are spread across multiple endpoints, and URLs and are more REST like, focusing on objects.
+
+Level 2: HTTP verbs
+
+-> This is considered as fully REST.
+-> Services are focused around HTTP verbs. 
+-> Ex: GET request method is used to get resources, POST method for creating resources.
+-> Level 2, we use HTTP response codes.
+
+Level 3 : Hypermedia Controls
+
+-> adds links, hypermedia controls as what to do with return information. 
+-> This is also referred to as HATEOAS.
+
+We use level2, since Level 3 is still nonstandard between libraries, and not supported by all clients.
+
+-> Level 2 focuses on HTTP verbs, so GET, POST, PUT, DELETE headers can be passed along with our request.
+-> Create, Read, Update and Delete are the CRUD functions.
+-> Web doesn't use Put and Delete.
+-> Level 3 includes level2, but puts a focus on Discoverability.
+	HATEOS - Hypertext As the Engine Of Application State
+	
+HATEOS
+------
+
+HATEOS - Hypermedia as the Engine of Application State.
+
+-> We are going to supply a mechanism for the client to interact with the server through Hypermedia. 
+-> The concept is to decouple the clinet and server, allowing them to evolve.
+	-> Interaction begins with a fixed URL
+	-> Future interactions are determined by server returning stuff based upon what we've requested.
+	-> If we request a list of activities, upn those lists of activities that we're going to get returned are a set of links for what we can do with that activity.
+-> THe concepts of HATEOAS are to help promote long term design
+	-> Cam make short term design/productivity more difficult.
+	
+	
+CRUD functions
+--------------
+
+-> CRUD functions are synonymous with modifying information in the database world.
+-> Create, Read, Update and Delete
+-> Level 2 of RMM is about matching services with their HTTP verbs, and the CRUD fucntions are mapped to their HTTP equivalents. 
+	Create = POST
+	Read = GET
+	Update = PUT
+	Delete = DELETE
+-> Often people will use POST for Create and update
+
+JSON
+----
+
+-> JSON stands for JavascriptObject Notation.
+-> Preferred when working with Javascript clients
+-> Looser way to represent data.
+-> Flexible and easy to work with.
+-> Common reason of using JSON is becoz it is not XML.
+-> Difficult to validate.
+
+To use JSON, annotate the method as below
+
+@Produces(MediaType.APPLICATION_JSON)
+
+XML
+---
+
+-> XML often gets associated with SOAP.
+-> Still a great solution for REST.
+-> REST doesn't mean unstructures, or unformatted.
+-> Easy to validate and easy to confirm that it's well formed.
+-> To use XML, annotate method with below
+
+@Produces(MediaType.APPLCIATION_XML)
+
+Binary
+------
+
+-> Not necessarily an alternative to JSON or XML.
+-> Used to serve objects. It soesn't mean we expose Java object, but rather server up file/image/PDF.
+-> SO, binary things serve up statically, or things that are stored.
+-> If we have images in a blob in the database, or some pdf files, we use the binary octect stream to stream those out to the client.
+-> To use it annotate the method as below:
+
+@Produces(MediaType.APPLICATION_OCTET_STREAM)
+
+Using HTTP GET
+==============
+
+GET
+---
+
+-> The GET method is used to retrieve records or get them.
+-> It is associated with the Read function of our basic CRUD functions.
+
+myresource
+----------
+
+@Path("myresource")
+public class MyResource {
+	
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getInt(){
+		return "Got it";
+	}
+}
+
+-> Annotated with @GET
+-> Mapping is defined with @Path
+-> URL is defined through our context/ servlet mapping/ @Path
+-> Content retuned is defined with @Produces
+	-> @Produces can take Array of multiple types of content that it can produce.(plain text, html, binary, XML, JSON)
+
+http://localhost:8080/exercise-services/webapi/myresource
+
+webapi is present in the web.xml, That's where we tell is that we want to direct all traffic to our Jersey application, and the path to our resource is defined by webapi/myresources, that's where path annotation comes. 
+
+Activity Resource
+-----------------
+
+Create service to retrieve all of our exercise activities in the application. 
+
+1. Create Activity class.
+2. Create ActivityRepository.(DAO) (we stub out and make a fake database in the application.)
+3. Create ActivityResource -> actual service, 
+	-> Annotate with GET
+	
+We access our activities by calling below URL and retrieve all the activities that are available in the system.
+
+http://localhost:8080/exercise-services/webapi/activities
+
+com.rest.repository package -> referred to as DAO tier. Standard way of doing things, called repository, becoz it's more than a database repository, we can create repositories to interface LDAP or web services. So repository is a looser term than DAO.
+
+ActivityResourceStub -> We want to stub out of database. We are not hooking this up t a database, we just return boilerplate code that would mimic a database. So, a common term for this is stub.
+
+Exception:
+----------
+
+MediaWriter error -> common mistake using Jersey, how to tell out the media that we're dealing with.
+
+MessageBodyWriter not found for media type=application/xml
+
+Solution:
+-------
+
+@XmlRootElement -> place this annotation on the object, i.e., Activity object
+
+-> This says that 'I am an element that you can expose, go ahead and display me".
+
+Output:
+
+<activities>
+	<activity>
+		<description>Walking</description>
+		<duration>85</duration>
+	</activity>
+	<activity>
+		<description>Cycling</description>
+		<duration>20</duration>
+	</activity>
+</activities>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

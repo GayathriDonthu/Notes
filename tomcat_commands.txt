@@ -4,3 +4,10 @@ Command to kill tomcat process
 netstat -o -n -a | findstr 8080
 
 taskkill /F /PID 4712
+
+set class path
+----------------
+
+set MAVEN_HOME=C:\Users\gayathri.guttikonda\Desktop\Gayathri\Softwares\apache-maven-3.3.9-bin\apache-maven-3.3.9
+
+set JAVA_HOME=C:\Users\gayathri.guttikonda\Desktop\Gayathri\Softwares\jdk1.8.0_121
