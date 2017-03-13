@@ -364,7 +364,245 @@ Output:
 -> Only for XML 
 MessageBodyWriter not found for media type=application/xml
 -> Jersey doesn't know how to marshal POJOs to XML.
-	-> Need to define what the XmlRootElement is.
+	1. Need to define what the XmlRootElement is.
+	2. can also rename other elements
+		-> @XmlElement  - tie that to things like our description or duration.
+	3. Can specify attributes too.
+-> Uses JAXB to do Java-to-XML - to take that POJO to XML it is using JAXB, any element or annotation or feature that's available through JAXB can be accesses inside of Jersey. 
+
+
+@XmlRootElement with JSON
+--------------------------
+
+@Produces(MediaType.APPLICATION_JSON)
+
+Error : MessageBodyWriter not found for media type=application/json
+
+JSON
+----
+
+-> Receives below error message MessageBodyWriter not found for media type=application/json
+-> JSON requires another jar to be added to pom.xml 
+	-> jersey-media-moxy - if we are using Maven and their Archetype.
+-> @Produces(MediaType.APPLICATION_JSON)
+-> Jersey uses JAXB and it converts POJO to XML and then XML to JSON. Even though we are asking for JSON, our object is going to get converted to XML, and then get converted to JSON. 
+	-> Our XML annotations affect our JSON output
+	-> description attribute converted to desc, using @XmlElement
+
+To fix the error, MessageBodyWriter not found for media type=application/json, need to uncomment below dependency in the pom.xml.
+<dependency>
+	<groupId>org.glassfish.jersey.media</groupId>
+	<artifactId>jersey-media-moxy</artifactId>
+</dependency>
+
+Output: 
+
+[{"desc":"Walking","duration":85},{"desc":"Cycling","duration":20}]
+
+-> Our XML annotation affected the output of our strings(description to desc) and that is because that under the hood they are taking and converting that to XML, and then XML to JSOn.
+-> Other tools like Jackson, Restlets also do the same.
+
+@Produces
+---------
+
+If we want to produce both XML and JSON?
+
+-> @Produces annotation will allow us to produce multiple output formats.
+-> @Produces can take a single String or and Array of Strings.
+	-> To do that, define as below
+	
+	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLCIATION_XML})
+	
+-> This may cause a problem, we need to use something besides our browser to set an accept header of what we want to see.
+	-> Most browsers support some type of posting tool like plugins.
+	-> They have standard tools that allow us to set our accept headers.
+		Chrome - Postman
+		Firefox - Poster
+		
+Add the Postman extension to chrome and provide the request URL, we can give the headers for JSON or XML 
+
+Accept - application/json
+Accept - application/xml
+
+Specific Objects
+-----------------
+
+1. How do we retrieve a specific object, In the example we want to retrieve specific activity. 
+
+	-> Provide the activity Id, at the end of the request URL.
+		http://localhost:8080/exercise-services/webapi/activities/1234
+	-> Use @PathParam to grab URL params.
+		@PathParam("paramname")
+	-> Can nest @Path references
+		So, our Path on our class before that was of activities, would now be looking for activities/ and our ID.
+	
+2. This applies to nested objects as well, if we want to go though and retrieve a user object based on our Actvity, we can now build our URL to access Actvity/activityId/ the user object, and this will pull back just that specific user object for us.
+	http://localhost:8080/exercise-services/webapi/activities/1234/user
+	
+Ex: Demo to add a specific activity. 
+
+	
+@Path("{activitId}") -> We need to give curly brace, becoz we are appending this to @Path("activities")
+
+@PathParam ("activityId") String activityId -> This is how we grab a parameter from URL or qyery String. This is taking the 	activityId("activityId"), pull it from URL and store it in the activityId(String activityId)
+
+-> Usually end user shouldn't see the id, http://localhost:8080/exercise-services/webapi/activities/1234
+
+Output:
+
+<activity>
+	<desc>Walking</desc>
+	<duration>85</duration>
+	<id>1234</id>
+</activity>
+
+
+Ex: User Demo
+
+@Path("{activitId}/user") // http://localhost:8080/exercise-services/webapi/activities/1234/user 
+
+This will retrieve a specific user that's inside of our activity.
+
+http://localhost:8080/exercise-services/webapi/activities/1234/user
+
+Browser Output:
+
+{"id":"5678","name":"Gayathri"}
+
+We got json, instead of XML, because the default xml failed. so it returned Json format. Everytime we should be checking the output in both formats.
+
+When we try for XML, we receive error as MessageBodyWriter not found for media type=application/xml, this is because User doesn't have XmlRootElement. Add @XmlRootElement in the user class.
+
+
+Using HTTP Post
+===============
+
+Post
+----
+
+-> Post method is used to create records.
+-> It is associated with the create function of CRUD functions.
+-> POSTs are the workhorse of REST functions, and are the key to submitting data to our backend.
+
+Create an Activity
+------------------
+
+-> Create a service to create an activity.
+	1. Create ActivityResource - annotate the method with a POST
+	
+-> Access the method using below URL.
+	http://localhost:8080/exercise-services/webapi/activities/activity
+	
+-> We used the same URL for GET, we will be using the same URL for POST, it's going to be accesses in different methods.
+
+
+@Consumes
+---------
+
+-> We need to tell the POST, what type of information we are consuming. 
+
+How to determine what our method will consume?
+-> We use @Consumes annotation with one of the specific types, such as 
+	- application/x-www-form-urlencoded
+	- application/json
+	- application/xml
+	
+-> @Consumes(MediaType.APLICATION_FORM_URLENCODED)
+
+-> @Produces is used to say what type of information our method would produce. 
+-> Consumes is what information we are going to send to this method, and have it consume. We do this by @Consumes annotation, and passing in a type.
+
+-> MediaType.APLICATION_FORM_URLENCODED - syays we'er going to take basic form information from POST, and from a HTML page that's posting to our server, and process that information.
+
+-> Take name value pairs and store it in MultivaluedMap<String, String> formParams.
+
+Ex: Create service to accept form-urlencoded parameters.
+
+Accessing methods:
+
+1. basic HTML form
+
+In the POSTMAN, give URL http://localhost:8080/exercise-services/webapi/activities/activity
+dropdown -> POST, Body -> x-www-form-urlencoded
+
+key           value
+
+duration    - 55
+description - running
+	
+When we hit send button, the output is displayed in the console.
+running 
+55
+
+-> We can send any form-data.
+
+Now create an object from our service.
+
+Output:
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<activity>
+    <desc>running</desc>
+    <duration>55</duration>
+</activity>
+
+Binding to an object
+---------------------
+
+-> Binding to an object is much cleaner, and simpler than having all of our parameters stuffed into a string HashMap, a MultivaluedMap.
+	- When we store in strings, we need to use Interger.parseInt, or calculate date based on the String that we passed in, al other formats.
+	- When we bind the it to an object, it automatically does that for us under the hood. 
+-> @Consumes(MediaType.APPLICATION_JSON)
+-> Binds to the XML name, so we're using JSOn, it converts our request from a Java object, to XML to JSON or from JSON to XML.
+-> We used @XmlRootElement to shorten the name description field to desc, even though we are passing JSOn, we still have to pass desc for that to bind to it, becoz it will use those @XmlElementNames for it binding.
+
+Ex: Demo for binding
+
+
+@Consumes(MediaType.APPLICATION_JSON) -> Used in Ajax driven app, we've got Javascript submitting to a RESTful service using jQuery, or Angular.
+
+POSTMAN
+
+-> @Consumes(MediaType.APPLICATION_JSON)
+
+So, we can give JSON in postman before sending request
+
+Headers 
+
+Content-type  = application/json
+
+CLick on raw tab
+
+give the json inputs
+
+{
+	"duration":55,
+	"description":"running"
+}
+
+Output in console
+
+null
+55
+
+it is null, becoz we are sending description, and that one is expecting desc.
+
+change the json input in postman
+
+{
+	"duration":55,
+	"desc":"running"
+}
+
+console output:
+
+running
+55
+
+-> We can use custom binders using various XmlElements for dates.
+
+
+
 
 
 
