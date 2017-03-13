@@ -602,20 +602,75 @@ running
 -> We can use custom binders using various XmlElements for dates.
 
 
+Build a RESTFul Client in Jersey
+================================
+
+-> Restful services are consumed in different ways like browser using javascript like JQuery's JSON features.
+-> When building an API, it can be beneficial to procide a client so that we can enforce the contract bewtween the client and the server more easily.
+
+JerseyClient
+------------
+
+-> Building a client helps us enforce a contract. In SOAP, the cotract is enforces through WSDL.
+-> Generating client everytime people want to use is inefficient, leads to design issues.
+-> Jersey has great client capabilities built into it, and it's part of their core framework.
+-> Build a client to retrieve an activity, we need to get acitivity id.
+ http://localhost:8080/exercise-services/webapi/activities/1234
+-> we create ActivityClient class to retieve that activity.
+-> Run with Junit.
+	1. Add Junit dependency to pom.xml
+	2. request(MediaType.APPLICATION_JSON_TYPE)
+	
+Ex: 
+
+Create ActivityClient class
+
+private Client client; -> Client is provided by Jersey , javax.ws.rs.client.Client
+
+-> We need to define a target that we want to hit, so an endpoint or a URI.
+
+WebTarget target = client.target("http://localhost:8080/exercise-services/webapi/");
+Activity response = target.path("activities/"+ id).request().get(Activity.class);
+
+Path -> just appends onto the client target that we've created above.
+request() -> says whatever the default type is you want to hand me back, taht's what I'll accept. We can specify JSOn or XML or an object.
+get(Activity.class) -> We are getting an Activity object back and it is bind to the Activity class, that's what we are going to store it in the Activity object (response object).
+
+The client is built, now add the dependency in th pom.xml
+
+<dependency>
+	<groupId>junit</groupId>
+	<artifactId>junit</artifactId>
+	<version>4.12</version>
+</dependency>
+
+-> junit is now added in our classpath. i.e., we can find it in our Maven dependencies.
+
+Add a JUnit test case for our ActivityClient we created.
+
+Right click on ActivityClient -> New -> JUnit test case 
+
+-> source folder change from exercise-services/src/main/java to exercise-services/src/test/java
+-> Click Next -> Select get() method in the ActivityClient class.
+-> This creates a stubbed out code for us. 
+-> Test case is built up with everythng we need in are basically setup and ready to go.
 
 
+public class ActivityClientTest {
 
+	@Test
+	public void testGet() {
+		fail("Not yet implemented");
+	}
 
+}
 
+-> JUnit uses a static import. Static import won't be imported through our context sensitive help(ctrl+shft+O). We need to add the static import manually.
 
+assertNotNull(activity); -> Fot this assertion to work, we have to do a static import.
 
-
-
-
-
-
-
-
+To run it, Right click on ActivityClientTest -> RUn As -> JUnit test -> We should see green bar, 0 Errors
+In the console, activity object is returned.
 
 
 
