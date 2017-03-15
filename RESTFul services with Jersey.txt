@@ -725,6 +725,10 @@ Code change:
 
 	List<Activity> response = target.path("activities").request(MediaType.APPLICATION_JSON).get(new GenericType<List<Activity>>() {});
 	
+	
+GenericType<List<Actiivty>>(){}
+
+{} -> are becoz we are creating an instance of this implementation 
 The response object
 -------------------
 
@@ -866,7 +870,7 @@ URLs
 	Each call will create a new object.
 	
 -> PUT URL will be like below:
-	http://localhost:8080/exercise-services/webapi/activities/activity
+	http://localhost:8080/exercise-services/webapi/activities/1234
 	
 	There is ID at the end. PUT is a specific URL.
 	A call will either create or update an object. (idempotent)
@@ -886,14 +890,90 @@ PATCH
 -> Used to do partial updates, no annotation called @patch
 -> Not built in Jersey yet.
 -> No need of sending entire object.
--> 
+
+Using HTTP Delete
+==================
+
+-> Delete method used to delete records.
+-> It is similar to PUT function not used often as POST and GET methods.
+-> Delete are specific to URL.
+	http://localhost:8080/exercise-services/webapi/activities/1234
+	This specifies that we are going to delete acitivity 1234
+-> Deletes can be recursive too.
+	http://localhost:8080/exercise-services/webapi/activities
+	This will delete all the activities 
+-> Delete is idempotent. - calling delete multiple times doesn't matter.
+
+Delete Client
+-------------
+
+1. Unit test
+2. Client code
+3. Server
+4. Repository/stub
+
+Ex: 
+
+-> Since we delete URL, we just need to build an instance of the client, and pass in the ID that we want to Delete. 
+-> Our response should be 200, unless the server is down.
 	
+RESTFul Searching
+=================
+
+Searching in Rest
+-----------------
+
+2 approaches
+
+1. use query parameters and append them onto the URL for the object that we are searching on.
+2. searching a top level object.
+
+QueryParams
+-----------
+
+-> Implementing queryparams is just appending them at the end of the URL.
+-> They are used with GET.
+	http://localhost:8080/exercise-services/webapi/activities?duration=55&description=swimming
+	This says that we are searching an activity and we want duration=55, description=swimming
 	
+-> They are cacheable since it is a GET. We can use the caching features that are built in most of the browsers.
+-> Shortcomings 
+	- no way to represent constraints.(<, >, =, >=, <=, []), we don't have a defined way to do this using GET parameters, or query parameters on our GET.
+	- no clean way to navigate subdirectories ( for activyt /user like we need to give them in query params)
+	- no Domain Specific Language for searching
+
+Ex:
+
+-> For search, we are using UriBuilder, becoz UriBuilder is to attach to query params.
 	
+Ranges
+------
+
+
+1. For simple cases 
+	- from Queryparam
+	- to Queryparam
 	
+	http://localhost:8080/exercise-services/webapi/activities?durationFrom=30&durationTo=60
 	
+	duration from 30 to 60 minutes
 	
+The queryparam is very difficult, as for single change we need so much of code changes and it ripples across the layers, not object oriented.
+
+First Class Searching
+---------------------
+
+-> Making searching a first class citizen of our API is lot more powerful than queryparams, 
+	- create search class
+	- Build criteria in search class
+	- type searches as well(ENUMS)
 	
+-> Used with a POST(creating a search)
+	http://localhost:8080/exercise-services/webapi/activities
 	
+-> A little more cumbersome
+	- The client and server agree on more than just the url, since we are passing the API along.
+	- buildign a search API into our application.
 	
-	
+Searching using a post demo
+---------------------------
