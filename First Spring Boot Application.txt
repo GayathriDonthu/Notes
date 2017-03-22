@@ -1,0 +1,195 @@
+								Creating your first SPring Boot Application
+								
+
+Topics:
+
+1. SPring Boot Starters
+2. Containerless Deployments
+3. Auto-configuration
+4. Testing with SpringBoot
+
+Creating First Spring Boot Project
+==================================
+
+App name: Das Boot
+
+1. Java 1.8+ for Spring Boot
+2. Maven
+3. Spring Tool Suite
+
+Demo : App is a basic CRUD app that starts off with a list of shipwrecks.(add/view/update/delete a shipwreck)
+
+-> Create Maven project in STS. 
+-> Add Spring Boot dependency in pom.xml
+In general we add dependencies in dependency section, but for spring boot we add it as parent to our project. 
+<parent>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-web</artifactId>
+</parent>
+-> Add spring-boot-starter-web dependency - it will integrate Spring MVC and auto configure it for us.
+
+-> com.boot package -> App.java class is created by Maven Quickstart archetype for us.
+
+-> To enable Spring Boot we need to add an annotation called @SpringBootApplication to the top of the class. This annotation scans our project for Spring components and auto-wires up most of the Spring libraries we want to use by enabling auto-configuration.
+
+SpringApplication.run(App.class, args);
+
+-> This line of code fires up Spring Boot when our main method is run as our pure Java application.
+-> We need to add Spring MVC Controller, which will handle our root or home URL call on our SPring Boot web application.
+
+-> Create 4 packages in the package com.boot
+
+Controller
+model
+repository
+service
+
+-> Create a class in controller packager, to make it a spring MVC controller by adding @RestController and @RequestMapping URL.
+
+@RestController
+public class HomeController {
+	
+	@RequestMapping("/")
+	public String home(){
+		return "Das Boot, Gayathri is using Spring Boot!";
+	}
+	
+}
+
+@RequestMapping("/") -> / will identify which mapping it'll take. The method is returning a string that gets returned to the UI, or the caller as the request handler mapping for our root URL.
+
+Start the application -> App.java -> RUn as -> Java application ( no need of using any tomcat)
+Browser -> URL: http://localhost:8080 
+
+Output:
+
+Das Boot, Gayathri is using Spring Boot!
+
+Learning Path for Spring Boot
+------------------------------
+
+-> Spring Boot can help us break into Java and Spring world by simply using the framework.
+
+1. Use this course
+2. note of difficult topics and recheck, debug source code.
+3. SPring tutorial reference for examples in http://spring.io
+4. Do programs with Google and Stackoverflow
+
+Spring Boot Dependency Management
+---------------------------------
+
+-> Spring Boot makes it easier when we want to integrate different libraries and frameworks in our application due to its dependency management structure. 
+-> Spring Boot calls its intelligent collection of dependencies the bill of materials - BOM.
+-> SPring developers taken time to match up all of the frameworks we may want to include in our application, with appropriate versions that work well with each other.
+-> Ex: spring core 4.2.3 matches well with logback-core 1.1.3 
+-> By using Spring Boot bill of materials, all these version matches have been setup already for us.
+-> Adding dependencies manually needs the right dependency version of libraries that work well with each other. Spring Boot will remove this work.
+
+BOM - working
+
+-> When we added the spring-boot-starter-parent to Maven build file, that parent brought in all of the dependency management.
+
+<parent>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-parent</artifactId>
+	<version>1.5.2.RELEASE</version>
+</parent>
+
+-> The starter parent also sets up other defaults that are useful for our project, like plugins, java min support version, resource filtering etc.
+
+pom.xml -> Dependency hierarchy tab. (image Dependency Hierarchy)
+
+spring-boot-starter-web -> version 1.5.2  -> This is the dependency we added in pom.xml
+
+-> This pulls in spring-boot, spring-core and a bunch of other transitive dependencies, all with specific versions.
+-> No version defined for spring-boot-starter-web dependency, no need to supply the version because the spting-boot-starter-parent defines this dependency and its version for us, and also sets up the correct associated dependencies, and their versions.
+-> We can check the versions by changing the version of parent, in dependency hierarchy tab the spring-boot-starter-web version also changes and other versions.
+-> SO spring Boot handles all the inticacies of the dependency versions, all by specifying one simple spring-boot-parent version in our build.
+-> It is very tedious to define all dependencies one by one in POM file.
+
+Other Spring Boot Initializers
+------------------------------
+
+-> Spring provides other tools to make getting started with spring boot even easier.
+-> The spring initialixer website, at start.spring.io, is the first tool, it makes easy to generate new project and select bunch of options to get up and running really quick.
+
+Browser -> start.spring.io
+
+-> To create a basic project, we need to fill info, select Spring Boot version and generate the project. To get full details, click on full version. 
+-> We have lot of frameworks and libraries to integrate. We can select the respective things like JDBC, h2 ans spring security and generate project.
+-> When we generate the project, it's going to create our own Maven based project, bundle up all of the options that we have selected, and download it as .zip file to our computer.
+
+FOr command line
+
+-> Install Spring Boot Command line Interface or CLI.
+-> The SPring Boot CLI can initialize a project just like the start.spring.io website does.
+-> The command line tools call out to the same back-end API that the website uses, so it's just another way of using spring Initializer, but from command line.
+
+Installing Spring Boot CLI:
+
+-> Several ways we can do, Spring Boot docs show how to use SDKMAN, Brew and other ways. 
+Link: https://docs.spring.io/spring-boot/docs/current/reference/html/getting-started-installing-spring-boot.html
+
+-> Search for Installing Spring Boot CLI, download the zip file. spring-boot-cli-1.5.2.RELEASE-bin.zip
+-> If we want command line, chekc the correct version of JDK so that we can run it with the command line. 
+-> Once we have downloaded it -> unzip it -> it simple navigates to the unzipped contents in our teminal.
+-> ctrl+shft+right click -> open command prompt
+
+*****************************************************************************************************************
+
+C:\Users\gayathri.guttikonda\Desktop\Gayathri\Softwares\spring-boot-cli-1.5.2.RELEASE-bin\spring-1.5.2.RELEASE>ls
+'ls' is not recognized as an internal or external command,
+operable program or batch file.
+
+C:\Users\gayathri.guttikonda\Desktop\Gayathri\Softwares\spring-boot-cli-1.5.2.RELEASE-bin\spring-1.5.2.RELEASE>dir
+ Volume in drive C is OSDisk
+ Volume Serial Number is F8E2-95EC
+
+ Directory of C:\Users\gayathri.guttikonda\Desktop\Gayathri\Softwares\spring-boot-cli-1.5.2.RELEASE-bin\spring-1.5.2.RELEASE
+
+03/22/2017  05:58 PM    <DIR>          .
+03/22/2017  05:58 PM    <DIR>          ..
+03/22/2017  05:58 PM    <DIR>          bin
+03/22/2017  05:58 PM             1,413 INSTALL.txt
+03/22/2017  05:58 PM    <DIR>          legal
+03/22/2017  05:58 PM    <DIR>          lib
+03/22/2017  05:58 PM               581 LICENCE.txt
+03/22/2017  05:58 PM    <DIR>          shell-completion
+               2 File(s)          1,994 bytes
+               6 Dir(s)  365,546,635,264 bytes free
+
+C:\Users\gayathri.guttikonda\Desktop\Gayathri\Softwares\spring-boot-cli-1.5.2.RELEASE-bin\spring-1.5.2.RELEASE>cd bin
+
+C:\Users\gayathri.guttikonda\Desktop\Gayathri\Softwares\spring-boot-cli-1.5.2.RELEASE-bin\spring-1.5.2.RELEASE\bin>dir
+ Volume in drive C is OSDisk
+ Volume Serial Number is F8E2-95EC
+
+ Directory of C:\Users\gayathri.guttikonda\Desktop\Gayathri\Softwares\spring-boot-cli-1.5.2.RELEASE-bin\spring-1.5.2.RELEASE\bin
+
+03/22/2017  05:58 PM    <DIR>          .
+03/22/2017  05:58 PM    <DIR>          ..
+03/22/2017  05:58 PM             3,001 spring
+03/22/2017  05:58 PM             1,948 spring.bat
+               2 File(s)          4,949 bytes
+               2 Dir(s)  365,546,635,264 bytes free
+
+C:\Users\gayathri.guttikonda\Desktop\Gayathri\Softwares\spring-boot-cli-1.5.2.RELEASE-bin\spring-1.5.2.RELEASE\bin>./spring --version
+'.' is not recognized as an internal or external command,
+operable program or batch file.
+
+C:\Users\gayathri.guttikonda\Desktop\Gayathri\Softwares\spring-boot-cli-1.5.2.RELEASE-bin\spring-1.5.2.RELEASE\bin>spring --version
+Spring CLI v1.5.2.RELEASE
+C:\Users\gayathri.guttikonda\Desktop\Gayathri\Softwares\spring-boot-cli-1.5.2.RELEASE-bin\spring-1.5.2.RELEASE\bin>
+
+******************************************************************************************************************
+
+Create a project usign below command
+
+> spring init --dependencies mySpringBootApp
+
+Using service at https://start.spring.io
+Initializr service call failed using 'https://start.spring.io' - service returned Bad Request: 'Unknown dependency 'mySpringBootApp' check project metadata'
+
+
+
+

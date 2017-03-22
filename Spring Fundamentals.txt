@@ -149,7 +149,7 @@ source tire -> business logic resides
 -> Configuration code is a bad thing becoz it makes things brittle i.e., hard to move to different environments. 
 -> recompiling code when we need deploy the code in different environment, testing matters. It becomes hard since the configuration is hard. 
 -> It may have reference to JNDI or some other database. 
--> Wherever we see creating interfaces, and it's tied to a concrete implementation, we should try and abstract that out of out code. So that our application isn't hardcoded anymore. 
+-> Wherever we see creating interfaces, and it's tied to a concrete implementation, we should try and abstract that out of our code. So that our application isn't hardcoded anymore. 
 
 Getting Spring
 ==============
@@ -157,12 +157,12 @@ Getting Spring
 -> No direct download for the compiled jars. 
 -> Spring wants us to download tools using Maven.
 -> Maven repo has source, javadocs, binaries.
--> Spring insists Maven becoz of dependencies which are required to run projects. As which jar to use.
+-> Spring insists Maven becoz of dependencies which are required to run projects as which jar to use.
 -> Spring Boot can be used to set up our application, but it is like black box. 
 
 Spring Dependancy
 
-browser -> spring.io -> projects -> SPring Framework 
+browser -> spring.io -> projects -> Spring Framework 
 
 <dependencies>
     <dependency>
@@ -177,13 +177,13 @@ Spring XML Configuration
 
 -> XML configuration was the first method available in spring. 
 -> Some things are still simpler using XML.
--> There is separation of concerns that organically happens when configuration code is removed
+-> There is separation of concerns that organically happens when configuration code is removed.
 
 
 applicationContext.xml
 
 -> XML configuration in spring begins with a file i.e., applicationContext.xml
--> It really is the root of the application configured using Spring and XML. 
+-> It is the root of the application configured using Spring and XML. 
 -> It doesn't have to be named as applicationcontext.xml. Name doesn't matter.
 -> It should be an XML file.
 -> If we use applicationContext.xml, Spring will do things using convention over configuration by default to find and discover pieces of our application on its own.
@@ -192,7 +192,7 @@ applicationContext.xml
 -> This can also be used as a simple registry and we look up those beans that we define in that HashMap out of this applicationContext file. 
 -> XML configuration begins with this file.
 -> We can have other files that this will reference and lookup and pullin. 
--> There are some namespaces that spring developers have put together that help usin our configuration and validation of files.
+-> There are some namespaces that spring developers have put together that help using our configuration and validation of files.
 -> Basically, we put an XML snippet at the the top of our applicationContext and it knows what our bean's namespace is to help us configure the rest of our file. 
 
 Spring Tool suite -> Get from Eclipse Market Place -> Install -> Open Perspective.
@@ -206,7 +206,7 @@ Spring Tool suite -> Get from Eclipse Market Place -> Install -> Open Perspectiv
 -> Ex: bean tag in XML, it throws no errors as we have added namespace.
 -> Ex: context tag if used in xml will throw warning saying that it doesn't know what this is at this location. It says it is well formed, but it is not valid XML.
 ->  STS will be adding all namespaces for us, without it we should be writing all manually by creating normal XML.
--> Creating a normal XML file will not save it as a spring configuration file. But, the by creating with the spring bean configuration file, it creates all other required tabs inside the appplicationContaxt.xml file like beans, bean graph becoz the ID has registered this as a spring configuration file. 
+-> Creating a normal XML file will not save it as a spring configuration file. But, then by creating with the spring bean configuration file, it creates all other required tabs inside the appplicationContaxt.xml file like beans, bean graph becoz the ID has registered this as a spring configuration file. 
 -> By using STS, it gives lot more features.
 
 Bean namespace
@@ -228,7 +228,7 @@ XML declaration
 	<property ........
 </bean>
 
--> This bean is the customer service bean that represents where we wnat to put our business logic inside of our applciation. 
+-> This bean is the customer service bean that represents where we want to put our business logic inside of our applciation. 
 -> The XML configuration is composed of beans and beans are basically classes. They're just pojos that we use inside of our applicationContext.
 -> Defining beans can be thought of as replacing the keyword new. 
 -> Ex: CustomerService x = new CustomerServiceImpl(); 
@@ -240,27 +240,32 @@ Separation of concerns
 
 -> We can now change the configurations without recompiling the code. We can switch from environments like dev to test and we just use a different configuration file and do not have to recompile pieces of our applciation. This technique is called, separation of concerns.
 
--> Inside bean tag, we can use name and slo property ID instead of name. Id has to be valid XML, so we can't use some characters that might want to inside of our name. 
--> class inside bean tag. Out file inside of our file we want to use the implementation but reference the interface. So, as we are defining the bean we use the actual implementation of it as our class. 
+-> Inside bean tag, we can use name and also property ID instead of name. Id has to be valid XML, so we can't use some characters that might want to be inside of our name. 
+-> class inside bean tag. Inside of our file we want to use the implementation but reference the interface. So, as we are defining the bean we use the actual implementation of it as our class. 
 
+<bean name="customerRepository"  --> reference
+	class = "com.spring.repository.HibernateCustomerRepositoryImpl"/> --> implementation
+	
+	
 Setter Injection
 ----------------
 
--> After defining a bean, we cna use the bean using injection. 
+-> After defining a bean, we can use the bean using injection. 
 -> There are 2 types of injection.
+
 1. Setter Injection -> getters and setters of the bean.
 2. Constructor Injection -> uses the defined constructors.
 
 -> We can use both types of injections together. 
 
-Setter Injection 
+Setter Injection:
 
 Customer ref = new customerImpl();
- remove the new customerImpl() in the file, and create the setther for the ref.
+ remove the new customerImpl() in the file, and create the setter for the ref.
  
 -> property tag inside the bean will wire another bean together by name and we can pass a ref of another bean.
 <property name = "customerRepository" ref = "customerRepository"/>
--> Thus we done setter Injection wired by name. 
+-> Thus we have done setter Injection wired by name. 
 
 
 ApplicationContext appContext = new ClassPathXmlApplicationContext("applicationContext.xml");
@@ -269,7 +274,7 @@ ApplicationContext appContext = new ClassPathXmlApplicationContext("applicationC
 -> Maven automatically places that file in the right place. 
 src/main/resources -> applicationContext.xml
 -> Maven will compile that into our application at the root of our application.
--> So, in our classes directory applicationContext.xml will be copied at the toot of that directory structure. So, we don't have to put any path information. 
+-> So, in our classes directory applicationContext.xml will be copied at the root of that directory structure. So, we don't have to put any path information. 
 
 CustomerService service = appContext.getBean("CustomerService", CustomerService.class);
 
@@ -291,6 +296,7 @@ Implementation classes for above
    
 3. WebApplicationContext ref1 = new XMLWebApplicationContext("xml file"); 
 -> XML file should be in WEB-INF, the name should be according to the servlet-name tag entry in web.xml.
+
 Ex: <servlet-name> myspring</servlet-name>
 xml file = myspring-servlet.xml
 -> Used only in Spring MVC.
@@ -325,10 +331,10 @@ Ex: If we have 3 arguments to pass in, then we start with index at position 0, p
 We can use both setter and Constructor injection as below
 
 <bean name="customerService" 
-		class="com.spring.service.CustomerServiceImpl">
-		<constructor-arg index = "0" ref="customerRepository"/>
-		<property name="customer" ref="customer"/>
-	</bean>
+	class="com.spring.service.CustomerServiceImpl">
+	<constructor-arg index = "0" ref="customerRepository"/>
+	<property name="customer" ref="customer"/>
+</bean>
 
    
 Autowire
