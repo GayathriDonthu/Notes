@@ -127,7 +127,9 @@ FOr command line
 
 Installing Spring Boot CLI:
 
--> Several ways we can do, Spring Boot docs show how to use SDKMAN, Brew and other ways. 
+-> Several ways we can do
+
+1. Spring Boot docs show how to use SDKMAN, Brew and other ways. 
 Link: https://docs.spring.io/spring-boot/docs/current/reference/html/getting-started-installing-spring-boot.html
 
 -> Search for Installing Spring Boot CLI, download the zip file. spring-boot-cli-1.5.2.RELEASE-bin.zip
@@ -173,10 +175,6 @@ C:\Users\gayathri.guttikonda\Desktop\Gayathri\Softwares\spring-boot-cli-1.5.2.RE
                2 File(s)          4,949 bytes
                2 Dir(s)  365,546,635,264 bytes free
 
-C:\Users\gayathri.guttikonda\Desktop\Gayathri\Softwares\spring-boot-cli-1.5.2.RELEASE-bin\spring-1.5.2.RELEASE\bin>./spring --version
-'.' is not recognized as an internal or external command,
-operable program or batch file.
-
 C:\Users\gayathri.guttikonda\Desktop\Gayathri\Softwares\spring-boot-cli-1.5.2.RELEASE-bin\spring-1.5.2.RELEASE\bin>spring --version
 Spring CLI v1.5.2.RELEASE
 C:\Users\gayathri.guttikonda\Desktop\Gayathri\Softwares\spring-boot-cli-1.5.2.RELEASE-bin\spring-1.5.2.RELEASE\bin>
@@ -190,6 +188,86 @@ Create a project usign below command
 Using service at https://start.spring.io
 Initializr service call failed using 'https://start.spring.io' - service returned Bad Request: 'Unknown dependency 'mySpringBootApp' check project metadata'
 
+-> When we run this, that creates a new folder called mySpringBootApp and places the new initialized project in our current folder that we are running in. 
+-> To make it more powerful, we include the spring in the path, so we could call the spring command regardless where we are on the file system.
+-> The spring CLI can also be used to run on SPring Boot apps that are Groovy based.
 
+2. We can get an app running up quickly is to simply clone or copy one of the Spring Boot example projects Spring provides on their Github repo. 
+-> Once we clone the app, we need to start replacing the exiting code samples with business logic and structures for our project, and we're instantly developing the application. 
+Examples:
+https://guthub.com/spring-projects/spring-boot/tree/master/spring-boot-samples
 
+-> The website contains lot of integrations, if we want to integrate with Cassandra on SPring Boot or Flyway database migrations, there's lot of options. 
+-> We simple browse the projects and find the one we want.
+-> warning - in the link spring boot projects typically only show a single integration with a single framework. So if we want more integrations we can go for Spring Initializer or CLI.
 
+How does Spring Boot work?
+---------------------------
+
+-> When we created our initial application we didn't deploy our app to a container like Tomcat. we simple ran java main method to start up our app.
+
+3 points
+
+1. Java - main method entry point
+	-> The application is started from a java main class using standard public static void main method.
+	
+2. Spring Application - Spring context, spring environment, Initalizers
+	-> Spring Boot Initializes the spring context that comprises our spring app, and then honours any auto-config initializers, configuration and annotations that direct how to initialize and start up the spring context. 
+
+3. Embedded server - Default is tomcat, Auto configured.
+	-> An embedded servlet container is started and auto configured.
+	-> This is done under os the covers and removes the need for a web.xml.
+	-> Spring chosen Tomcat as default servlet container, but there are options to swap out with Jetty, or change configuration options, such as server port.	
+	
+	
+public static void main()   	->    Starts Java and then the applciation.
+									  
+									  1. It has an argument parameter, and when we start a Java program by typing 
+									     java app.class, the JVM initializes and passes control execution to this method.
+									  2. The content inside this method are then used to run and perform our 
+										 application code and logic.
+										 
+@SpringBootApplication 			->    A convenience annotation that wraps commonly used annotations with Spring Boot
+									  
+									  1. This directs Spring Boot how to intialize and start up spring.
+									  2. This annotation actually sets up other annotations under the coners, so instead of having to write out each of the other annotations, we can use this one as a convenience annotation.
+									  
+@Configuration 					->    Spring configuration on startup.
+			
+									  1. The configuration annotation classigies the Java class we as a 
+									     configuration for the spring context that spring Boot and spring will use to initialize and configure various components in environment settings used by Spring. 
+									  2. We can think of the configuration annotation as equivalent to the older  
+									     Spring XMl based configurations. 
+									  3. Instead of using XML to define Spring components, we're going to use Java to define them.
+									  								  
+@EnableAutoConfiguration 		->    Auto configures framework.
+	
+									  1. EnableAutoConfiguration is a spring boot-specific annotation. 
+									  2. This annotation tells Spring Boot that if it finds any spring subprojects, 
+										 or other spring-compatible frameworks on the class path, that it should attempt to auto-configure them and get them wired up and integrate automatically with spring. 
+									  3. This single annotation does a lot of the magic of Spring Boot when combined 
+									     with the Maven bill of materials the spring-boot-starter-parent provides. 
+									  4. When we added the spring-boot-starter-web dependency in our pom.xml file,  
+									     that brought in the Spring MVC sub-framework.
+									  5. This auto configuration annotation told spring Boot to automatically set 
+									     up so we can use spring controllers without having to do any other integration work with that framework.
+									  6. It makes setting up a full Java stack app so easy. 
+										
+@ComponentScan					->	  Scans project for Spring components
+									  
+									  1. This annotation tells Spring Boot and spring to look for any spring 
+									     components, such as controllers, services, repositories or any other spring components, starting in the package of App.java, and recursively looking through all sub packages from there.
+									  2. If we place our main app class in a nested subfolder below our other app 
+									     folders, the componentScan won't be able to find the spring components.
+									  3. It is best to keep the main class at the top level of our main package 
+									     structure.
+									  
+Above three annotations are the main annotations that the SpringBootApplication provides.They are not present explicitely in the code, but they are present.
+
+SpringApplication.run();		->    Starts Spring, creates spring context, applies annotations and sets up 
+									  container.
+									  
+									  1. The SpringApplication boot class is placed in the main method and the 
+									     static run method is called. 
+									  2. This code intializes our spring context, applies all of the annotation and configuration classes, searches for any spring components, and places them in the spring context, and finally he sets up and configures the embedded container. 
+									  

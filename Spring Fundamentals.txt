@@ -258,6 +258,18 @@ Setter Injection
 
 -> We can use both types of injections together. 
 
+pom.xml
+
+<dependencies>
+	<dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-context</artifactId>
+		<version>4.3.5.RELEASE</version>
+	</dependency>
+</dependencies>
+
+applicationContext.xml -> add context in namespaces
+
 Setter Injection:
 
 Customer ref = new customerImpl();
@@ -347,25 +359,68 @@ Autowire
 1. by type 
 --------------
 
+-> setter injection
 -> allows a property to be autowired if exactly one bean of that property type exists withing the container.
-Ex: CustomerRepository is bean of specific type, I we had 2 beans of same class but with different names, we would get an exception using this approach becoz, it couldn't tell which bean to choose. 
+Ex: CustomerRepository is bean of specific type, If we had 2 beans of same class but with different names, we would get an exception using this approach becoz, it couldn't tell which bean to choose. 
 -> it will look at the arguments for the setter. Ex: type of object is customerRepository. 
 -> it doesn't care of the name of the bean and name of the setter. 
+
+Ex:
+Success case:
+
+	<bean name="foo" class="com.spring.repository.CustomerRepositoryImpl"></bean>
+	
+	<bean name="customerService" class="com.spring.service.CustomerServiceImpl" autowire="byType"></bean>
+	
+Output: Gayathri
+
+Failure Case:
+
+	<bean name="customerRepository" class="com.spring.repository.CustomerRepositoryImpl"></bean>
+	<bean name="repo" class="com.spring.repository.CustomerRepositoryImpl"></bean>
+
+	<bean name="customerService" class="com.spring.service.CustomerServiceImpl" autowire="byType"></bean>
+
+Exception:
+
+NoUniqueBeanDefinitionException: No qualifying bean of type 'com.spring.repository.CustomerRepository' available: expected single matching bean but found 2: customerRepository,repo
 
 2. by name
 -----------
 
+-> setter injection
 -> By name fixes the problem of by type.
--> Both are good, becoz by type will allo us to only create 1 instance of that class in our container in our applicationContext.
+-> Both are good, becoz by type will allow us to only create 1 instance of that class in our container in our applicationContext.
 -> by name, will allow us to have multiples and choose that specific object based on the name. 
 -> by name looks for the setter of the bean. Ex: customerRepository bean, it checks for setCustomerRepository. If we change the name of customerRepository then it would through exception.
--> setter injection
+
+Ex:
+Success Case:
+
+	<bean name="customerRepository" class="com.spring.repository.CustomerRepositoryImpl"></bean>
+	<bean name="repo" class="com.spring.repository.CustomerRepositoryImpl"></bean>
+
+	<bean name="customerService" class="com.spring.service.CustomerServiceImpl" autowire="byType"></bean>
+
+	Output: Gayathri
+	
+Failure Case:
+
+	<bean name="foo" class="com.spring.repository.CustomerRepositoryImpl"></bean>
+	
+	<bean name="customerService" class="com.spring.service.CustomerServiceImpl" autowire="byName"></bean>
+	
+Exception:
+
+NullPointerException - becoz there is no setter with setFoo()
 
 3. by Constructor
 -----------------
 
 -> Constrcutor auto-wiring is similar to setter injection by type. 
 -> It looks for an object of that type to inject into the arguments of the constructor. 
+
+Ex: <bean name="customerService" class="com.spring.service.CustomerServiceImpl" autowire="constructor"></bean>
 
 4. no/ none for autowiring
 -----------------------------
@@ -380,6 +435,7 @@ Ex: CustomerRepository is bean of specific type, I we had 2 beans of same class 
 
 
 -> "property" and "constructor-arg" elements, always override autowiring
+
 
 Annotation configuration using XML
 ==================================
@@ -401,12 +457,16 @@ XML declaration
 		http://www.springframework.org/schema/context/spring-context.xsd">
 
 -> To start up the component scanner, we need to add 2 things to our application context
+
 1. context namespace
+
  -> It has schema defining context and the xsd location. 
  -> Just like beans specification we can add the context specification and schema to the top of our document. 
  -> We need to add 2 elements to our schema. 
- -> We need to tell our application that it is configured using annotations, and then where to start scanning for those annotations. 
- --> First element says " it is configured with annotations"
+ -> We need to tell our application that it is configured using annotations, and then where to start scanning for those annotations.
+  <context:annotation-config/>
+ -> First element says " I am configured with annotations"
+ <context:component-scan base-package="com.spring">
  -> second element says " this is the package that it sould start looking for these annotations in."
  -> We can drill down to a specific package, and tell it to only load things from that specific location. 
  -> Adding annotation, configuration and location scanner is easy inside of our application context. 
