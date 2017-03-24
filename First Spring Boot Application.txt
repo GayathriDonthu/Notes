@@ -270,4 +270,84 @@ SpringApplication.run();		->    Starts Spring, creates spring context, applies a
 									  1. The SpringApplication boot class is placed in the main method and the 
 									     static run method is called. 
 									  2. This code intializes our spring context, applies all of the annotation and configuration classes, searches for any spring components, and places them in the spring context, and finally he sets up and configures the embedded container. 
-									  
+
+Why move to containerless Deployments
+-------------------------------------
+
+What happenes when we deply to a container, such as tomcat or JBoss
+-> With a container, we bundle up our application and deploy it to a container running on a server.
+
+	Container
+	
+	 _______
+	|		|
+	|  App  |
+	|_______|
+	
+Container Deployments
+
+1. Pre-setup and configuration
+	-> The container needs to be setup and configured for each environment.
+	-> Ex: stage, test, prod environments, container needs to be configured for each environment.
+	-> The process is independent of or actual application and it's like provisioning a database for each of these environments.
+	
+2. Need to use files like web.xml to tell container how to work. 
+	-> For our application to work we need to provide some deployment descriptors so the container understands how to deploy and serve up our application.
+	-> This is done with web.xml file, so that the servlet container knows how to set up our application so it can be accessed via the HTTP protocol.
+
+3. Environment configuration is external to our application.
+	-> Any application environmental configuration needs to be set up and agreed upon by the application and the container.
+	-> This means using JNDI, or container environment properties or settings.
+	-> This kind of environmental configuration is external to our application and is configured in the container.
+	
+		App
+	
+	 _________
+	|		  |
+	|Container|
+	|_________|
+	
+	Application Deployments
+	
+	
+1. Runs anywhere Java is setup(like cloud deployments)
+	-> When the application is ready for deployment we only need to find an environment that is capable of running the correct version of Java that our app runs on.
+	-> This removes any pre-container setup steps and many cloud environments can easily run Java, so deploying to these environments is now quite simple since we can just throw our application .jar file, and it starts running.
+	-> We no longer need to find a hosting environment that we can work with that supports something like JBoss, WebLogic, Tomcat or any of the other containers. 
+	
+2. Container is embedded and the app directs how the container works.
+	-> As the container is embedded inside the application we no longer need a deployment descriptor.
+	-> web.xml file is gone.
+	-> The application along with the SPring Boot, direct the embedded servlet container how to set up the app sp that it can be accessed via the HTTP protocol.
+	-> The auto-configuration handles most of this, but we can change behaviour using the Spring Boot property files.
+	
+3. Environment configuration is internal to application
+	-> We are able to run our application as a plain Java app provides some other benefits such as easier debugging and testing.
+	-> If for some reason, we can't get away from deploying to a container, we can still deploy Spring Boot apps to a container. 
+	
+	
+Creating Web apps
+=================
+
+-> setting up Spring MVC to handle communicating with our web client via a REST API.
+-> Spring Boot auto-configures Spring MVC for us. 
+
+points
+
+1. Creating controllers
+2. Configure spring MVC with spring boot application properties
+3. where to put web-related resources like html, css and javascript 
+
+RESTful Web App
+---------------
+
+-> Spring Boot application which we created will be server side of our application.
+-> The server side consists of Spring Boot, Spring core and Spring MVC.
+-> Spring MVC will provide our RESTful API endpoints that our user interface will communicate with. 
+-> We need user interface so our users can actually use our application. 
+-> one way to display the UI is browser on computer or mobile that talks to our application via HTTP, or HTTPS protocol.
+-> This is a standard client/server architecture that should be familiar to you if you've done any kind of web application programming before.
+
+1. Demo - wiring in our UI client and integrating it with SPring Boot.
+		- how to serve client and have it talk back to Spring Boot server.
+		- user interface is Angular 1 UI that incorporates Bootstrap for styling.
