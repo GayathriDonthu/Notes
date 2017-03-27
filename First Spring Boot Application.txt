@@ -341,6 +341,12 @@ points
 RESTful Web App
 ---------------
 
+				Clients												Spring Boot
+										HTTP/HTTPS
+			(Computer/ Mobile) <--------------------------------->   (App)
+		
+
+
 -> Spring Boot application which we created will be server side of our application.
 -> The server side consists of Spring Boot, Spring core and Spring MVC.
 -> Spring MVC will provide our RESTful API endpoints that our user interface will communicate with. 
@@ -351,3 +357,97 @@ RESTful Web App
 1. Demo - wiring in our UI client and integrating it with SPring Boot.
 		- how to serve client and have it talk back to Spring Boot server.
 		- user interface is Angular 1 UI that incorporates Bootstrap for styling.
+
+		
+Demo: Integrating a JavaScript Based UI
+---------------------------------------
+
+git clone https://github.com/dlbunker/ps-spring-boot-resources.git
+
+Clone/download  from this location.
+
+To know where to put in the spring Boot, Spring Boot has several areas that it will by default serve static content from. 
+These areas can be overridden if needed, one default location will suffice.
+
+1. classpath
+	- /static
+	- /public
+	- /resources
+
+Client folder -> contains Angular code, resources and other front end assets. 
+
+client -> www folder -> copy the contents of www folder and paste it in das-boot project -> src/main/resources/public
+
+if resources folder is not present, create it. 
+
+src/main/resources -> is a Maven construct that puts anything in this onto the classpath, so this would be classpath-related resources that are not necessarily java files. 
+
+Create /public folder under src/main/resources -> /public is a location for static content
+
+STS IDE -> das-boot -> right click -> refresh 
+					-> right click -> Maven -> update project (to make resources folder to appear, Maven identifies it as a class path resource)
+					
+src/main/resources -> public folder -> we can find the front end assets
+
+das-boot -> Run as -> Java Application
+
+Browser -> localhost:8080
+
+Output:
+
+Das Boot, Gayathri is using Spring Boot!
+
+http://localhost:8080/index.html 
+
+We can see the UI, with the images and all Das Boot - WWII Shipwreck Dive Locations (Das Boot - image from desktop)
+
+-> We have successfully integrated the UI in spring Boot and it's serving it out. 
+
+UI -> Right click -> Inspect -> COnsole tab -> click on shipwrecks link -> GET http://localhost:8080/api/v1/shipwrecks 404 error
+
+-> This is becoz we haven't setup the back-end Spring MVC controller to handle the Shipwreck API calls. 
+
+Features of Spring Boot's static serving
+------------------------------------------
+
+-> If we change the code in client folder, does spring Boot handle it or we need to restart spring Boot to make the changes effected. 
+
+src/main/resources/public/views -> home.html
+
+add a new header <h1>Can I see this change?</h1>
+
+save it and refresh the browser http://localhost:8080/index.html 
+
+We can see the changes, without restarting Spring Boot. 
+
+-> We can also deploy the front-end code separately and setup cores to allow the front end to talk to Spring Boot API. 
+-> We can setup Grunt or Gulp to update the UI content in Spring Boot as changes are made to the front end code. 
+
+
+Demo: Creating Rest End points
+------------------------------
+
+-> In the previous demo, we have created client by plugging in the Angular client.
+-> We need to provide REST API functionality. 
+-> The REST API piece is located in our Spring Boot app, and Spring MVC provides that REST functionality. 
+-> It is our entry point in and out of our server for our web client. 
+
+Spring MVC REST COntroller:
+
+-> We use Spring MVC REST Controller to handle the needed API endpoints. 
+-> There are 5 endpoints that we need to build out to make the application work with the Angular ngResource. 
+
+-> Each endpoint follows standard RESTful best practices by associating the HTTP verb with a URL to handle the different resource needs such as adding, viewing, deleting, updating shipwrecks in our application. 
+
+We can refer ngResource for  "shipwreck"
+
+- GET/api/v1/shipwrecks(list)
+- POST/api/v1/shipwrecks(add)
+- GET/api/v1/shipwrecks/{id}(view)
+- PUT/api/v1/shipwrecks/{id}(update)
+- DELETE/api/v1/shipwrecks/{id}(delete)
+
+Create REST controller
+
+1. @RESTController
+2. @RequestMapping("api/v1/")
