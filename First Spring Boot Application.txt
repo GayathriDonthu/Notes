@@ -441,13 +441,239 @@ Spring MVC REST COntroller:
 
 We can refer ngResource for  "shipwreck"
 
-- GET/api/v1/shipwrecks(list)
-- POST/api/v1/shipwrecks(add)
-- GET/api/v1/shipwrecks/{id}(view)
-- PUT/api/v1/shipwrecks/{id}(update)
-- DELETE/api/v1/shipwrecks/{id}(delete)
+- GET /api/v1/shipwrecks(list)
+- POST /api/v1/shipwrecks(add)
+- GET /api/v1/shipwrecks/{id}(view)
+- PUT /api/v1/shipwrecks/{id}(update)
+- DELETE /api/v1/shipwrecks/{id}(delete)
 
 Create REST controller
 
 1. @RESTController
-2. @RequestMapping("api/v1/")
+2. @RequestMapping("api/v1/") 
+	-> The value of api/v1 specifies the base URL that all endpoints will contain for this class. 
+	-> In the above URLs, all are starting with /api/v1/, the class level RequestMapping annotation is setting that piece of the endpoint up for us. 
+3. @RequestMapping(value = "shipwrecks", method = RequestMethod.GET)
+	-> The method level RequestMapping annotation appends its value on to the class level annotation. 
+4. similarly for update, view, add, delete
+
+-> Spring Boot handles the integration of Spring MVC, and then it sets up the Jackson Json Library, so that when we send the shpwreck info across the HTTP connection, Spring Boot and Spring MVC are automatically marshalling the JSON info into and out of the shipwreck Java object. 
+
+Restart the app-> run the URL -> Now we have shipwrecks showing upp
+
+Perform add/ delete/ view / update operations
+
+-> If we restart the application, any changes will be lost, but they are persisted in memory in the backend stub for now. 
+
+
+Spring MVC Integration Overview
+-------------------------------
+
+What Spring Boot did to auto-configure and integrate Spring MVC for us. 
+
+1. Spring-boot-starter-web in pom.xml
+   -> Spring Boot did more than simply include the Spring MVC.jar on the classpath. 
+   -> We also have the auto-configuration enabled with our SpringBootApplication annotation, so Spring Boot goes the extra step and sets up some Spring MVC features for us. 
+  
+2. Sets up ViewResolvers automatically.
+	-> Spring Boot told Spring MVC to set up the content negotiating viewResolver, which determines how to respond based on the content type. Since we're dealing with JSOn payloads, Spring Boot and Spring MVC will setup the Jackson JSON library to handle content negotiation views for our application JSON types. 
+
+3. Sets up static resource sharing
+	-> Spring Boot configured and told Spring MVC that it should serve out static resources that are located at the root of the classpath in the static, public, or resources path.
+
+4. Sets up HttpMessageConverter
+	-> Spring Boot sets up standard Spring MVC HTTPMessageCOnverters so that it can use sensible defaults to convert JSOn objects into Java ones and vice versa. 
+	-> The basic string encoding is set to UTF-8 out of the box by Spring Boot and Spring MVC.
+	
+5. Sets up customizable hooks
+	-> And last, SPring Boot and SPring MVC leave a way that we can override or change any of the default behaviours that gets set up with auto-configuration by leaving us with some programmable, customizable hooks.
+	-> These hooks give us full control over how Spring MVC is integrated and we can generally program in any kind of behaviour that we may need. 
+	-> These hooks are powerful, but do require us to know more about the framework integrations and are complex. 
+	
+	
+Properties and Environmental configuration
+------------------------------------------
+
+application.properties
+
+-> Till now spring boot does auto configuration, if we need to change application that behaves differently than the default Spring Boot gives us, then we can use Spring Boot application properties. 
+-> Many of the application settings and behaviour can be adjusted and modified using the application.properties file. 
+-> When this file is placed at the root of our classpath, Spring Boot will load it and apply any of the property configurations to your application when your application starts up. 
+-> There are other locations that Spring Boot will locate and load your property file.
+-> In the Maven-enabled project, it is placed in src/main/resources folder that we placed our static assets for the Angular app. 
+
+Environmental configuration
+
+-> The application properties can also be YAML format-based, instead of the standard Java properties format. 
+-> Spring Boot will accept YAML files if we have the SnakeYAML dependency on your classpath. 
+-> Application properties change from environment to environment, db credentials change from dev to stage, etc. Spring Boot provides an easy way to handle these changes as we move application from one environment to another. 
+-> We can define additional property files that have a profile embedded in the name of the file. 
+	application.{profile}.properties
+Ex: application.dev.properties -> has dev related configuration in it. 
+-> These profile specific property files will be loaded over the main application.property file and any environment-specific properties will be overridden and set for that particular environment.
+
+Demo: Configuring application with properties
+=============================================
+
+1. Create application.properties
+	-> make sure that it is in the correct place on the classpath so Spring Boot can find it. 
+2. Customize embedded container properies
+	-> to see how adding simple properites affect the application behaviour. 
+3. Setup environment profiles. 
+	-> setup application specific property files so we can see how using the spring profiles can run our application differently based on the environment that we are deploying or running in. 
+	
+-> There is a property which will be able to adjust the logging level in our application so we can debug or figure out what is happening as the application's running. 
+-> Just using properties, no need of log4j or other logging-related files. 
+
+logging.level.org.springframework.web=DEBUG
+
+-> It says that it needs to set the logging level for the package org.springframework.web to the DEBUG output.
+-> Unti now we were using info logging level, if we change debug we should see more ifnromation about the framework. 
+-> We cna place any of the package structures for logging levels.
+
+Now, run the application, we cna see lot of debug statements in the console. Our application.properties was found by SPring Boot and spring. This allowed us to add that property so that too, we can configure the logging levels and change that in our application behaviour. 
+
+-> Server port that is used with the embedded servlet container can be customized .
+-> Until now, we were using port 8080 that is the Spring Boot  default. 
+   server.port=8181
+   http://localhost:8080/index.html#/ -> it will not work
+   http://localhost:8181/index.html#/ -> it will work
+
+-> Create application-test.properties, application-prod.properies, Spring Boot won't apply properties from these files unless we specify the actual spring profile. 
+
+
+application-test.properties -> server.port=9090
+application-prod.properies -> server.port=80 -> often applications in production are right on the standard HTTP port 80.
+
+-> When workign with SPring profiles, Spring Boot's going to load all of our main application properties first and then override any environment specific properties as needed. 
+
+Setting up Spring profile
+-------------------------
+
+1. Shutdown application
+2. Add -D property that defines the profile. 
+	-> SPring profiles are part of the core spring project, they're not spring boot specific, but they also tie nively with spring boot becoz of our enviornment-specific files. 
+3. Application -> Run configurations -> Arguments -> VM arguments 
+	-Dspring.profiles.active=test
+	test - is the profile that we are trying to run as, matches with application-test.properies file.
+	
+Run the application 
+
+-> To check if it's using a profile is to look and see what port the app is listening on. 
+	Tomcat started on port(s): 9090 (http)
+	
+Profiles
+--------
+
+-> The spring Boot documentation has a list of all the properties that we can adjust at below URL.
+
+https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
+
+(or) spring boot common application properties
+
+It has all information as how spring boot configures and works with various libraries and frameworks.
+
+Configuring and accessing a data source
+=======================================
+
+-> Integration of Spring Boot to a Datasource in an appropriate JDBC driver for our Shipwreck application. 
+
+Identifying frameworks for Integration
+--------------------------------------
+
+Architecture (image from desktop)
+
+
+
+-> We have a REST API setup with controllers using the Spring MVC framework. 
+-> This sits at the top of our server-side stack.
+-> We need to tie in JPA and Spring Data JPA so our Spring MVC controllers have a persistence layer they can utilize. 
+-> The JPA ORM layer will then talk to a database. (H2 database)
+-> H2 database is easy to provision and use, but this could be a MySQL or Oracle or some other relational db.
+-> Need FlywayDB framework to handle the ability to version and migrate database structure along with the code.
+-> We need to add the Spring Data JPA starter and Spring Boot will auto-configure and set up Spring Data JPA with JPA and all its related libraries pulled in and setup. 
+-> The H2 database and FlywayDB libraries are simply dependencies in our Maven POM file.
+-> Even though H2 and Flyway aren't actual starters, Spring Boot and Spring will still integrate them and allow us to configure most of those frameworks via the application properties. 
+
+
+Demo: Provisioning and Integrating a database
+---------------------------------------------
+
+-> Integrate H2 database - adding H2 dependency to the Maven POM file.
+-> This will include the actual H2-embeddable database and the JDBC sriver support for it. 
+-> Add starter dependency as it will detect the H2 database dependency and do some auto-configuration and integration for us. 
+
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-data-jpa</artifactId>
+</dependency>
+
+<dependency>
+	<groupId>com.h2database</groupId>
+	<artifactId>h2</artifactId>
+</dependency>
+
+Add above depenencies in pom.xml
+Make sure the vm arguments is empty before starting the application. 
+
+-> In the console we can see that dataasbe dialect was set to the H2 dialect, so that means that Spring Boot also detected our H2 database. 
+-> At this point we don't have any other views into our embedded database or our frameworks that we added, but Spring Boot provides some configuration properties to help us get an idea of what adding these depenencies really did.
+
+Add below in application.properties
+
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2
+
+-> These properties enable the H2 database console in our web app, and allow us to specify the path that we can access it at, which is /h2. 
+
+Restart application -> browser -> localhost:8080/h2
+
+-> h2 console appears and it provides a login with some default values set. 
+-> SPring Boot auto-configures the database for us, so we can just login to the console with the default.
+-> We actually provisioned our H2 database and got it integrated with our Spring Boot application.
+
+Demo: Configuring a data source
+-------------------------------
+
+-> With Spring Boot we can configure our Datasource with the application.properties file. 
+-> Besides setting the Datassource connection info, SPring Boot also tries to automatically set up our datasource pooling for us. 
+-> Database pooling improves db throughput and performance. If spring detects any of the common pooling libraries on our classpath, the auto-configuration will integrate that pool and tie it in with our data source. 
+-> When spring-boot-starter-data-jpa dependency was added, that dependency transitively pulled in the tomcat-jdbc pooling librabry.
+-> Spring pool uses this pool and its default since it has pretty good performance and concurrency out of the box. 
+-> Other pools spring boot will integrate aret he HikariCP, Commons-DBCP, and commons DBCP2.
+
+appliction.properties
+
+spring.datasource.url=jdbc:h2:file:C:/Users/gayathri.guttikonda/Desktop/Gayathri/H2;MV_STORE=FALSE
+spring.datasource.username=springBoot
+spring.datasource.password=springBoot
+spring.datasource.driver-class-name=org.h2.Driver
+
+Above properties define the basics for our database and datasource connection. 
+-> Change the URL so that we store our database as a file, database name - Das Boot. 
+-> By this way our DB info persists across server restarts as we're testing and developing our application instead of using an in-memeory volatile model.
+
+Restart application -> browser -> localhost:8080/h2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
