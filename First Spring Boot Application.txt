@@ -797,8 +797,123 @@ public class PersistenceConfiguration {
 
 @ConfigurationProperties(prefix="spring.datasource") -> The configurationProperties annotation tells the DataSourceBuilder to use the connection and pooling properties in the application.properties file where the properties begin with the spring.datasource prefix.
 
+-> We can keep all of the existing connection property definitions that were used with auto-configuration setup, and spring DataSource bean will reuse them.
 
+-> Since, we are adding another datasource, spring needs to know which one is the default when finds ambiguity in wiring up a datasource. This is done by @primary annotation on the Datasource.
+
+@Bean
+@ConfigurationProperties(prefix="datasource.flyway")
+public DataSource flywaydatasource(){
+	return DataSourceBuilder.create().build();
+}
+
+
+add the properties with datasource.flyway
+
+datasource.flyway.url=jdbc:h2:file:C:/Users/gayathri.guttikonda/Workspace_STS/das-boot/src/main/resources/flyway;MV_STORE=FALSE
+datasource.flyway.username=flyway
+datasource.flyway.password=flyway
+datasource.flyway.driver-class-name=org.h2.Driver
+
+
+-> Creating multiple datasources helps in giving role-based credentials.
+-> We need flagging the secondary datasource so that FLyway recognizes it and uses it. Becoz Spring Boot is nice and wants us to imtegrate easily with Flyway, Spring has provided an annotation we can place on our secondary DataSource that flags it for Flyway. That annotation is called @FlywayDataSource.
+
+Restart the application and ensure app starts.
+
+Demo: Adding JPA and Spring Data JPA
+------------------------------------
+
+-> We need to add our JPA entity and our SPring Data JPA repository so that our REST controller can use that. 
+
+shipwreck.java -> using it as a DTO object or a transfer object previously. 
+			   -> Convert it into an actual JPA entity by adding @Entity
+			   
+-> We need to tell JPA what attribute of this class is the primary key and how the primary key gets generated.
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	Long id;
 	
+-> The generated value is saying that the database will take care of incrementing our primary key value for us, so we don't need to pass in a sequence value or some way of generating the primary key. We rely on database engine for that. 
+-> The table matches the Java object clearly, so no need of adding @Column.
+
+-> Create a new interface, ShipwreckRepository. As we need it to be a Spring data repository, we extend the JPA repository interface, which takes in the shipwreck entiry, and the primary key type of Long.
+
+-> Till now, we have added our JPA and our SPring Data JPA parts of our persistence tier.
+
+Restart the application and ensure app starts.
+
+Demo: Completing the App
+------------------------
+
+-> The persistence tier is built oout of our application, replace the ShipwreckStub in our controller class with the Spring Data ShipwreckRepository, and the app will then complete from the browser all the way down to the database. 
+
+-> Inject the newly-created ShipwreckRepository at the top of the ShipwreckController class by auto-wiring it in and defining the interface.
+
+-> Remove all of the references to the ShipwreckStub and replace them with the ShipwreckRepository.
+
+public class ShipwreckController {
+	
+	@Autowired
+	private ShipwreckRepository shipwreckRepository;
+	
+	@RequestMapping(value = "shipwrecks", method = RequestMethod.GET)
+	public List<Shipwreck> list(){
+		return shipwreckRepository.findAll();
+	}
+	
+	@RequestMapping(value = "shipwrecks", method = RequestMethod.POST)
+	public Shipwreck create(@RequestBody Shipwreck shipwreck){
+		return shipwreckRepository.saveAndFlush(shipwreck);
+	}
+	
+	@RequestMapping(value = "shipwrecks/{id}", method = RequestMethod.GET)
+	public Shipwreck get(@PathVariable Long id){
+		return shipwreckRepository.getOne(id);
+	}
+	
+	@RequestMapping(value = "shipwrecks/{id}", method = RequestMethod.PUT)
+	public Shipwreck update(@PathVariable Long id, @RequestBody Shipwreck shipwreck){
+		
+		Shipwreck existingShipwreck = shipwreckRepository.findOne(id);
+		BeanUtils.copyProperties(shipwreck, existingShipwreck);
+		return shipwreckRepository.saveAndFlush(existingShipwreck);
+		
+	}
+	
+	
+	@RequestMapping(value = "shipwrecks/{id}", method = RequestMethod.DELETE)
+	public Shipwreck delete(@PathVariable Long id){
+		
+		Shipwreck existingShipwreck = shipwreckRepository.findOne(id);
+		shipwreckRepository.delete(existingShipwreck);
+		return existingShipwreck;
+		
+	}
+	
+}
+
+
+Restart the application and test it.
+
+localhost:8080/index.html
+
+Shipwrecks -> We don't see any dummy data since we are talking to database and the shipwreck table is not having any data in it.
+
+Testing the Spring Boot Project
+===============================
+
+Getting started with Spring Boot testing
+----------------------------------------
+
+-> There are several different types of tests that we can write to help test and automate the health of our application.
+-> Before testing we need to integrate the testing frameworks.
+-> With Spring Boot, we need to add a starter to our project dependencies.
+-> For testing we need to add spring-boot-starter-test dependency. This dependency will get us set up with most of our testing needs.
+-> The first framework that test starter will integrate is Junit. 
+-> When doing basic unit testing, JUnit and Spring complement each other well.
+-> Even though JUnit provides some assertion support to help analyze test results, Spring Boot also incorporates Hamcrest.
+-> This framework provides improved test result matching and assertions, that when combined with JUnit allow you to automate our testing from start to finish. 
 
 
 
