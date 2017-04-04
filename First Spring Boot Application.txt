@@ -554,7 +554,9 @@ Setting up Spring profile
 2. Add -D property that defines the profile. 
 	-> SPring profiles are part of the core spring project, they're not spring boot specific, but they also tie nively with spring boot becoz of our enviornment-specific files. 
 3. Application -> Run configurations -> Arguments -> VM arguments 
+
 	-Dspring.profiles.active=test
+	
 	test - is the profile that we are trying to run as, matches with application-test.properies file.
 	
 Run the application 
@@ -635,6 +637,7 @@ Restart application -> browser -> localhost:8080/h2
 Demo: Configuring a data source
 -------------------------------
 
+-> For databases like oracle mysql, we need to provide JDBC details. 
 -> With Spring Boot we can configure our Datasource with the application.properties file. 
 -> Besides setting the Datassource connection info, SPring Boot also tries to automatically set up our datasource pooling for us. 
 -> Database pooling improves db throughput and performance. If spring detects any of the common pooling libraries on our classpath, the auto-configuration will integrate that pool and tie it in with our data source. 
@@ -644,10 +647,12 @@ Demo: Configuring a data source
 
 appliction.properties
 
-spring.datasource.url=jdbc:h2:file:C:/Users/gayathri.guttikonda/Desktop/Gayathri/H2;MV_STORE=FALSE
+spring.datasource.url=jdbc:h2:file:C:/Users/gayathri.guttikonda/Workspace_STS/das-boot/src/main/resources/H2;MV_STORE=FALSE
 spring.datasource.username=springBoot
 spring.datasource.password=springBoot
 spring.datasource.driver-class-name=org.h2.Driver
+
+hibernate.dialect=org.hibernate.dialect.H2Dialect
 
 Above properties define the basics for our database and datasource connection. 
 -> Change the URL so that we store our database as a file, database name - Das Boot. 
@@ -655,13 +660,145 @@ Above properties define the basics for our database and datasource connection.
 
 Restart application -> browser -> localhost:8080/h2
 
+(change the spring-boot-starter-web -> version 1.5.2 to version 1.3.1 if the server doesn't start)
+
+-> We can see the h2 login page, enter the details and login. 
+-> Create a new table 
+
+CREATE TABLE TEST(ID INT PRIMARY KEY,
+   NAME VARCHAR(255));
+   
+Created;
+
+-> To make sure that our database is persisting across application restarts, we restart the application and see that the table Test is presisted across application restarts. 
+-> If we are using an in-mememory database, our databases will essentially get flushed every time the application restarted. 
+-> So, if we want persistence to actually persists, we need to make sure that we are using the file-based databases with the H2 protocol.
+-> In the JDBC URL, it specifies file.
+jdbc:h2:file:C:/Users/gayathri.guttikonda/Workspace_STS/das-boot/src/main/resources/H2
+
+-> We need different databases for each environment, we can set in application-prod.properies file for production.
+
+application-prod.properies
+
+server.port=9191
+
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2
+
+spring.datasource.url=jdbc:h2:file:C:/Users/gayathri.guttikonda/Workspace_STS/das-boot/src/main/resources/H2_prod;MV_STORE=FALSE
+spring.datasource.username=prod
+spring.datasource.password=prod
+spring.datasource.driver-class-name=org.h2.Driver
+
+hibernate.dialect=org.hibernate.dialect.H2Dialect
 
 
+RunAs -> Arguments -> -Dspring.profiles.active=prod
+
+Browser -> localhost:9191/h2
+
+Login with prod credentials -> Success
+
+Database pooling
+----------------
+
+-> The spring-boot-starter-data-jpa dependency that we added also includes tomcat-jdbc pool for us.(check in dependency hierarchy)
+-> Since the librabry lives in the classpath, it's being used as our database pool. 
+-> So we can configure that by simply adding data base pooling properties. 
+-> These properties also have the prefix of spring.datasource, and it allows us to specify some common pooling properties like how many connections are active and idle, wait, evict etc.
+-> These settings are environment-specific, so set them for each environments.
+
+spring.datasource.max-active=10
+spring.datasource.max-idle=8
+spring.datasource.max-wait=10000
+spring.datasource.min-evictable-idle-time-millis=1000
+spring.datasource.min-idle=8
+spring.datasource.time-between-eviction-runs-millis=1
 
 
+Define shipwreck-appropriate database tables using FlywayDB migration framework.
+
+Demo: Integrating FlywayDB
+--------------------------
+
+1. Add the Flyway dependency
+	-> To get FlywayDB integrated with the application, add flyway dependency in the classpath.
+	-> Spring Boot is good about detecting most libraries and doing some auto-configuration with it, same for flyway.
+	
+2. COnfigure flyway datasource.
+	-> Spring Boot needs to make sure that the datasource is available for flyway. 
+	-> Spring Boot typically uses the default datasource we setup, but also have some options to configure and alternative datasource for flyway if we don't want to use the default primary datasource. 
+	
+3. Create migration scripts
+	-> Migrating scripts to modify our database structure. (shipwreck database table be defined and created)
+
+4. Migrate on app startup.
+	-> When we startup th application, Flyway will run any outstanding migrations against the database. 
+	-> FLyway integrates wiht our core spring Boot app, s migrations simply run and no need to execute the migrations as a separate step. 
+	
+Create a file V2__create_shipwreck.sql under src/main/resources -> db -> migration folder
+
+-> The reason for starting the migrations at version2 is that flyway baselines at version 1 and migrations start at version 2. 
+
+CREATE TABLE SHIPWRECK(
+	ID INT AUTO_INCREMENT,
+	NAME VARCHAR(255),
+	DESCRIPTION VARCHAR(2000),
+	CONDITION VARHAR(255),
+	DEPTH INT,
+	LATTITUDE DOUBLE,
+	LONGITUDE DOUBLE,
+	YEAR_DISCOVERED INT
+);
+
+-> Flyway SQL is database dependent. The above create table statement will only work for H2 databases.(for oracle it is based on it's syntax)
+-> Need to add below property so FLyway can initialize itself properly.
+
+	flyway.baseline-on-migrate=true
+	
+-> This tells Flyway that if this is the first time that Flyway's ever been run, it should goahead and create the migration metadata table. 
+-> Since the application has never been run in our app, this property will make sure that Flyway gets installed and set up correctly. This is why migration script starts at 2, becoz it's going to baseline and create the metadata table as version 1.	
+
+spring.jpa.hibernate.ddl-auto=false
+
+-> Becoz hibernate is running as the entity manager for our JPA tier, it will try to auto-create any entities using the DDL of those entities.
+-> We're relying on FLyway to create our database structures and not hibernate.
+
+-> Restart the app and login to H2 db to check if the table is created. 
+-> We can see shipwreck table and schema_version - this is the Flyway metadata table that defines what needs to be migrated and what's already been migrated. 
+-> Till now we've created some database structures that are relevant to our application by simply including the flyway dependency, adding a migration script, and starting the application.
+
+Spring Boot Java Configuration
+------------------------------
+
+1. Define spring beans using Java.
+	-> IN older versions of spring, most of the configuration was handled in XML files. We can do the same thing using Java code.
+	-> This removes XML from our application and allows us to progammatically handle any kind of app configuration needs that need to take place on app startup.
+	-> Instead of relyin on th auto-configuration to setup and build the app datasource, we can create a configuration class and create the DataSource progammatically.
+	-> Any configuration Java class that has public methods with the app being annotation will get loaded on app startup and the return values of these methods will then be set as beans inside of the Spring context.
+	-> This basic onfiguration lets us add or configure any bean to the spring context.
+
+Why we need to define the datasource progammatically?
+-> We may need to define multiple datasources becoz we are talking to multiple databases.
+-> We use primary datasource for our JPA code and the secondary datasource for our Flyway migrations.
+
+@Configuration
+public class PersistenceConfiguration {
+	 
+	@Bean
+	@ConfigurationProperties(prefix="spring.datasource")
+	public DataSource dataSource(){
+		return DataSourceBuilder.create().build();
+	}
+	
+}
+
+@Bean -> tells Spring in Spring Boot that the return value of this method which is a DataSource, needs to be setup and stored as a Spring bean in the Spring context.
+
+@ConfigurationProperties(prefix="spring.datasource") -> The configurationProperties annotation tells the DataSourceBuilder to use the connection and pooling properties in the application.properties file where the properties begin with the spring.datasource prefix.
 
 
-
+	
 
 
 
