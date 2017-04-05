@@ -903,27 +903,146 @@ Shipwrecks -> We don't see any dummy data since we are talking to database and t
 Testing the Spring Boot Project
 ===============================
 
-Getting started with Spring Boot testing
+Getting started with Spring Boot testing(image from desktop)
 ----------------------------------------
 
 -> There are several different types of tests that we can write to help test and automate the health of our application.
 -> Before testing we need to integrate the testing frameworks.
 -> With Spring Boot, we need to add a starter to our project dependencies.
 -> For testing we need to add spring-boot-starter-test dependency. This dependency will get us set up with most of our testing needs.
--> The first framework that test starter will integrate is Junit. 
--> When doing basic unit testing, JUnit and Spring complement each other well.
--> Even though JUnit provides some assertion support to help analyze test results, Spring Boot also incorporates Hamcrest.
--> This framework provides improved test result matching and assertions, that when combined with JUnit allow you to automate our testing from start to finish. 
+
+1.  The first framework that test starter will integrate is Junit. 
+	-> When doing basic unit testing, JUnit and Spring complement each other well.
+
+2. Even though JUnit provides some assertion support to help analyze test results, Spring Boot also incorporates Hamcrest.
+	-> This framework provides improved test result matching and assertions, that when combined with JUnit allow you to automate our testing from start to finish. 
+
+3. The next framework that test starter integrates is Mockito. 
+	-> Sometimes when we test, the code we are testing has dependencies on other objects or code that are hard to prop up for a unit test.
+	-> In that case, we can use a framework like Mockito to mock and stub those objects so we can proceed wiht our tests, and then verify what was called and used on that mocked object after our test is run. 
+	
+4. Last, the test starter pulls in Spring Test tools.
+	-> These include annotations, test utilities and other testing integration support that allow working with JUnit, Hamcrest and Mockito in a Spring environment. 
+
+	
+Demo: Wiring up the Starter and running tests
+---------------------------------------------
+
+-> setup environment for testing.
+
+1. Add the spring-boot-starter-test dependency to project's dependencies.
+2. Build a unit test to see how it works.
+3. Running tests within spring boot.
+
+-> When we created the project using the Maven archetype, that added the JUnit dependency 3.8.1 version. Since the test starter will add JUnit for us, we can remove existing JUnit dependency.
+
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-test</artifactId>
+	<scope>test</scope>
+</dependency>
+
+-> This dependency pulls in all test resource dependencies.
+-> The scope is test, which means that when the app is bundled and packaged for deployment, any dependencies that are declared with the test scope are ignored. 
+-> The test scope dependencies are only available when running in development and Maven test modes. 
+-> In the dependency hierarchy tab, the spring-boot-starter-test is grayed out which means it is available only as a test scope.
+-> We can also see the 4 main libraries that are transitively pulled in, JUnit, Hamcrest, Mockito and Spring Test. 
+
+-> The Maven archetype that generated the project initially included a test called AppTest. (com.boot package)
+-> Modifying AppTest to be first unit test of the applciation as it is outdated.
+
+public class AppTest 
+{
+	@Test
+    public void testApp() {
+		
+		HomeController hc = new HomeController();
+		String result = hc.home();
+		assertEquals(result, "Das Boot, Gayathri is using Spring Boot!");
+		
+    }
+}
+
+Run As -> JUnit test
+Run As -> Maven test
+
+command line > mvn test 
+
+Demo: Unit Testing with Mockito
+-------------------------------
+
+-> ABove unit testing was simple since it was just text. 
+-> As apps grow in complexity, we cannot simply unit test in this way, becoz the code we are testing has dependencies on other code that is managed by spring, or is difficult to construct via a test. In that case we can use Mockito. 
+
+public class ShipwreckControllerTest {
+	
+		@Test
+	public void testShipwreckGet() { // goal is to get a shipwreck by its id
+		
+		ShipwreckController sc = new ShipwreckController();
+		Shipwreck wreck = sc.get(1L);
+		assertEquals(1L, wreck.getId().longValue());
+				
+	}
+	
+}
+
+-> Ultimate goal for this test is to ask for the shipwreck of id1 and get that shipwreck back from the controller. We then run an assertion on the returned object to make sure that the id is equal to 1.
+
+Test failed with NullPointer Exception
+
+-> It appears that the shipwreckRepository is null. becoz, we instaniated the ShipwreckController and didn't use Spring to inject it, so all of the injected objects on the ShipwreckController, like shipwreckRepository, never got created properly by Spring. 
+-> This is the exact problem that mock frameworks were created for.
+-> By using Mockito, we can mock the shipwreckRepository so we can get out test to work.
+-> Instead of instantiating the ShipwreckController, we create a mock instance of it.
+-> Mockito provides an annotation that creates this object and injects into the test.
+
+@InjectMocks
+private ShipwreckController sc;
+
+@Test
+public void testShipwreckGet() { // goal is to get a shipwreck by its id
+	Shipwreck wreck = sc.get(1L);
+	assertEquals(1L, wreck.getId().longValue());
+}
+
+-> Mockito will now manage this object for us. 
+
+-> We need to create a shipwreckRepository mock object so that when we call our controller we don't get that NullPointer Exception. 
+
+@Mock
+private ShipwreckRepository shipwreckRepository;
+
+-> Now both objects are managed by Mockito framework.
+-> To get Mockito to set that mocked repository automatically on the controller, we need to add a setup init method that initializes all of the mocked objects together when the test runs.
+
+@Before
+public void init(){
+	MockitoAnnotations.initMocks(this);
+}
+
+MockitoAnnotations.initMocks(this); -> When it passes 'this' , it looks at the @InjectMocks and the @Mock attributes, and see if they need to be pushed together. 
+-> In our case, since the shipwreckConntroller has a shipwreckRepository on it, the mockito frameowrk will set that for us, much like spring dependency injection. 
+
+-> Specify the mock behaviour on the repository when we call our test. Since we are not actually hitting a database, mock with below lines.
 
 
+when(shipwreckRepository.findOne(1L)).thenReturn(sw);
 
+-> when method call allows us to provide the actual mocking behaviour. It tells Mockito that when the findOne method is called on the repository, it should return the stubbed shipwreck object.
+-> This now allows us to test our controller code as an actual unit text and no need to wired up to database or to spring to make test pass. 
+-> The test passes becoz we've mocked the shipwreckRepository.
 
+-> The other cool feature Mockito gives us is the ability to verify that our mocked or stubbed method calls are actually used during the testing of the code. 
 
+To check if the method is called or not.
 
+verify(shipwreckRepository).findOne(1L);
+	
+-> If for some reason the controller called the findOne method on the repository twice, the test would fail and we could figure out why the method was called twice and fix the issue.
 
-
-
-
+-> We can now test controllers, services or any other kind of objects without having to run an integration test that boots up the Spring Container.
+-> Unit tests with mock objects are fast, much faster than integration tests.
 
 
 
