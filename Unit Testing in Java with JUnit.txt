@@ -1,0 +1,68 @@
+										Unit Testing in Java with JUnit
+										===============================
+										
+JUnit Overview
+==============
+
+Junit - testing framework
+
+assertion - comparing the actual with the expected result
+
+-> write test cases in a separate class file, mark each test case with @Test annotation. The JUnit runner executes those test cases. 
+
+Junit features
+--------------
+
+1. Asserts 
+2. Test setup and tear down -> setup test data before our test actually runs and teardown that data or context after it runs.
+							-> ensures that test code is not repetetive.
+3. Exception testing -> checks for exception not thrown and thrown
+4. Test suites -> useful for managing large amount of tests.
+5. Parameterized testing -> we can create tests that operate on sets of data that we feed into those tests. 
+6. Assumptions -> to ignore tests that aren;t even qualified to run on a platform or context. 
+7. Rules -> allows to extend the functionality of JUnit by adding behaviours to tests that happen whenever we use a particular rule.
+8. Theories -> special kind of tests that work under different contexts.
+			-> We can set them up with different data and make sure those theories still hold.
+9. Integration with popular build systems.
+
+JUnit(image from desktop)
+-----
+
+Test code -> Tests an SUT(Subject under Test)
+
+SUT -> is a Java class, doesnt have to be since JUnit can be more than unti testing. 
+
+-> The test code we write uses the capabilities of the JUnit framework to make it easier to compare results and do other things.
+-> Includes annotations that tells JUnit to recognize it as a Test.
+
+JUnit runner -> to run the test, it looks the test code and determines what tests exist and how it should run them and report those results. It also has the ability to report the results to a view.
+
+-> We can setup JUnit to run and output results files, which can be picked up by our build system or another tool.
+
+Unit testing
+------------
+
+Unit -> class -> smallest unit
+more than class -> integration tests etc
+calling database -> not a unit test
+
+Kent Back -> founder of Agile
+Kent Back and Erich Gamma -> creators of JUnit
+
+JUnit basics
+============
+
+JUnit test method
+-----------------
+
+-> To create unit tests in JUnit, we need to create test methods.
+@Test
+public void testMethod(){
+}
+
+JUnit Annotations
+-----------------
+
+1. @Test
+2. @Before 
+3. @After -> Before and After annotations work together to allow us to specify some behaviour to happen before and after each test is run. 
