@@ -1044,7 +1044,125 @@ verify(shipwreckRepository).findOne(1L);
 -> We can now test controllers, services or any other kind of objects without having to run an integration test that boots up the Spring Container.
 -> Unit tests with mock objects are fast, much faster than integration tests.
 
+Demo: Hamcrest Matchers
+-----------------------
+
+-> Hamcrest provides more readable, declarative approach to asserting and matching test results.
+
+assertEquals(1L, wreck.getId().longValue());   // - Mockito
+
+is replaced by
+
+assertThat(wreck.getId(), is(1L));  // Hamcrest
+
+-> This is much more readable and easy to see the ultimate goal of the test assertion.
+
+Integration testing challenges
+------------------------------
+
+-> Integration testing is all about testing all pieces of an application working together as they would in a live or production environment. 
+-> This means that our application needs to be running to test it. 
+-> Becoz of the nature of integration tests, this poses some challenged when building and running these type of tests.
+
+Challenges before spring Boot:
+
+1. Containers are difficult to test
+	-> Any code that is part of our application that relies on the container or the servlet application is hard to test becoz we either need to test the startup of the container and run tests against it, or we need to mock the container and emulate it in some way. 
+
+2. Spring Context needs to be available.
+	-> Since spring core, spring beans and dependency injection requires Spring to be running and managing those pieces in its application context, all integration tests need to ensure that the spring application context is running. 
+	
+3. App/ Test startup can be slow.
+	-> Starting the spring context and running or emulating the container can take time in larger applciations.
+	-> Integration tests run slower than plain unit tests. 
+
+4. Database state needs to be consistent.
+	-> If our integration tests are modifying the database, or expecting cerain data in the database to be there for our test case, then we can run into problems if we can;t make the database stay consistent everytime we run the tests. 
+	
+Spring Boot Apps working:
+
+1. No container, easier to start up.
+	-> Becoz spring Boot can be started as a plain Java application, the complexity dealing with a container and deploying our application is removed.
+	-> Spring boot has an embedded container, but spring boot simply makes starting and dealing with our app much easier.
+	
+2. Spring context auto-configuration
+	-> Integration tests in spring Boot still need to have a spring Context. 
+	-> The main difference between spring Boot and traditional spring apps is the use of starters and auto-configuration.
+	-> This makes holding up the spring container with spring boot a little easier.
+	
+3. App/Test startup can be slow
+	-> Integration test startup and execution time are still issues in spring Boot environment.
+	-> bigger application - more spring components - more time to start application.
+	
+4. Database state needs to be consistent.
+	-> Database consistency is still an issue with spring boot testing.
+	
+Demo: Integration Testing
+-------------------------
+
+-> To convert any JUnit test into proper integration test, 2 things need to be done
+
+1. Annotate tests with @RunWith annotation and specify that we want to run it with SpringJunit4ClassRunner.
+
+	@RunWith(SpringJunit4ClassRunner.class)
+	
+2. Add the SpringApplicationConfiguration annotation and provide main spring Boot class for our application.
+
+	@SpringApplicationConfiguration(App.class)
+	
+	
+SpringJunit4ClassRunner -> spring based test class runner, is part of the spring test tools that the test starter transitively 
+						   included in the project. 
+
+@SpringApplicationConfiguration(App.class) -> supply main class as annotation parameter, app.class in our application. 
+										   -> This tells the spring Boot how to configure and start our application.
+										   -> This is like calling main method when we start our app, except that now wew are embedding that inside of the context of a unit test. 
+										   
+										   
+@Test
+public void testAll(){
+	List<Shipwreck> wrecks = shipwreckRepository.findAll();
+	assertThat(wrecks.size(), is(greaterThanOrEqualTo(0)));
+}
+
+-> Above test asking the respository for all shipwrecks and then using Hamcrest to make sure that the return list >=0. 
+-> When the test starts up the spring ontext will load and spring will inject the full shipwreckRepository into the test similar to running in a standard application.
+
+Demo: Web Integration Testing
+-----------------------------
+
+Web Integration test == calling REST API.
+
+-> REST API is prefered than templated JSP page, it's nice to be able to test that actual API. That in turn tests our entire server-side stack. This is the concept of a web integration test. 
+-> Spring provides a simple annotation that flags an integration test as web integration test. 
+	@WebIntegrationTest
+	
+	
+	
+
+	@Test
+	public void testListAll() throws JsonProcessingException, IOException{
+		
+		RestTemplate restTemplate = new TestRestTemplate();
+		
+		ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:8080/api/v1/shipwrecks", String.class);
+		
+		assertThat( response.getStatusCode() , equalTo(HttpStatus.OK));
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+		JsonNode responseJson = objectMapper.readTree(response.getBody());
+		
+		assertThat( responseJson.isMissingNode(), is(false));
+		assertThat( responseJson.toString() , equalTo("[]"));
+		
+	}
 
 
+-> Creating RestTemplate, Resttemplates are how we can programatically call APIs, in this case we want to programatically call SHipwreck API. 
+-> That API call is asking for all of the shipwrecks that the systsem knows about, and it holds the response. 
+-> url can be placed in the application.propertis.
+-> Assertion to make sure that we get 200 OK back. If we don't get the 200OK back test will fail immediately.
+-> Converting the response into an actual JSON object, and perform some assertions on that to make sure that the return JSON is in a state that makes sense.
+-> Since we don't have any shipwrecks in database currently, we check to make sure we get an empty array returned as JSON payload. ([])
 
 
