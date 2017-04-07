@@ -4,13 +4,13 @@
 JUnit Overview
 ==============
 
-Junit - testing framework
+JUnit - testing framework
 
 assertion - comparing the actual with the expected result
 
 -> write test cases in a separate class file, mark each test case with @Test annotation. The JUnit runner executes those test cases. 
 
-Junit features
+JUnit features
 --------------
 
 1. Asserts 
@@ -65,4 +65,261 @@ JUnit Annotations
 
 1. @Test
 2. @Before 
-3. @After -> Before and After annotations work together to allow us to specify some behaviour to happen before and after each test is run. 
+3. @After 
+	-> Before and After annotations work together to allow us to specify some behaviour to happen before and after each test is run. 
+4. @BeforeClass
+5. @AfterClass
+	-> allows us to specify some behaviour that happens before any methods in a test class are executed and after all the methods are executed.
+6. @Ignore
+	-> tells JUnit runner to ignore this test, useful for temporarily disabling a test.
+7. @Test(Expected = Exception.class)
+	-> allows us to expect that an exception will be thrown in our testMethod
+8. @Test(timeout = 100)
+	-> allows us to specify a period that the test should execute in, otherwise it will time out.
+	
+	
+Before and After
+----------------
+
+-> @Before and @After annotations eliminate duplication in unit tests. 
+-> public void Method annotated with @Before will be called before each test class is run like a setUp.
+-> This is useful in setting up some data that all tests will use and resetting that data before running each new test. 
+-> Tests dhouldn't be run in a particular order.
+-> @After annotation works exactly like @Before except that it runs after each test, like clean up code.
+
+BeforeClass and AfterClass
+--------------------------
+
+-> @BeforeClass and @AfterCLass annotations can be used when we want to execute a method before any test methods in a class are executed or after all test methods in a class are executed. 
+-> they are executed only 1 time each regardless of test case numbers.
+-> they must be static methods.
+-> useful when we want to setup test data once for all tests in a class and need to cleanup the data afterwards. 
+-> useful for non unit testing uses of JUnit, like cleaning data in database after all tests are run.
+
+Using Ignore
+------------
+
+-> @Ignore - test case will not be run. 
+-> when the build is failing and we want to get a test that's failing out of there so that the build can continue, but we don't want to remove that test. We can use @Ignore.
+
+Exception testing
+-----------------
+
+-> JUnit has built in support for helping us to write tests that check to make sure an exception was thrown and that it was a right kind of exception by using the test annotations expected field.
+-> When we declare a test annotation, if we set the expected field = exception class, the test will only pass if an exception of that type is thrown.
+
+
+Timing Out
+----------
+@Test(timeout = 100)
+-> Make sure Method does right thing within a certain time limit. 
+-> By setting timeout field on the @Test annotation in JUnit, we can specify a number of milliseconds in which time the test should complete. Otherwise, it will be considered as failure.
+-> used in non unit test situations where network connection is there, and shouldn't hang up whole suite of tests we are executing.
+-> 	used where a test case more time to execute.
+Ex: 	@Test(timeout = 200)
+	public void badTest(){
+		for(int i=0; i< 10000000; i++)
+			service.addProtein(1);
+	}
+	
+	
+Assertions
+----------
+
+1. assetArrayEquals
+2. assertEquals - checks two objects are equal usign the equal operator.
+3. assertTrue - checks boolean value
+4. assertFalse - checks boolean value
+5. assertNull - checks for null
+6. assertNotNull - checks for not null
+7. assertSame - checks the actual objects are the actual same excat objects 
+8. assertNotSame - - checks the actual objects are not the actual same excat objects 
+9. fail - want to fail the test, cases where we don't have an assert that really expresses what we want to check.
+
+
+Advanced JUnit
+==============
+
+Test Suites
+-----------
+
+-> If we want to run multiple test classes together wihtout having to individually select and run each one, then we can use test suits.
+-> Test suite class is annotated with the RunWith annotation and then tell it use the Suite.class.
+-> This tells the JUnit to run this particualr test suite using the suite runner, which is capable of reading the Suite.SuiteClasses annotation and running any test classes contained within it.
+
+@RunWith(Suite.class)
+@Suite.SuiteClasses(...) 
+						 __________________ Test class	
+						 |	
+Test Suite---------------------------------> Test class
+						 |__________________ Test class
+						 
+
+@RunWith(Suite.class) -> Tells Test Suite class what to run i.e., Suite.class
+@Suite.SuiteClasses(...)  -> tells us what classes that this particular suite is made up of.
+
+we can add multiple classes for multiple tests.
+
+@Suite.SuiteClasses({	HelloJUnitTest.class,	TrackingServiceTests.class}) 
+
+-> Eclipse IDE will use the Suite class runner, which is built into the IDE, when we run it all the tests classes are run. 
+
+Categories
+---------
+
+
+@RunWith(Categories.class)
+@IncludeCategory(A.class)
+														 @Category(A.class)
+								|----------------------> Test Class
+								|						 
+								|						 @Category(A.class)	
+Test Suite --------------------------------------------> Test class
+								|
+								|						 @Category(A.class)
+								|----------------------> Test Method
+
+-> similar to test suites in JUnit. 
+-> Category runner is aspecial kind of suite runner that is able to read category annotations off of test methods or test classes and determine whether or not to run the containing test depending on whether or not the categories matched the categories specified in the include category annotation on the test suite. 
+-> In JUnit we can add a category to any test method by using the category annotation and then specifying the class of the category.
+-> A catrgory class is juts a blank interface only used as a marker, but it can also be a class. 
+-> Inheritance applies to categories, can create category hierarchy.
+
+@RunWith(Categories.class)
+@IncludeCategory(GoodTestsCategory.class)
+@ExcludeCategory(BadTestsCategory.class)
+@Suite.SuiteClasses({
+	HelloJUnitTest.class, 
+	TrackingServiceTests.class
+})
+public class GoodTestsSuite {
+
+}
+
+-> It filters based on what;s included, here we included GoodTestsCategory. So, it runs the tests that belong to this category and eclused the BadTestsCategory.
+
+
+Parameterized Tests
+-------------------
+
+-> developers problem - repetetive test only vary in the input and expected output.This is resolved by parameterized tests. 
+-> We can use parameterized tests to pass a set of inputs and expected outputs into a test class and have our tests run against those nputs and check against the expected results without having to create a test case for each pair. 
+
+@Parameters
+static method{
+	return collection of arrays 1 item for input and 1 item for expected result.
+}
+
+-> create a test class that has a constructor that takes an input and an expected result and sets those values to the fields in the class. 
+-> We create our test that reply on the input and expected results values stored in the fields in our class. 
+
+
+Advanced Assertions
+--------------------
+
+
+AssertThat([value], [matcher statement])
+							|
+							|
+							|
+							-------------> Is, HasItem, Contains String, IsNull, AllOf
+							
+AssertThat annotation -> uses Hamcrest library to give us the ability to use powerful matchers to construct elegant assertions in our tests. 
+
+-> With the AssertThat format, we first specify the value we want to check. Thsi would be the actual value in our normal JUnit test, then we specofy a matcher statement. 
+-> A matcher statement is like all the items in our collection contain a string with the test high in them. 
+-> We can write the matcher statements by combining different matchers together. 
+
+Instead of assert = 3, AssertThat results is 3.
+
+Ex: 
+
+assertEquals(10, service.getTotal());
+assertThat(service.getTotal(), is(10));
+
+Advanced Exception Testing
+--------------------------
+
+						@Rule
+						ExpectedException
+						     |
+							 |
+							 |
+							 |
+						@Test
+						Test Method
+						
+-> We can use the expected exception rule to create a special set of assertions in our tests, which will check that a particular exception is thrown and/or that a specific message is set on the exception. 
+-> To use the expected exception rule, create public field of type expected exception that's annotated witht he rule annotation and then in our test method we call the expect method on the expected exception field to set up an expectation that a particular exception should be thrown or we can call the expect message method to ensure that a particualr message exists on that exception.
+-> We can test the message of the exception. 
+
+
+Rules
+-----
+
+-> JUnit provides more rules and allows us to create own rules that can be used to extend JUnit itself.
+-> Rules are the way to hook into JUnit to add some functionality before or after a test is run. 
+-> Ex: rules allow to specify a before and after annotation pair that goes together whenever we use the rule.
+-> We can call methods on rules and they can hold data, but basic idea is to add some functionality to a test with a simple declaration. 
+
+1. TemporaryFolder
+2. ExtrenalResource
+3. ErrorCollector -> used to collect multiple errors and display them at once instead of immediately failing a test.
+4. Verifier
+5. TestWatcher
+6. TestName
+7. Timeout -> allows to specify a timeout for an entire set of tests in a test class. 
+8. ExpectedException
+9. RuleChain -> lets us chain multiple rules together.
+10. @ClassRule -> works at the class level.
+
+To know more about rules -> junit page 
+
+Theories
+--------
+
+
+@DataPoint
+Static method {
+	@Theory
+	Test method
+
+}
+
+-> similar to parameterized test. 
+-> Theory is a test that holds true under all conditions that meet a set of assumptions. 
+-> We can create a theory by using the theory annotation instead of the test annotation on a test method.
+-> Theory method will use a single parameter of any data type we like and will use that as input for the test.
+-> difference between a theory and parameterized test is that the theory will have the same expected result for all inputs. 
+-> We setup the test data by using the data point annotation that either returns a single piece of data to test or a collection of inpits. 
+
+Ex: 
+
+If we add a positive value to addProtein, the total will always be a positive value.
+
+@DataPoint -> will be one data point, specify one at a time
+@DataPoints -> we can specify a bunch of them at once. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
