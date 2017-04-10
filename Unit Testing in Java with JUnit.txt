@@ -300,22 +300,110 @@ If we add a positive value to addProtein, the total will always be a positive va
 @DataPoint -> will be one data point, specify one at a time
 @DataPoints -> we can specify a bunch of them at once. 
 
+Integrating JUnit
+================
+
+-> The JUnit runner, built into Eclipse is handy for running tests quickly while we're doing development, not an option for automating the running of JUnit tests. 
+
+Alternative runners for auomtation
+
+1. Use a runner class that is built into the framework and run the JUnit tests using this runner directly from some Java code. 	
+   Using this option we can create a Java application and in that application, call the runner to run the tests. 
+   This allows us to have a standard applicationcapable of running our JUnit tests.
+   
+2. Invoke the JUnit runner directly from the command line. We can do this by just invoking the JUnit runner using the Java   
+   command and specifying the test classes we want to run. 
+   
+Console Runner
+--------------
+  
+1st method:
 
 
+public class ConsoleRunner {
+
+	public static void main(String[] args) {
+		
+		JUnitCore junit = new JUnitCore();
+		
+		junit.addListener(new TextListener(System.out));
+		
+		junit.run(TrackingServiceTests.class);
+		
+		
+	}
+
+}
 
 
+JUnitCore junit = new JUnitCore(); 
+
+-> it gives runner that we can run tests with.
+
+junit.addListener(new TextListener(System.out)); 
+
+-> If we just run the tests using the runner(junit), by default it's not going to output anything, but by adding the listener, it's going to put out the output to System.out.
+
+junit.run(TrackingServiceTests.class); -> Test class that we want to run.
+
+-> When we run the above class as Java Application, it gives output. We get Before After stuff that we put in the TrackingServiceTests file, we can also see the failure, where the failure was, why it failed, and summary giving no. of test failed. 
+
+-> This is easier way to get results from our runs.We can use this if we don't want to use the built in runner.
 
 
+Getting JUnit jars
+------------------
+
+-> We don't need above code to run JUnit just using java from command line, but we need the JUnit JARs. 
+-> For command line version of running JUnit, 
+
+download the jars from junit.org -> clikc on download and install -> we need 2 jars
+
+junit.jar
+hamcrest-core.jar
+
+Running from the command line
+-----------------------------
+
+2nd method:
+
+Specify classpath in command line
+
+junit libraries path followed by our jar file
 
 
+-> We need to execute the runner, so we need to fully specify the name of this runner, which will be org.junit.runner.JUnitcore then we need to specify the tests that we want to run(fully qualified name) com.proteinTracker.tests.TrackingServiceTests
 
+java -cp C:\Users\gayathri.guttikonda\Desktop\Gayathri\Libraries\junit\*;C:\Users\gayathri.guttikonda\Desktop\Gayathri\jars\ProteinTracker.jar org.junit.runner.JUnitCore com.proteinTracker.tests.TrackingServiceTests
 
+Run this in command line, we get similar output as in Console runner.
 
+Before 
+After
+---
 
+Tests run : 5, Failures: 4
 
+JUnit and Ant
+-------------
 
+-> JUnit and Ant work together nicely. Ant provides some tasks that we can use to run JUnit tests in an Ant build scipr with minimal effort.
+-> When integrating JUnit into Ant scripts, all the options available for setting up a JUnit task can be a bit overwhelming.
+-> Basic idea is to make it so the JUnit target in Ant depends on both the source code being compiled and the test code being compiled.
 
+Creating an Ant build file
+--------------------------
 
+ProteinTrackerTest -> Right click -> Export -> ant build files -> select ProteinTracker and ProteinTrackerTests projects 
+
+We can see the build.xml files in both the projects.
+
+Running with Ant
+----------------
+
+1. Right click on build.xml -> run as Ant build
+
+2. Right click on build.xml -> run as External Tools Configuration -> Targets -> select the specified test we want to run
 
 
 
