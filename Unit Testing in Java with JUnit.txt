@@ -405,6 +405,286 @@ Running with Ant
 
 2. Right click on build.xml -> run as External Tools Configuration -> Targets -> select the specified test we want to run
 
+JUnit Reporting 
+-------------------
+
+build.xml -> Run as -> External Tools configuration -> New configuration(icon) -> Name it as JUnit report -> targets -> specify only junitreport -> Run 
+
+We get xsl sheet and the build will be successful.
+
+JUnit and Maven
+---------------
+
+-> JUnit also integrates nicely with Maven.
+
+Convert both ProteinTracker and ProteinTrackerTests projects to Maven project 
+
+Project -> Right click -> COnfigure -> COnvert to maven project
+
+In the pom.xml of ProteinTrackerTests, add the 2 dependencies
+
+1. ProteinTracker project dependency.
+2. junit dependency
+
+Now, Run mvn clean install on ProteinTracker
+
+Run ProteinTrackerTests -> Right click -> Run As -> mvn install
+
+BY default JUnit in Maven looks for classes that end with Test, Ex: HelloJUnitTest.java
+
+mvn test -> only HelloJUnitTest.java is picked up and it ran only that.
+
+
+Code Coverage
+-------------
+
+-> Code coverage referes to the measure of how much of your source code is executed by our unit tests or other tests.
+-> Most code coverage tools work by first instrumenting our code with some code that will keep track of what lines of code were executed and what caused them to be executed. 
+-> The tool will run our test against the instrumented code to produce a report of what code was actually executed.
+-> The raw report data is transformed into some readable format that gives you the percentages of code executed and other useful information.
+
+Code coverage tools with JUnit
+
+1. EclEmma -> plugin for Eclipse, allows us to generate code coverage information directly in Eclipse when we are running our 	
+			  tests. 
+		   -> useful in getting immediate feedback on how effective tests are.
+		   
+2. Cobertura -> It's a mature code coverage tool for JUnit that we can use to automate code coverage reports so that we can have 
+			    our build system generate the code coverage reports when it runs our tests. 
+				
+				
+Using EclEmma
+-------------
+
+Install EclEmma from Eclipse market place.
+
+click on ProteinTrackerTests project, Rrun(red and green icon) -> Converage As -> JUnit
+
+We get the coverage results in the JUnit view
+
+ProteinTrackerTests -> 86.6 %
+
+ProteinTracker -> 75%
+
+open TrackingService.java file -> It has some green lines and yellow lines
+
+green lines -> lines executed
+yellow lines -> missed a particular branch
+red lines -> lines not executed at all
+
+
+Cobertura
+---------
+
+cobertura.sourceforge.net -> download cobertura.jar file
+
+Beyond JUnit
+============
+
+COntinous Testing
+-----------------
+
+			Modifying tests -------------------------> running tests
+							<------------------------
+							
+
+-> When developing, we may be modifying sourc and running tests continously, this can be automated by tools and this is called continous testing.
+-> A continous testing tool will monitor our source code and when it detects a change, automatically runs JUnit tests that are associated with that code. 
+-> Infinitest is a continous Testing tool that plugs right into eclipse.
+
+junit.org -> wiki -> JUnit Usage and Idioms - Continous Testing -> IDE plugins http://infinitest.github.com/ 
+
+ drag & drop the icon install to a running Eclipse.
+ 
+ Eclipse Marketplace is opened -> install Infinitest
+ 
+ We get Infinitest is waiting for changes.
+ 
+ 
+ProteinTracker -> make any change in source code Ex: TrackingService.java file, we can see that the test suites running automatically and we get message saying 6 test cases ran at timestamp.
+
+We cna check the console for the test results.
+
+Problems view -> it shows the tests failed, if we click on them it goes to the line where error occured.
+
+-> We can correct those errors and the problems disappear.
+
+Dependencies
+------------
+
+Dealing with dependencies while doing unit testing can be done in 2 ways
+
+1. Stubs
+2. Mocks
+
+Stubs(image from desktop)
+-----
+
+-> Easiest way to deal with dependencies when unit testing is to use a stub.
+-> A stub is basically some code that pretends to be the dependency, SUT - subject under test, is using.
+-> It allows us to test SUT code without having to test any other dependencies the code uses.
+-> In java, we usually create a stub first by creating an interface that represents our dependency and then creating a stub class that implements that interface.
+-> The stub class doesn't do anything but return back dummy data and perhaps store a little bit of information about its state.
+
+Adding a dependency
+-------------------
+
+-> In our example, the dependency item is HistoryItem.java, which is simple DTO no need of creating any kind of stub for this, we can use it as is becoz it just holds data.
+
+So add a dependency in Tracking service
+
+private Notifier notifier;
+
+if(total > goal)
+{
+	boolean sendResult = notifier.send("goal met");
+	String historyMessage = "sent:goal met";
+	if(!sendResult)
+		historyMessage = "send_error : goal met";
+	history.add(new HistoryItem(historyId++, 0, historyMessage, total));
+}
+ 
+ 
+package com.protein;
+
+public interface Notifier {
+
+	boolean send(String message);
+
+}
+
+
+Creating a Stub
+---------------
+
+Notifier message may be written by another team, but in order to use it in our testing, we create a NotifierStub by implementing the interface Notifier.
+
+public class NotifierStub implements Notifier {
+
+	@Override
+	public boolean send(String message) {
+		return true;
+	}
+
+}
+
+-> We can use this stub in our trackign service in order to just pretend like it is hooked up to the real notifier. 
+-> This will allow us to test our code in isolation. 
+
+
+Create a TrackingService constructor and pass Notifier as an argument.
+
+public TrackingService(Notifier notifier) {
+	this.notifier = notifier;
+}
+
+-> We can see that tests are failing since new TrackingService(); is present, so replace it with new TrackingService(new NotifierStub());
+
+Testing with a Stub
+-------------------
+
+-> create a tests case that will demonstrate that the code that is using our stub is working.
+-> We are testing that our history in our class is updated, we're not testing that we actually set the notification becoz we don't have a way to do that with a stub. We can do that using mock.
+-> Now, we are just checing the functionality that history should be updated.
+
+@Test
+public void whenGoalIsMetHistoryIsUpdated() throws InvalidGoalException{
+	service.setGoal(5);
+	service.addProtein(6);
+	
+	HistoryItem result = service.getHistory().get(1);
+	assertEquals("sent:goal met", result.getOperation());
+}
+
+Mocks(image from desktop)
+-----
+ 
+-> Problem with stubs - stubs don't actually test anything.
+-> A stub just allows the SUT to call methods on it and returns dummy data to the SUT.
+-> Need to verify that a SUT is making correct calls out to its dependencies and that it's only makign those calls and no additional calls. 
+-> We can test this behaviour and still isolate our SUT by using a mock instead of a stub.
+-> A mock object will act like the real dependency, but it will also record what calls were made to it.
+-> A mock can also be setu to return specific data under certain conditions.
+-> In our test code after we run our tests, we can check with the mock to verify that what we expected to happen actually happened as a condition of our test.
+
+JMock
+-----
+
+-> JMock is the commonly used mocking framework.
+
+jmock.org -> download jar and set up inside the project.
+
+Using JMock
+-----------
+
+-> Add below jars into buildpath of the ProteinTrackerTests
+
+hamcrest-core.jar
+hamcrest-lirary.jar
+jmock-2.6.0.jar
+
+-> Make sure that the junit is below the hamcrest jars, so that hamcrest are used before junit. Becoz JUnit uses different version of hamcrest jars, it can have problems when we try to do the mock since it is using a later version. 
+
+Mockery context = new Mockery();
+final Notifier mockNotifier = context.mock(Notifier.class);
+
+-> In JMock, we create Mockery to test.
+-> The above code will give us an object that implements Notifier interface that we can control how it responds to calls on it, just like a stub, and we can get information about what has happened to it.
+
+-> We setup some expectations and then we check those expectations.
+
+service = new TrackingService(mockNotifier);
+
+-> Passing mockNotifier instead of the stub.
+
+-> setup a check. There's a language that we can use basically out of these hamcrest matchers.
+
+context.checking(new Expectations() {{
+	oneOf(mockNotifier).send("goal met");
+	will(returnValue(true));
+}});
+
+-> Here, we expect that this Send should be called on mockNotifier with goal met one time. 
+-> If it doesn't happen, when we check our context later when we verify that everything happenend, it's going to fail.
+-> If it happens more than once, it'wll also fail. It's needs to happen exactly one time. 
+-> We can also make it so that this will return a value.
+
+context.assertIsSatisfied(); -> This makes sure that whatever we specified here has actually happened. If we don't put this in, it won't check any of this. So we do have to put this in. Thsi is our assert.
+
+Now the test case passes.
+
+-> If we change the string to 1goal met, We get an error, ExpectationErorr unexpected invocation. We were expecting the wrong string that was being passed in here. If this isn't called or the wrong thing is called, it's going to fail that test and that's the value of using a mock is that the mock is able to check that certain things were called on it.
+-> By using JMock, we can set this up. no need of writing code as we did for NotifierStub. Instead we dynamically creating a mock, we're setting up some expectations on that mock, and then we're asserting those expectations happened. 
+
+Integration testing
+-------------------
+
+-> JUnit can also be used to do integration level testing.
+-> When we do integration testing, we don't care about isolating the SUT from its dependencies. We wnat to make sure the SUT is using its dependencies becoz we want to test that everything works together. 
+-> We can use JUnit to create integration tests, but be careful as we use real databases, this is where before and After help us manage resources.
+
+The SMS Notifier(image from desktop)
+----------------
+
+-> We'll be creating an integration test for our tracking service by creating a real implementation for the notifier interface. 
+-> This implementation will create a send notification through SMS when goal is reached.
+-> We use Java Library that lets us check and send SMS messages through Google Voice.
+-> Our test code will call the tracking service, which will send the SMS message through the SMS notifier. Then our tests code will call Google Voide itself to verify the message was sent.
+-> Have test code cleanup the messages so that the tests can be run again and we don't leave anything behind.
+
+Integration Test Overview
+-------------------------
+
+https://code.google.com/archive/p/google-voice-java/
+
+download jar file
+
+-> This library allows us to do Google voice. We are usign it to send a message.
+-> It will basically fulfill that Notifier dependency in our class and it will really send a real message through Google voice. And this is one of the things that we perhaps want to do in an integration test is to test that it actually really works with the real system.
+-> 
+
+
+		
 
 
 
