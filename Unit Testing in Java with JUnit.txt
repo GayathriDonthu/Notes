@@ -681,7 +681,30 @@ download jar file
 
 -> This library allows us to do Google voice. We are usign it to send a message.
 -> It will basically fulfill that Notifier dependency in our class and it will really send a real message through Google voice. And this is one of the things that we perhaps want to do in an integration test is to test that it actually really works with the real system.
--> 
+-> Need to create a demo Google voice account.
+
+-> notifier.send is called, it dowsn't care whether this is a mock, a stub or the real implementation that sends via SMS. 
+
+Selenium
+--------
+
+-> We can also JUnit to drive other testing frameworks such as Selenium to enable us to do even higher level automated testing. 
+-> JUnit is very useful way to create Selenium tests that can automate a web browser to create tests that operate at the same level as a real user, it gives easy way to execute and organize tests, aeert conditions and see the results.
+-> Selenium is an open source tool for automating web browsers.
+
+Website:
+
+http://docs.seleniumhq.org
+
+Using Selenium
+--------------
+
+docs.seleniumhq.org -> downloads -> slenium server jar -> download the latest version
+
+Download geckodriver.exe
+
+
+
 
 
 		
