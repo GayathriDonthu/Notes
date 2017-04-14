@@ -707,10 +707,21 @@ XMl config
 
 <context: property-placeholder location="app.properties"/>
 
+<property name = "dbUsername" value = "${dbUsername}"></property>
+
 -> This creates a property placeholder configurer that is loaded from the location attribute. 
--> To use these properties, we use (${) to inject that value into our bean. 
--> ${dbusername} is used to pull a property out of our properies file. 
+-> To use these properties, we use ${} to inject that value into our bean. 
+-> ${dbUsername} is used to pull a property out of our properies file. 
+-> create a setter for the dbusername in the bean class which we want to use.
+
+
+XML COnfig injection
+--------------------
+
+-> To inject the value in using annotations instead of hardwiring our XML, remove setter and add @value("${dbUsername}") to the dbUsername variable.
 -> @value annotation is used to load the property , and inject into a field inside of code. 
+-> we can remove the property tag for dbUsername in the applicationContext.xml
+-> Add <context:annotation-config/> 
 
 Java Config
 -----------
@@ -722,11 +733,62 @@ Java Config
 
 -> PropertySourcesPlaceholderConfigurer is a bean that Spring uses to return an instance of this PropertySourcesPlaceholderConfigurer.
 -> This is equivalent to property-placeholder XMl element. So it creates an instance of a bean, to store those values in. 
--> PropertySourcesPlaceholderConfigurer takes all those propertiesthat were loaded in from the property's source location, and puts them in this class and makes them available in the context for our application to use. 
+-> PropertySourcesPlaceholderConfigurer takes all those properties that were loaded in from the property's source location, and puts them in this class and makes them available in the context for our application to use. 
 
 @Value("${dbUsername}") -> used to inject into our code.
 
 
+Summary:
+=========
+
+To use annotations - <context:annotation-config/> 
+
+
+XML Config Properties
+------------------
+
+1. Create app.properties file, give any var=value (dbUsername=mydbUsername)
+2. Open applicationContext.xml file -> Namespaces tab -> check mark the context
+3. Add <context:property-placeholder location="app.properties"/> in applicationContext.xml file
+4. Add the property to customerRepository bean in applicationContext.xml file
+	<property name = "dbUsername" value = "${dbUsername}"></property>
+5. Add below lines in CustomerRepositoryImpl class and print the value.
+	private String dbUsername;
+    
+XML Config with Annotation Properties
+-------------------------------------
+
+1. Add <context:annotation-config/> in applicationContext.xml file
+2. Remove the property tag 
+	<property name = "dbUsername" value = "${dbUsername}"></property>
+3. Add @Value annotation as below to the variable as below
+	@Value("${dbUsername}")
+	private String dbUsername;
+
+Java Config Autowire 
+--------------------
+
+1. Add @ComponentScan("com.spring") to AppConfig class
+2. Remove @Bean("customerRepository"), @Bean("customerService") for CustomerRepository and CustomerService and then Add @Repository("customerRepository") and @Service("customerService") to CustomerRepositoryImpl and CustomerServiceImpl respoectively.
+3. For Constructor Autowired add @Autowired above the variable customerRepository in CustomerServiceImpl
+4. For setter Autowired add @AutoWired above the setter method in CustomerServiceImpl.
+
+Java Config Properties
+----------------------
+
+1. Create app.properties file, give any var=value (dbUsername=mydbUsername)
+2. Add @PropertySource("app.properties") above the AppConfig class.
+3. Add below method in AppCOnfig class
+	@Bean
+	public static PropertySourcesPlaceholderConfigurer getPropertySourcesPlaceholderConfigurer(){
+		return new PropertySourcesPlaceholderConfigurer();
+	}
+4. Add below lines in CustomerRepositoryImpl class and print the value.
+	@Value("${dbUsername}")
+	private String dbUsername;
+	
+
+	
 
 
 
