@@ -1,4 +1,4 @@
-													Introduction to Spring MVC
+														Introduction to Spring MVC
 													==========================
 
 ->  Spring MVC is a web application framework for developing applications using Enterprise Java or J2EE.
@@ -200,7 +200,7 @@ Prerequisites:
 
 1. JAVA ( version >= 5)
 2. Maven ( version = 3)
-3. Spring STS
+3. Spring STS/ Eclipse
 4. Tomcat
 
 
@@ -1372,17 +1372,126 @@ private String activity;
 
 
 
+Overall Summary
+---------------
+
+  Incoming                     Delegate                       Handle
+  Request                      request                        Request
+-------------->   Front      ------------>   Controller    -----------------> Backend
+<-------------- Controller   <---Model-----                <-----------------
+  Return           ^  |       Delegate                      Create
+  response         |  |       rendering                      Model
+				   |  |
+                   |  Model
+                   |  |
+                   |  |
+     Return        View            Render
+	 Control      Template         Response
 
 
 
+1. Dispatcher Servlet -> The entry/ configuration point for the application or Front Controller 
+	
+2. Controller -> Command pattern object that handles the request and determines which view to route to
+
+3. Request Mapping -> The url and request type that our method is tied to.              
+
+4. View Resolver -> used to locate the JSP pages or whatever view technology we are using. 
+			
+5. Servlet-config -> it is a configuration file per DispatcherServlet.
+
+6. POJO -> Plain Old Java Object
+
+7. Bean -> A Spring configured POJO.
+
+Requirements 
+
+Dependencies:
+
+1. spring-webmvc
+2. servlet-api
+3. jstl
+
+Steps:
+
+1. Create Maven project		  
+	Filter with web
+	groupId: org.apache.maven.archetypes
+	ArtifactId: maven-archetype-webapp
+	
+Spring MVC Configuration
+------------------------
+
+1. Configure web.xml
+2. Configure servlet-config.xml
+3. Add Controller
+4. Add View
+
+For views, we put jsp pages or any other view technology under the WEB-INF directory, reasons are:
+
+1. Security
+2. Control User Experience
+3. bookmarking/deeplinking
+
+We do this by using InternalResourceViewResolver -  It says " when I ask for this jsp page, I am goingto find it in this directory and serve it up to them"
+
+Controllers
+-----------
+
+1. Annotation based
+	-> @Controller
+2. Named whatever we want
+	-> typically named around business domain.
+3. Path set using annotation.
+	-> @RequestMapping
+
+Web.xml
+-------
+
+1. Add Servlet 3.0 deployment descriptor in web.xml
+
+2. Create Dispatcher servlet(ctrl+space)
+	<!-- The front controller of this Spring Web application, responsible for handling all application requests -->
+	<servlet>
+		<servlet-name>springDispatcherServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB_INF/config/servlet-config.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<!-- Map all requests to the DispatcherServlet for handling -->
+	<servlet-mapping>
+		<servlet-name>springDispatcherServlet</servlet-name>
+		<url-pattern>*.html</url-pattern>
+	</servlet-mapping>
+
+servlet-config.xml
+-------------------
+
+1. WEB_INF -> config -> New Spring Bean COnfiguration file -> servlet-config.xml
+2. servlet-config.xml -> Namespaces tab -> select context and mvc
+3. Add <mvc:annotation-driven/>
+4. Add <context:component-scan base-package="com.springMVC.controller"></context:component-scan>
+
+Controller
+----------
+
+1. src/main/java -> HelloCOntroller
 
 
-
-
-
-
-
-
-
-
+@Controller
+public class HelloController {
+	
+	@RequestMapping(value = "/greeting")
+	public String sayHello (Model model) {
+		
+		model.addAttribute("greeting", "Hello Gayathri");
+		
+		return "hello";
+	}
+	
+}
 

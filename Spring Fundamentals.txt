@@ -293,7 +293,7 @@ CustomerService service = appContext.getBean("CustomerService", CustomerService.
 -> appContext can be used to find the bean. We are using interface instead of concrete class so that we can swap out the implementations behind the scenes without having to recomiple our application. 
 -> getBean(String T, class<T> arg) , we are passing the class type also since it would remove the typecasting. 
 
-3 ways we can read an spring config XML file(Interfaces)
+Spring Containers - 3 ways we can read a spring config XML file(Interfaces)
 1. BeanFactory 
 2. ApplicationContext
 3. WebApplicationContext
