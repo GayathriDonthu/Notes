@@ -1,0 +1,112 @@
+															JSON
+															====
+															
+															
+JSON APIs
+---------
+
+1. Jackson
+2. GSON
+3. Boon
+4. Json.org
+5. JSONP - JSR 353 compliant JSON Parser
+6. Simple JSON														
+
+JSON - Data exchange format between browsers and web servers becoz the browsers can parse JSON and into JavaScript objects natively.
+
+-> On the server, however, JSON needs to be parsed and generated using JSON APIs. 
+
+Jackson
+-------
+
+Contains 2 JSON generators
+
+1. Jackson objectMapper - which can generate JSON from custom java objects, or from a specific tree structure.(tree model)
+2. Jackson JsonGenerator - which can generate JSON one token at a time.
+
+GSON
+----
+
+-> GSON is a Java JSON API from Google. That is where the G in GSON comes from. GSON is reasonably flexible, but Jackson was faster than GSON. 
+
+GSON contains 3 Java JSON parsers:
+
+1. The Gson class -  which can parse JSON into custom Java objects.
+2. The GSON JsonReader - which is GSON's pull JSON parser - parsing JSON one token at a time.
+3. The GSON JsonParser  - which can parse JSON into a tree structure of GSON specific Java objects.
+
+GSON also contains a JSON generator:
+
+1. The Gson class which can generate JSON from custom Java classes.
+
+Boon
+----
+
+-> Boon is fastest of all.
+-> Boon is being used as the standard JSON API in Groovy. 
+-> Boon's API is very similar to Jackson's, But - Boon is more than just a Java JSON API. Boon is a general purpose toolkit for working with data easily. This is handy e.g. inside REST services, file processing apps etc.
+
+Boon contains the following Java JSON parsers:
+
+1. The Boon ObjectMapper which can parse JSON into custom objects or Java Maps
+
+-> Like in Jackson, the Boon ObjectMapper can also be used to generate JSON from custom Java objects.
+
+JSON.org
+--------
+
+-> JSON.org also has an open source Java JSON API. 
+-> This was one of the first Java JSON APIs available out there. It is reasonably easy to use, but not as flexible or fast as others.
+
+JSONP
+-----
+
+-> JSONP is a JSR 353 compliant JSON API for Java. 
+-> Being JSR 353 compliant means, that if you use the standard APIs it should be possible to exchange the JSONP implementation with another API in the future, without breaking your code.
+
+Jackson Intsallation
+--------------------
+
+The Java JSON API called Jackson consists of one core JAR file (project) and two other JAR files that use the core JAR file. The three JAR files (projects) in the Jackson JSON API are:
+
+Jackson Core
+Jackson Annotations
+Jackson Databind
+These projects use each other in that sequence too. Jackson Annotation uses the Jackson Core features, and the Jackson Databind uses Jackson Annotation.
+
+In order to "install" Jackson in your Java application you need to add these JAR files to the classpath of your application. 
+
+Adding the JAR Files to Your Classpath :
+--------------------------------------
+
+-> In order to use any of t-he Jackson projects (JAR files) we must add the corresponding JAR file to the classpath of your application. We can do so in several different ways.
+-> Before you even start adding the Jackson JAR files to your classpath, you need to decide what version of the Jackson JSON API to use. 
+-> To do so, go to the Jackson website and see what versions are available.
+-> If you are not already using a specific version of Jackson in your project, use the latest stable version. 
+
+Adding Jackson as Maven Dependencies
+------------------------------------
+
+If your project uses Maven to build (and resolve + download dependencies), you need to add Jackson as a dependency to your project's POM file. Here is how Jackson as Maven dependencies look:
+
+<dependency>
+  <groupId>com.fasterxml.jackson.core</groupId>
+  <artifactId>jackson-core</artifactId>
+  <version>2.5.3</version>
+</dependency>
+
+<dependency>
+  <groupId>com.fasterxml.jackson.core</groupId>
+  <artifactId>jackson-annotations</artifactId>
+  <version>2.5.3</version>
+</dependency>
+
+<dependency>
+  <groupId>com.fasterxml.jackson.core</groupId>
+  <artifactId>jackson-databind</artifactId>
+  <version>2.5.3</version>
+</dependency>
+
+
+-> both jackson-annotations and jackson-databind have "transitive dependencies" to jackson-core (and jackson-databind to jackson-annotations). 
+
