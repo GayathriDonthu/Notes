@@ -1433,7 +1433,7 @@ For views, we put jsp pages or any other view technology under the WEB-INF direc
 2. Control User Experience
 3. bookmarking/deeplinking
 
-We do this by using InternalResourceViewResolver -  It says " when I ask for this jsp page, I am goingto find it in this directory and serve it up to them"
+We do this by using InternalResourceViewResolver -  It says " when I ask for this jsp page, I am going to find it in this directory and serve it up to them"
 
 Controllers
 -----------
@@ -1494,4 +1494,30 @@ public class HelloController {
 	}
 	
 }
+
+Model -> hashmap
+
+view
+----
+
+-> WEB-INF -> jsps -> create a jsp file -> hello.jsp
+
+${greeting} -> greeting is the key value in the model. 
+
+-> Configure the bean hello.jsp in servlet-config.xml
+
+<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+	<property name = "prefix" value = "/WEB-INF/jsp/"></property>
+	<property name = "suffix" value = ".jsp"></property>
+</bean>
+
+Run the Application 
+-------------------
+
+Run the project through tomcat 
+
+Browser -> localhost:8080/FitnessTracker/greeting.html
+
+Output: Hello Gayathri
+
 
