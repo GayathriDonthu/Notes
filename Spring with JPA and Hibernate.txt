@@ -1,0 +1,114 @@
+									Spring with JPA and Hibernate
+									=============================
+									
+What is JPA?
+------------
+-> JPA - Java Persistence API, focused on Object Relational Mapping - ORM.
+-> Originally JPA was part of EJB, but later available on its own.
+-> Started as Hibernate and then extracted a standard interface.
+-> It is ORM tool - how we map Object Oriented language Java to our replational database.
+-> It is POJO based. JPA focuses on good object oriented design.
+	1. XML configuration
+	2. Annotation based configuration.
+-> Built around patterns and best practices 
+	1. Helps keep our code OO.
+	2. Pluggable persistence providers
+		- Hibernate
+		- Toplink (before Java, developed by Smalltalk developers)
+		- EclipseLink
+		- OpenJPA
+		
+History of JPA
+--------------
+
+Hibernate 1.0 -> 2001 by Gavin King 
+JDO 1.0 -> 2002 - focused on storing more than just relational databases like XML or flat files.
+JPA 1.0 -> 2006 - Entity beans are heavy weight and complicated, they had to be used on application server instead of a 
+			      lightweight Tomcat. Many third party features are included in JPA. Hibernate and TopLink became implementations of JPA.
+JPA 2.0 -> 2009 - address features that weren't present in popular ORM vendors
+Hibernate 3.0 -> 2010 -annotation based and is an implementation of JPA 2.0 specification.
+
+-> Now, JBOSS acquired Hibernate, open source implementation, can be used on any container, doesn't have to be used with JBoss.
+
+Problem
+--------
+
+Why we need to use HIbernate or JPA?
+
+-> Developers don't always make good DBA's. - like not understanding foreign key constraints or how to best represent what they are trying to do in a relational database.
+-> Data model doesn't line up with Object model.
+-> Configuration is better with JPA, but still could be better..
+	1. Transactions 
+	2. Testing
+	3. Datasource configuration
+	
+	Thease are solved by Spring and JPA.
+	
+-> Business focus
+	Ex: we may have 40 lines of code using JDBC to retrieve details of car based on Id and assignining it to an object, but business focus is only 2 lines. There is finally block which closes connections, if not we run out of connections, out of memory or heapspace or permgen.
+	
+	
+The Solution
+------------
+
+-> JPA removes boiler plate code.
+-> Helps deveolopers to build objects and JPA bridges the gap between relational database and OO code.
+-> Spring handles the configuration and transactions.
+-> Code can focus on testing.
+-> Transactions are transparent to the developer.
+-> Annotation based development.
+
+Business focus 
+
+The huge JDBC code turns into below code, 
+
+public Car find(Integer p){
+	Car car = getEntiryManager().find(Car.class, p);
+	
+	return car;
+}
+
+Scaffold application
+====================
+
+Application build in SPring MVC course.
+
+Prerequisites
+-------------
+
+1. Java 7 or greater
+2. Maven 3.x or greater
+3. Spring STS
+4. Tomcat 7 or greater
+
+Requirement:
+
+Everytime we post to the fitnessTracker page, it just throws away the minutes added at the end of that request response life cycle. We need to flush out the rest of the way using JPA and Hibernate and Spring to configure JPA and Hibernate.
+
+-> Bootstrap and Jetstrap were included in the downloaded application by Hansen.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
