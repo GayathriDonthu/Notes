@@ -87,16 +87,99 @@ Everytime we post to the fitnessTracker page, it just throws away the minutes ad
 
 -> Bootstrap and Jetstrap were included in the downloaded application by Hansen.
 
+persistence.xml
+---------------
+
+JPA without spring, we specify
+
+1. datasource
+2. allowed operations
+3. caching
+
+why spring?
+
+-> Can override settings per environment
+-> easier to test
+-> inject into other resources
+
+Using spring also we need empty persistence.xml file
+-> src/main/resouces/META-INF/persistence.xml
+
+Maven will keep implicitly find places anything inside te META-INF directory
+
+persistence.xml
+
+<persistence xmlnamespace="http://java.sun.com/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence_2_0.xsd"
+	version="3.0">
+	
+	<persstence-unit name="punit">
+		
+	</persstence-unit>
+	
+</persistence>
 
 
+web.xml
+-------
+
+-> for JPA we use 
+
+1. listener inside web.xml
+2. context-param
+	-> name - contextConfigLocation
+	-> value - classpath:/jpaContext.xml
+
+classpath:/jpaContext.xml -> tells where on classpath to find this value, it will be at the root.
+
+<listener>
+	<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+</listener>
+
+-> When our application starts up, the listener class is actually triggered by the container to start up the above listener. 
+-> Then this looks for a context parmeter named contextConfigLocation, which in turn looks for classpath for a file named jpaContext.xml
+
+jpaContext.xml
+--------------
+
+-> used in place of the persistence.xml
+-> so all those we place inside jpaContext.xml are loaded by spring
+-> jpaContext.xml ( just a standard naming convention)
+-> Loaded from classpath, configured in web.xml using context loader listener.
+-> Once loaded, place it in src/main/resources/jpaContext.xml
+-> Contains:
+	1. EntityManagerFactory
+		-> JPA vendor
+		-> JPA Properties
+		
+	2. Transaction Manager
+	3. Annotation Configuration
+	4. Datasource configuration or lookup
 
 
+src/main/resources/ -> New -> spring bean configuration file -> jpaContext.xml
+
+Under namespaces tab, check the context and tx
+
+<context:annotation-config/> -> tells spring that configure rest of the application usign annotation. scan classpath and items inside the context file, inject into other beans that we have created.
+
+bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/> -> tells spring to use the persistent context annotation.
+
+EntityManagerFactory
+--------------------
+
+-> used to start up JPA and Hibernate inside of the application.
+-> CLass "LocalContainerEntityManagerFactoryBean" is present inside that,
+	1. located inside spring-orm.jar
+	2. references our persistence unit.
+	3. Injected datasource if one isn't defined in the persistence unit.
+	4. defines what vendor(JPA provider) we are using.
+	5. options to specify vendor specific JPA properties.
 
 
-
-
-
-
+Transaction Manager
+------------------
 
 
 
