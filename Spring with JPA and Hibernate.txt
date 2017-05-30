@@ -177,17 +177,148 @@ EntityManagerFactory
 	4. defines what vendor(JPA provider) we are using.
 	5. options to specify vendor specific JPA properties.
 
+<property name="showSql" value="true"/> 
+	-> it shows the sql that it's executing behind the scenes as we're running Hibernate.
+	
+<property name="jpaPropertyMap">
+	-> This is where we define specific JPA vendor properties, so these are ones specific to Hibernate.	
+	
+<map> 
+	-> similar to HashMap, like name and value pair.
+	
+hibernate.dialect
+	-> Hibernate has specific dialects that we choose for each vendor of database that we're using. Sometimes, dialect per version.
+	
+hibernate.hbm2ddl.auto
+	-> This is for interacting with the ddl that our database needs to work.
+	
+hibernate.format_sql
+	-> debugging purpose
+	
+These properties are needed for JPA to be setup with our LocalContainerEntityManagerFactoryBean.
 
 Transaction Manager
 ------------------
 
+-> With JPA and hibernate, people work within a transaction but they don't create and start transactions ans roll them back on their own.
+-> We have to wrap a trasaction manager around them.
+
+1. JPATransactionManager
+	-> takes EntityManagerFactory as a ref
+	
+2. Annotation Driven
+
+3. Comes from spring-tx.jar
 
 
+<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+	<property name="entityManagerFactory" ref="entityManagerFactory"/>
+</bean>
 
+-> Makes transaction manager available for us.
 
+<tx:annotation-driven transaction-manager="transactionManager"/>
 
+-> To configure transactions
 
+Datasource
+----------
 
+1. DriverManagerDataSource
+	-> spring-jdbc.jar
+	
+2. driverClassName
+	-> org.h2.Driver
+	
+3. url
+	-> jdbc:h2:~/test
+	
+4. username
+	-> sa
+	
+5. password
+	-> sa
+
+Overview of JPA and creating first entity
+=========================================
+
+JPA - JPA is an interface for a specific implementation of an ORM.
+ORM - created to bridge the gap between object-oriented languages such as Java and various relations databases.
+Relational database - don't have the concept of object oriented techniques. There are things we can do in our design to represent these features with the use of JPA.
+
+What is JPA?
+------------
+
+-> It's just a specification, not an actual implementation of code.
+-> JPA is an interface to ORM and ORM is an implementation of JPA.
+-> We can use annotations/ xml files.
+-> JPA is a specification for accessing, persisting and managing data between Java objects or classes and a relational database.
+-> JPA is not SQL as it will deal with objects similar to database tables.
+-> JPA uses JPQL - Java Persistence Query Language and it is dealing with POJOs and Java objects.
+-> Everything inside of JPA is centered around the object ad around the specific POJO.
+
+JPA Providers
+-------------
+
+Since JPA is just and interface for a specific provider, there are quite a few implementations.
+
+1. BA2
+2. DataNucleus
+3. EclipseLink / Toplink - Hibernate and JPA have lots of concepts from toplink
+4. ObjectDB
+5. OpenJPA - alternative to hibernate or a competitor to Hibernate
+6. Versant 
+7. Hibernate
+
+Some of them also support data warehousing like OLAP operations. Choose the provider based on business. Hibernate is most preferred.
+
+Hibernate History
+-----------------
+
+-> Previosuly in EJBs , container-manage persistence technique was present - It drove away OO principles, hence Hibernate came
+-> Sun introduced JPA , similar to Hibernate in replacement of container-manage persistence.
+
+JPA makes easier t switch between providers.
+
+What makes up an Entity
+-----------------------
+
+-> We need to add 2 things to POJO to make it an entity that Hibernate and JPA will work with.
+
+1. Add @Entity annotation - class level annotation, signifies JPA that we are going to persist and use against the database.
+
+2. Add @Id annotation - usually use long as not to run out of space.
+
+JPA/Hibernate Configuration
+----------------------------
+
+<property name="jpaPropertyMap">
+	<map>
+		<entry key="hibernate.dialect" value="  org.hibernate.dialect.H2Dialect"/>
+		<entry key="hibernate.hbm2ddl.auto" value="none"/>
+		<entry key="hibernate.format_sql" value="true"/>
+	</map>
+</property>
+
+The above code is configured in the LocalContainerEntityManagerFactoryBean, so that's where the jpaPropertyMap is located at.
+
+1. hibernate.dialect -> is what type of vendor of database
+2. hibernate.format_sql -> it means when it dumps it out in our log statements it's going to be in formatted way.
+3. hbm2ddl.auto  
+	-> create  - It will create database for us if we have it sent here. We need to have schema defined, but it will take all of our entities and create 
+				 them in the database for us.	
+	-> create-drop - It will create it when we start up our application and drop it when we are done with our application.
+	-> update - update any fields that have changed, doesn't delete if anything is already added to our record.
+	-> validate - run in production when we are finished working with application. It will go through and verify that what we have in database structure lines up with what our object says it is.
+	-> none
+	
+	
+Entity and JPA config
+---------------------
+
+@Entity
+@Id
+@GeneratedValue - it says that it's going to use the field whatever the column type is of our Id column and our database, uses an auto incrementing field. It says, id is an auto-incrementing field, it is the primary key and since it is an entity, I want Hibernate and JPA to be tracking me against the database.
 
 
 
