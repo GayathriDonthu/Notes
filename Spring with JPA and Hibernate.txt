@@ -73,6 +73,10 @@ Scaffold application
 
 Application build in SPring MVC course.
 
+https://github.com/bh5k/spring_mvc_base
+
+
+
 Prerequisites
 -------------
 
@@ -318,11 +322,79 @@ Entity and JPA config
 
 @Entity
 @Id
-@GeneratedValue - it says that it's going to use the field whatever the column type is of our Id column and our database, uses an auto incrementing field. It says, id is an auto-incrementing field, it is the primary key and since it is an entity, I want Hibernate and JPA to be tracking me against the database.
+@GeneratedValue - it says that it's going to use the field whatever the column type is of our Id column and our database, uses an auto incrementing field. It 
+				  says, id is an auto-incrementing field, it is the primary key and since it is an entity, I want Hibernate and JPA to be tracking me against the database.
+				  
+<entry key="hibernate.hbm2ddl.auto" value="create"/> -> creates tables and schema
+				  
+JPA Annotations and how to use them
+===================================
 
+@Entity - Declares the object as an entity and now the database will be aware of it.
 
+@Table - Describes more specific details about the database, i.e., name, schema
 
+@Id - Identifier attribute for a simple primary key type.
 
+@GeneratedValue - used in conjunction with Id
+	1. IDENTITY - used to specify a database identity column. 
+					-> id is not available when returned to user after the transaction is committed.
+					-> It is slower as that cannot pre-allocate Id's for inserts.
+					-> Ex: autom incrementing field in mysql
+					-> simpler to use
+	2. AUTO - Automatically chooses an implementation based on underlying database.			
+		      -> oracle don't have auto incrementing field but has sequence field
+			  
+	3. SEQUENCE - Works with a sequence(if db supports), @SequenceGenerator
+				  -> Ex: MySQL doesn't support sequence, but Oracle, DB2 or other vendors have sequences.
+				  -> we plug in the sequence using @SequenceGenerator tag annotation, it will tie that into that underlying implementation.
+				  
+	4. TABLE - specifies that a database will use an identity table and column to ensure uniqueness, @TableGenerator
+			   -> most portable options is Table
+			   -> Table will work with all implementations of databases
+			   -> It uses an identity table and column to ensure uniqueness and we also have to tie this in using the TableGenerator annotation.
+	
+Column Annotation
+-----------------
 
+-> Till now we had columns that we hadn't specified a name yet, but they were still mapped.
+-> JPA will look the name and the type of column that the object is and make assumptions about what to map it as.
 
+@Column -> allows us to override column names and column mappings and specific attributes like below
+
+- columnDefinition
+- insertable
+- length
+- name
+- nullable
+- precision
+- scale
+- table
+- unique
+- updatable
+
+How to use Annotations
+----------------------
+
+1. Get our entity manager injected into our code using @PersistenceContext
+
+   @PersistenceContext - grabs an instance of our Entity Manager Factory and injects it into our code. It is called persistenceContext instead of EntityManager 
+						 is because it is pertaining to a specific persistenceUnit or persistenceContext. Since, we created Entity manager and tied it to a persistence unit so it's not called as @EntityManager.
+					  
+2. @Service - It ties sequence of events going to our database and our repository tier.
+			- service is where our business logic located at.
+			
+3. @Repository - spring  DAO object, database interactions occurs.
+
+4. Transactional - annotation needed to tie whole thing together to start using
+				 - used to start a transaction
+				 - We have to have a transaction in process to interact with our database.
+   
+
+<context:annotation-config/> should be followed by
+<context:component-scan base-package=""/>
+
+JPA will not save until we do flush.
+
+@Transactional should be added to start a transaction.
 
