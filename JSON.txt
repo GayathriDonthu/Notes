@@ -385,5 +385,8 @@ Read + Write Annotations
 
 @JsonIgnoreType -> The @JsonIgnoreType Jackson annotation is used to mark a whole type (class) to be ignored everywhere that type is used.
 
+@JsonAutoDetect -> @JsonAutoDetect is used to tell Jackson to include properties which are not public, both when reading and writing objects. 
+
+				-> The JsonAutoDetect.Visibility class contains constants matching the visibility levels in Java, meaning ANY, DEFAULT, NON_PRIVATE, NONE, PROTECTED_AND_PRIVATE and PUBLIC_ONLY.
 
 
