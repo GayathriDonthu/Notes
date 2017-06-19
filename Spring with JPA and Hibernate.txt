@@ -91,6 +91,50 @@ Everytime we post to the fitnessTracker page, it just throws away the minutes ad
 
 -> Bootstrap and Jetstrap were included in the downloaded application by Hansen.
 
+
+
+Architecture walkthrough of a Spring JPA/Hibernate Application
+==============================================================
+
+Configuration of Spring and JPA development 
+===========================================
+
+Maven dependencies required for JPA
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.195</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>5.2.10.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.transaction</groupId>
+			<artifactId>jta</artifactId>
+			<version>1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>4.3.8.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>4.3.8.RELEASE</version>
+		</dependency>
+		
+
+1. h2 -> to connect to database
+2. hibernate-entitymanager ->is actual provider of JPA, includes JPA 2.0 interfaces as a transitive dependency.
+3. jta -> used for implementing transactions in our application, we can use different JTA providers based on app server that we are using.
+4. spring-jdbc -> contains libraries to get a data source and connect using the h2 JARs.
+5. spring-orm -> provides the interface for us to configure JPA within the spring.
+
+
 persistence.xml
 ---------------
 
