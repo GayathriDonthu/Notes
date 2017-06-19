@@ -1,5 +1,7 @@
 															JSON
 															====
+
+http://tutorials.jenkov.com/java-json/index.html
 															
 															
 JSON APIs
@@ -79,10 +81,7 @@ In order to "install" Jackson in your Java application you need to add these JAR
 Adding the JAR Files to Your Classpath :
 --------------------------------------
 
--> In order to use any of t-he Jackson projects (JAR files) we must add the corresponding JAR file to the classpath of your application. We can do so in several different ways.
--> Before you even start adding the Jackson JAR files to your classpath, you need to decide what version of the Jackson JSON API to use. 
--> To do so, go to the Jackson website and see what versions are available.
--> If you are not already using a specific version of Jackson in your project, use the latest stable version. 
+-> In order to use any of t-he Jackson projects (JAR files) we must add the corresponding JAR file to the classpath of your application.
 
 Adding Jackson as Maven Dependencies
 ------------------------------------
@@ -109,4 +108,282 @@ If your project uses Maven to build (and resolve + download dependencies), you n
 
 
 -> both jackson-annotations and jackson-databind have "transitive dependencies" to jackson-core (and jackson-databind to jackson-annotations). 
+
+Jackson - ObjectMapper
+-----------------------
+
+-> Jackson's objectMapper can parse a JSON from a string, stream or file,  and create an object graph representing the parsed JSON - simplest way
+
+Jackson Databind
+----------------
+
+-> The ObjectMapper is located in the Jackson Databind project, so your application will need that project on its classpath to work. 
+
+Jackson ObjectMapper Example
+=============================
+
+public class Car {
+
+	public String brand;
+	public int doors;
+
+}
+
+
+package com.jackson.objectMapper;
+
+import java.io.IOException;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+public class ObjectMapperDemo {
+
+	public static void main(String[] args) {
+
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		String carJSON = "{	\"brand\" : \"Mercedes\", \"doors\" : 5	}";
+
+		try {
+			Car car = objectMapper.readValue(carJSON, Car.class);
+
+			System.out.println("car.brand = " + car.brand);
+			System.out.println("car doors = " + car.doors);
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+}
+
+Jackson Annotations
+-------------------
+
+-> Jackson Annotations are used to modify how Jackson reads and writes JSON to and from Java objects.
+
+Jackson JSON Tree Model
+-----------------------
+
+-> Jackson has a built-in tree model which can be used to represent a JSON object. Jackson's tree model is useful if you don't know how the JSON you will receive looks, or if you for some reason cannot create a class to represent it.
+-> The Jackson tree model is represented by the JsonNode class. 
+->Jackson ObjectMapper is used to parse JSON into a JsonNode tree model
+
+package com.jackson.treeModel;
+
+import java.io.IOException;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+public class JacksonTreeModel {
+
+	public static void main(String[] args) {
+
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		String carJSON = "{ \"brand\" : \"Mercedes\", \"doors\" : 5}";
+
+		try {
+			JsonNode node = objectMapper.readValue(carJSON, JsonNode.class);
+
+			JsonNode brandNode = node.get("brand");
+			String brand = brandNode.asText();
+			System.out.println("brand = " + brand);
+
+			JsonNode doorsNode = node.get("doors");
+			int doors = doorsNode.asInt();
+			System.out.println("doors = " + doors);
+
+		} catch (IOException e) {
+
+		}
+
+	}
+}
+
+Jackson JsonNode class
+
+-> Once we have parsed your JSON into a JsonNode (or a tree of JsonNode instances) you can navigate the JsonNode tree model as shown in above example.
+
+Reading JSON From a String
+--------------------------
+
+ObjectMapper objectMapper = new ObjectMapper();
+String carJSON = "{	\"brand\" : \"Mercedes\", \"doors\" : 5	}";
+Car car = objectMapper.readValue(carJSON, Car.class);
+
+Reading JSON From a Reader
+--------------------------
+
+ObjectMapper objectMapper = new ObjectMapper();
+String carJson ="{ \"brand\" : \"Mercedes\", \"doors\" : 4 }";
+Reader reader = new StringReader(carJson);
+Car car = objectMapper.readValue(reader, Car.class);
+
+Reading JSON From a File
+------------------------
+
+ObjectMapper objectMapper = new ObjectMapper();
+File file = new File("data/car.json");
+Car car = objectMapper.readValue(file, Car.class);
+
+Reading JSON From a URL
+-----------------------
+
+ObjectMapper objectMapper = new ObjectMapper();
+URL url = new URL("file:data/car.json");
+Car car = objectMapper.readValue(url, Car.class);
+
+Reading JSON From an InputStream
+--------------------------------
+
+ObjectMapper objectMapper = new ObjectMapper();
+InputStream input = new FileInputStream("data/car.json");
+Car car = objectMapper.readValue(input, Car.class);
+
+Reading JSON From a Byte Array
+------------------------------
+
+ObjectMapper objectMapper = new ObjectMapper();
+String carJson = "{ \"brand\" : \"Mercedes\", \"doors\" : 5 }";
+byte[] bytes = carJson.getBytes("UTF-8");
+Car car = objectMapper.readValue(bytes, Car.class);
+
+Generate JSON From Objects
+==========================
+
+The Jackson ObjectMapper can also be used to generate JSON from an object by using one of the methods:
+
+1. writeValue()
+2. writeValueAsString()
+3. writeValueAsBytes()
+
+ObjectMapper objectMapper = new ObjectMapper();
+
+Car car = new Car();
+car.brand = "BMW";
+car.doors = 4;
+
+objectMapper.writeValue(
+    new FileOutputStream("data/output-2.json"), car);
+
+The ObjectMapper's writeValueAsString() and writeValueAsBytes() both generate JSON from an object, and return the generated JSON as a String or as a byte array. 
+
+Jackson - Json Parser
+---------------------
+
+-> The Jackson JsonParser class is a low level JSON parser. It is similar to the Java StAX parser for XML, except the JsonParser parses JSON and not XML.
+-> The Jackson JsonParser works at a lower level than the Jackson ObjectMapper. This makes the JsonParser faster than the ObjectMapper, but also more cumbersome to work with.
+
+Creating a JsonParser
+---------------------
+
+-> To create Json Parser, JsonFactory is needed.
+-> Jsonfactory is used to create JsonParser instances. 
+-> The JsonFactory class contains several createParser() methods, each taking a different JSON source as parameter.
+-> We can also pass a Reader, InputStream, URL, byte array or char array to the createParser() method.
+
+Parsing JSON with JsonParser
+----------------------------
+
+-> The way the JsonParser works is by breaking the JSON up into a sequence of tokens which you can iterate one by one.
+-> As long as the isClosed() method of the JsonParser returns false, there are still more tokens in the JSON source.
+-> JsonToken is obtained using the nextToken() of the JsonParser.
+-> The token types are represented by a set of constants in the JsonToken class
+
+JsonToken = START_OBJECT
+JsonToken = FIELD_NAME
+JsonToken = VALUE_STRING
+JsonToken = FIELD_NAME
+JsonToken = VALUE_NUMBER_INT
+JsonToken = END_OBJECT
+JsonToken = null
+
+-> We can use these constants to find out what type of token the current JsonToken is. By using equals() method.
+
+-> The getCurrentName() method of the JsonParser returns the current field name, if the token pointed to is a field name.
+
+String carJson =
+        "{ \"brand\" : \"Mercedes\", \"doors\" : 5 }";
+
+JsonFactory factory = new JsonFactory();
+JsonParser  parser  = factory.createParser(carJson);
+
+Car car = new Car();
+while(!parser.isClosed()){
+    JsonToken jsonToken = parser.nextToken();
+
+    if(JsonToken.FIELD_NAME.equals(jsonToken)){
+        String fieldName = parser.getCurrentName();
+        System.out.println(fieldName);
+
+        jsonToken = parser.nextToken();
+
+        if("brand".equals(fieldName)){
+            car.brand = parser.getValueAsString();
+        } else if ("doors".equals(fieldName)){
+            car.doors = parser.getValueAsInt();
+        }
+    }
+}
+
+System.out.println("car.brand = " + car.brand);
+System.out.println("car.doors = " + car.doors);
+
+Jackson - JsonGenerator
+-----------------------
+
+The Jackson JsonGenerator is used to generate JSON from Java objects 
+
+Creating a JsonGenerator
+------------------------
+
+-> To create Json Generator, JsonFactory instance is needed.
+-> create the JsonGenerator using the createGenerator() method of the JsonFactory.
+
+JsonFactory factory = new JsonFactory();
+
+JsonGenerator generator = factory.createGenerator(
+    new File("data/output.json"), JsonEncoding.UTF8);
+	
+-> The first parameter of the createGenerator() method is the destination of the generated JSON.
+-> The createGenerator() method is overloaded, so there are other versions of the createGenerator() method which takes e.g an OutputStream etc.
+-> The second parameter of the createGenerator() method is the character encoding to use when generating the JSON.
+
+Generating JSON With The JsonGenerator
+--------------------------------------
+
+-> The JsonGenerator contains a set of write...() methods which you can use to write the various parts of a JSON object. 
+
+-> writeStartObject() which writes a { to the output.
+-> writeStringField() which writes the brand field name + value to the output.
+-> writeEndObject() is called which writes a } to the output.
+
+Closing the JsonGenerator
+-------------------------
+
+generator.close();
+
+-> Closing the JsonGenerator will also close the file or OutputStream etc. whereto the JsonGenerator writes the generated JSON.
+
+Jackson Annotations
+-------------------
+
+-> Java annotations used to influence how JSON is read into objects, or what JSON is generated from the objects. 
+
+Read + Write Annotations
+------------------------
+
+@JsonIgnore ->  @JsonIgnore is used to tell Jackson to ignore a certain property (field) of a Java object. 
+
+-> The property is ignored both when reading JSON into Java objects, and when writing Java objects into JSON. 
+
+@JsonIgnoreProperties -> The @JsonIgnoreProperties Jackson annotation is used to specify a list of properties of a class to ignore. 
+
+@JsonIgnoreType -> The @JsonIgnoreType Jackson annotation is used to mark a whole type (class) to be ignored everywhere that type is used.
+
+
 
