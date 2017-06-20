@@ -377,16 +377,53 @@ Jackson Annotations
 Read + Write Annotations
 ------------------------
 
-@JsonIgnore ->  @JsonIgnore is used to tell Jackson to ignore a certain property (field) of a Java object. 
+1. @JsonIgnore ->  @JsonIgnore is used to tell Jackson to ignore a certain property (field) of a Java object. 
+			   ->  The property is ignored both when reading JSON into Java objects, and when writing Java objects into JSON. 
 
--> The property is ignored both when reading JSON into Java objects, and when writing Java objects into JSON. 
+2. @JsonIgnoreProperties -> The @JsonIgnoreProperties Jackson annotation is used to specify a list of properties of a class to ignore. 
 
-@JsonIgnoreProperties -> The @JsonIgnoreProperties Jackson annotation is used to specify a list of properties of a class to ignore. 
+3. @JsonIgnoreType -> The @JsonIgnoreType Jackson annotation is used to mark a whole type (class) to be ignored everywhere that type is used.
 
-@JsonIgnoreType -> The @JsonIgnoreType Jackson annotation is used to mark a whole type (class) to be ignored everywhere that type is used.
+4. @JsonAutoDetect -> @JsonAutoDetect is used to tell Jackson to include properties which are not public, both when reading and writing 
+					  objects. 
+				   -> The JsonAutoDetect.Visibility class contains constants matching the visibility levels in Java, meaning ANY, DEFAULT, NON_PRIVATE, NONE, PROTECTED_AND_PRIVATE and PUBLIC_ONLY.
 
-@JsonAutoDetect -> @JsonAutoDetect is used to tell Jackson to include properties which are not public, both when reading and writing objects. 
+Read Annotations
+----------------
 
-				-> The JsonAutoDetect.Visibility class contains constants matching the visibility levels in Java, meaning ANY, DEFAULT, NON_PRIVATE, NONE, PROTECTED_AND_PRIVATE and PUBLIC_ONLY.
+1. @JsonSetter -> @JsonSetter is used to tell Jackson that it should match the name of this setter method to a property name in the JSON 
+				  data, when reading JSON into objects.
 
+	Ex: 
+
+		Attribute - personId
+
+		Json string - 
+
+		{
+		  "id"   : 1234,
+		  "name" : "John"
+		}
+
+		-> The @JsonSetter annotation instructs Jackson to use a setter method for a given JSON field. In our case we add the @JsonSetter annotation above the setPersonId() method.
+
+		@JsonSetter("id")
+		public void setPersonId(long personId) { 
+			this.personId = personId; 
+		}
+
+2. @JsonAnySetter ->  @JsonAnySetter instructs Jackson to call the same setter method for all unrecognized fields in the JSON object
+
+	unrecognized -> means all fields that are not already mapped to a property or setter method in the Java object.
+
+	-> this only has effect on unrecognized fields. If there is a public method or a setter for private variable, then this will not be called.
+
+3. @JsonCreator ->  @JsonCreator is used to tell Jackson that the Java object has a constructor (a "creator") which can match the fields of a JSON object to the fields of the Java object.
+
+-> It is mostly used in immutable objects as they do not have any setter methods, so they need their initial values injected into the constructor.
+
+To tell Jackson that it should call the constructor of PersonImmutable 
+
+1. add the @JsonCreator annotation to the constructor.
+2. annotate the parameters of the constructor to tell Jackson which fields from the JSON object to pass to which constructor parameters
 
