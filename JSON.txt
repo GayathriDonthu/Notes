@@ -377,16 +377,18 @@ Jackson Annotations
 Read + Write Annotations
 ------------------------
 
-1. @JsonIgnore ->  @JsonIgnore is used to tell Jackson to ignore a certain property (field) of a Java object. 
-			   ->  The property is ignored both when reading JSON into Java objects, and when writing Java objects into JSON. 
+1. @JsonIgnore 			 ->  @JsonIgnore is used to tell Jackson to ignore a certain property (field) of a Java object. 
+						 ->  The property is ignored both when reading JSON into Java objects, and when writing Java objects into JSON. 
 
 2. @JsonIgnoreProperties -> The @JsonIgnoreProperties Jackson annotation is used to specify a list of properties of a class to ignore. 
 
-3. @JsonIgnoreType -> The @JsonIgnoreType Jackson annotation is used to mark a whole type (class) to be ignored everywhere that type is used.
+3. @JsonIgnoreType 		 -> The @JsonIgnoreType Jackson annotation is used to mark a whole type (class) to be ignored everywhere that type is 
+							used.
 
-4. @JsonAutoDetect -> @JsonAutoDetect is used to tell Jackson to include properties which are not public, both when reading and writing 
-					  objects. 
-				   -> The JsonAutoDetect.Visibility class contains constants matching the visibility levels in Java, meaning ANY, DEFAULT, NON_PRIVATE, NONE, PROTECTED_AND_PRIVATE and PUBLIC_ONLY.
+4. @JsonAutoDetect 		 -> @JsonAutoDetect is used to tell Jackson to include properties which are not public, both when reading and writing 
+					        objects. 
+						 -> The JsonAutoDetect.Visibility class contains constants matching the visibility levels in Java, meaning ANY,
+						    DEFAULT, NON_PRIVATE, NONE, PROTECTED_AND_PRIVATE and PUBLIC_ONLY.
 
 Read Annotations
 ----------------
@@ -418,12 +420,19 @@ Read Annotations
 
 	-> this only has effect on unrecognized fields. If there is a public method or a setter for private variable, then this will not be called.
 
-3. @JsonCreator ->  @JsonCreator is used to tell Jackson that the Java object has a constructor (a "creator") which can match the fields of a JSON object to the fields of the Java object.
+3. @JsonCreator ->  @JsonCreator is used to tell Jackson that the Java object has a constructor (a "creator") which can match the fields of a 
+				    JSON object to the fields of the Java object.
 
--> It is mostly used in immutable objects as they do not have any setter methods, so they need their initial values injected into the constructor.
+	-> It is mostly used in immutable objects as they do not have any setter methods, so they need their initial values injected into the constructor.
 
-To tell Jackson that it should call the constructor of PersonImmutable 
+	To tell Jackson that it should call the constructor of PersonImmutable 
 
-1. add the @JsonCreator annotation to the constructor.
-2. annotate the parameters of the constructor to tell Jackson which fields from the JSON object to pass to which constructor parameters
+	1. add the @JsonCreator annotation to the constructor.
+	2. annotate the parameters of the constructor to tell Jackson which fields from the JSON object to pass to which constructor parameters
 
+	
+4. @JacksonInject -> @JacksonInject is used to inject values into the parsed objects, instead of reading those values from the JSON. 
+
+5. @JsonDeserialize -> @JsonDeserialize is used to specify a custom de-serializer class for a given field in a Java object.
+					-> need to add the @JsonDeserialize annotation to the field you want to use the custom deserializer for.
+				
