@@ -462,3 +462,554 @@ personJson = {"id":0,"address":{ "street" : "Cafe Streer", "number" : 23}}
 			   
 @JsonSerialize -> @JsonSerialize Jackson annotation is used to specify a custom serializer for a field in a Java object. 
 			   -> The OptimizedBooleanSerializer will serialize a true value to 1 and a false value 0. 
+			   
+			   
+Boon Installation
+=================
+
+Boon maven dependency
+
+
+<dependency>
+    <groupId>io.fastjson</groupId>
+    <artifactId>boon</artifactId>
+    <version>0.33</version>
+</dependency>
+
+Creating an ObjectMapper
+-----------------------
+
+ObjectMapper mapper = JsonFactory.create();
+
+Parsing JSON Into Objects
+--------------------------
+
+String fleetStr = "{" +
+        "  \"cars\" : [" +
+        "     { \"brand\" : \"Audi\", \"doors\" : 4 }" +
+        "    ,{ \"brand\" : \"Mercedes\", \"doors\" : 3}" +
+        "    ,{ \"brand\" : \"BMW\",  \"doors\" : 2 }" +
+        "  ]" +
+        "}";
+
+ObjectMapper mapper = JsonFactory.create();
+
+Fleet fleet = mapper.readValue(fleetStr, Fleet.class);
+
+public class Fleet {
+    public Car[] cars = null;
+}
+
+public class Car {
+
+    public String brand = null;
+    public int    doors = 0;
+
+    public Car() {}
+
+    public Car(String brand, int doors) {
+        this.brand = brand;
+        this.doors = doors;
+    }
+}
+
+Parsing JSON into Maps
+----------------------
+
+->  pass Map.class as second parameter to the readValue()
+
+Parsing JSON From Other Sources
+-------------------------------
+
+Boon can parse JSON from other sources than strings. You can parse also JSON from a:
+
+byte array
+char array
+File
+Reader
+InputStream
+String
+
+Example:
+
+Fleet fleet = mapper.readValue(
+        new FileInputStream("data/fleet.json"), Fleet.class);
+		
+Generating JSON From Objects
+----------------------------
+
+-> generate JSON from an object by calling the writeValue() or writeValueAsString() methods of the Boon ObjectMapper.
+
+Fleet fleet   = new Fleet();
+fleet.cars    = new Car[1];
+fleet.cars[0] = new Car("Mercedes", 5);
+
+ObjectMapper mapper = JsonFactory.create();
+
+String json = mapper.writeValueAsString(fleet);
+System.out.println(json);
+
+{"cars":[{"brand":"Mercedes","doors":5}]}
+
+Generating JSON From Maps
+-------------------------
+
+-> Pass a Map instance as the second parameter to the writeValue() or writeValueAsString() method. 
+
+Date Formats in JSON
+--------------------
+
+-> The Boon ObjectMapper can work with different date formats in JSON. 
+-> It can use parse and generate both a long version of a date (the number of milliseconds since jan. 1. 1970)
+
+Parsing a long Into a Date
+--------------------------
+
+-> Boon's ObjectMapper can parse a long value in JSON into a date.
+-> When the ObjectMapper parses this JSON string it converts the long value of the paymentDate into a Date object, because the paymentDate field of the Payment class is a Date.
+
+String paymentJson = "{ \"paymentDate\" : 1434016456493 }";
+
+ObjectMapper objectMapper = JsonFactory.create();
+
+Payment payment = objectMapper.readValue(paymentJson, Payment.class);
+
+Parsing a Date String Into a Date
+---------------------------------
+
+String paymentJson = "{ \"paymentDate\" : \"2015-06-11T12:33:00.014Z\" }";
+
+ObjectMapper objectMapper = JsonFactory.create();
+//ObjectMapper objectMapper = JsonFactory.createUseJSONDates();
+
+Payment payment = objectMapper.readValue(paymentJson, Payment.class);
+
+System.out.println("payment.paymentDate = " + payment.paymentDate);
+
+Generating Date Strings in JSON
+-------------------------------
+
+-> By default the ObjectMapper will serialize a Date to a long number (milliseconds) when generating JSON from an object.
+-> We can create a version of the ObjectMapper which creates date strings instead.
+
+ObjectMapper objectMapper = JsonFactory.createUseJSONDates();
+
+-> using createUseJSONDates, Date fields will get converted to date strings in the serialized JSON instead of numbers.
+
+Annotations
+-----------
+
+-> Boon contains a set of annotations that can be used to adjust the parsing or generation of JSON.
+
+1. @JsonIgnore
+2. @JsonInclude
+
+@JsonIgnore
+-----------
+
+-> The @JsonIgnore annotation can be placed above a field in a class. 
+-> When Boon detects the @JsonIgnore it will ignore that field and Boon will not serialize the comment field when serializing a Car object.
+
+@JsonInclude
+------------
+
+-> By default Boon excludes fields from serialization that are empty (null), empty lists, or fields which have default values
+-> If we want Boon to include such fields in the generated JSON, you can add a @JsonInclude annotation to the field.
+
+Parsing Primitives
+------------------
+
+-> Boon can also parse fragments of JSON into Java primitives.
+Ex: parsing a string into an int or a JSON array into an array of Java primitives.
+-> We  need to access the JsonParserAndMapper returned from the ObjectMapper's parser method. On the JsonParserAndMapper instance you can call the primitive parsing methods.
+
+Ex: 1	String to int
+	
+	int intVal = objectMapper.parser().parseInt("123");
+
+Ex: 2  json string with array of numbers to primitive java types
+
+	int[] ints = objectMapper.parser()
+        .parseIntArray("[123, 456, 789]");
+
+Ex: 3 JSON string representing an object into a Java Map
+
+	String jsonMap = "{ \"key1\" : \"val1\", \"key2\" : \"val2\" }";
+
+	Map<String, Object> map =
+			objectMapper.parser().parseMap(jsonMap);
+
+			
+			
+GSON - Installation
+-------------------
+
+GSOn Maven dependency
+
+<dependency>
+    <groupId>com.google.code.gson</groupId>
+    <artifactId>gson</artifactId>
+    <version>2.3.1</version>
+</dependency>
+
+Creating a Gson Instance
+------------------------
+
+two ways to create a Gson instance:
+
+1. Using new Gson()
+
+	Gson gson = new Gson();
+
+2. Creating a GsonBuilder instance and calling create() on it.
+
+	GsonBuilder builder = new GsonBuilder();
+	Gson gson = builder.create();
+	
+-> Using a GsonBuilder allows you to set configuration options on the GsonBuilder before creating the Gson object.
+
+
+Parsing JSON Into Java Objects
+-------------------------------
+
+	String json = "{\"brand\":\"Jeep\", \"doors\": 3}";
+
+	Gson gson = new Gson();
+
+	Car car = gson.fromJson(json, Car.class);
+
+Pretty Printing
+---------------
+
+	Gson gson = new Gson(); > compact json, hard to read
+
+	Ex: {"brand":"Rover","doors":5}
+
+	Gson gson = new GsonBuilder().setPrettyPrinting().create(); -> pretty printing, easy to read
+
+	Ex: 
+	{
+	  "brand": "Rover",
+	  "doors": 5
+	}
+
+Excluding Fields
+----------------
+
+-> gson can exlude a field from being serialized.
+
+Transient fields
+-----------------
+
+-> If you make a field in a Java class transient then GSON will ignore it in both serialization and deserialization.
+
+	public class Car {
+		public transient String brand = null;
+		public int    doors = 0;
+	}
+
+The @Expose Annotation
+-----------------------
+
+->  used to mark a field to be exposed or not (included or not) when an object is serialized or deserialized. 
+-> 2 boolean parameters.
+
+	@Expose(serialize = true); ->  specifies if the field annotated with the @Expose annotation should be included when the owning object is 
+								   serialized.
+	@Expose(serialize = false);
+	@Expose(deserialize = true); ->  specifies whether that field should be read when the owning object is deserialized.
+	@Expose(deserialize = false);
+	@Expose(serialize = true , deserialize = false);
+	@Expose(serialize = false, deserialize = true);
+
+
+	public class Car {
+
+		@Expose(serialize = false, deserialize = false)
+		public String brand = null;
+
+		@Expose(serialize = true, deserialize = true)
+		public int    doors = 0;
+	}
+
+-> In order to get GSON to react to the @Expose annotations you must create a Gson instance using the GsonBuilder class.
+
+GsonBuilder builder = new GsonBuilder();
+builder.excludeFieldsWithoutExposeAnnotation();
+Gson gson = builder.create();
+
+-> this configuration makes GSON ignore all fields that do not have an @Expose annotation. 
+-> To have a field included in serialization or deserialization it must have an @Expose annotation above it.
+
+GsonBuilder.setExclusionStrategies()
+------------------------------------
+
+-> Another way to exclude a field of a class from serialization or deserialization in GSON is to set an ExclusionStrategy on a GsonBuilder, and use that GsonBuilder to build the Gson object with
+
+-> ExclusionStrategy is an interface, so you will have to create a class that implements the ExclusionStrategy interface. 
+
+Implementing ExclusionStrategy with anonymous inner class
+
+	ExclusionStrategy exclusionStrategy = new ExclusionStrategy() {
+		public boolean shouldSkipField(FieldAttributes fieldAttributes) {
+			if("brand".equals(fieldAttributes.getName())){
+				return true;
+			}
+			return false;
+		}
+
+		public boolean shouldSkipClass(Class aClass) {
+			return false;
+		}
+	};
+
+-> inside the shouldSkipField() method of the ExclusionStrategy implementation the example checks if the given field name is brand. If it is, that field is excluded from serialization and deserialization.
+
+	GsonBuilder builder = new GsonBuilder();
+	builder.setExclusionStrategies(exclusionStrategy);
+
+	Gson gson = builder.create();
+
+-> The exclusionStrategy variable has to point to an implementation of the ExclusionStrategy interface.
+
+Serializing Null Fields
+-----------------------
+
+-> By default the Gson object does not serialize fields with null values to JSON. If a field in a Java object is null, Gson excludes it.
+
+-> We can force Gson to serialize null values via the GsonBuilder
+
+-> Once serializeNulls() has been called the Gson instance created by the GsonBuilder will include null fields in the serialized JSON.
+
+	GsonBuilder builder = new GsonBuilder();
+
+	builder.serializeNulls();
+
+	Gson gson = builder.create();
+
+	Car car = new Car();
+	car.brand = null;
+
+	String json = gson.toJson(car);
+	System.out.println(json);
+
+Custom Instance Creators in GSON
+--------------------------------
+
+-> By default GSON will try to create an instance of a given class by calling the no-arg constructor of that class.
+-> if a given class does not have a default constructor, or we want to do some default configuration of the instance, we need to create and register our own instance creator.
+
+-> A GSON instance creator is simply an object factory. 
+-> An instance creator has to implement the InstanceCreator interface.
+
+	import com.google.gson.InstanceCreator;
+
+	public class CarCreator implements InstanceCreator<Car> {
+		public Car createInstance(Type type) {
+			Car car = new Car();
+			car.brand = "Toyota";
+			return car;
+		}
+	}
+
+-> use the CarCreator class by registering it on a GsonBuilder before you create the Gson instance. 
+
+	GsonBuilder gsonBuilder = new GsonBuilder();
+
+	gsonBuilder.registerTypeAdapter(Car.class, new CarCreator());
+
+	Gson gson  = gsonBuilder.create();
+	
+-> the Gson instance will use the CarCreator instance to create Car instances.
+
+
+Version Support in GSON
+------------------------
+
+-> GSON version support means that you can mark fields in your Java classes with a version number, and then have GSON include or exclude fields from your Java classes based on their version number.
+
+-> For versioning  @Since annotation should be used.
+->  create a GsonBuilder and tell it what version it should be serializing to and deserializing from.
+
+	GsonBuilder builder = new GsonBuilder();
+	builder.setVersion(2.0);
+
+	Gson gson = builder.create();
+	
+-> The Gson instance created from the above GsonBuilder will now just include fields that are annotated with @Since(2.0) or a lower version number than 2.0. The email field is annotated with version 3.0 which is later than 2.0, so GSON will exclude the email field.
+
+Custom Serialization and Deserialization
+----------------------------------------
+
+-> custom serializers can convert Java values to custom JSON, and your custom deserializers can convert custom JSON to Java values again.
+
+Custom Serializer
+-----------------
+
+-> A custom serializer in GSON has to implement the JsonSerializer interface. 
+
+-> Implementing a custom serializer that can serializer boolean values.
+
+	public class BooleanSerializer implements JsonSerializer<Boolean> {
+
+	  public JsonElement serialize(Boolean aBoolean, Type type,
+		JsonSerializationContext jsonSerializationContext) {
+		if(aBoolean){
+		   return new JsonPrimitive(1);
+		}
+		  return new JsonPrimitive(0);
+	  }
+	}
+
+-> Registering this custom serializer
+	
+	GsonBuilder builder = new GsonBuilder();
+
+	builder.registerTypeAdapter(Boolean.class, new BooleanSerializer()) ;
+
+	Gson gson = builder.create();
+
+	
+	PojoWithBoolean pojo = new PojoWithBoolean();
+	pojo.username = "abc";
+	pojo.isSuperUser = false;
+
+	String pojoJson = gson.toJson(pojo);
+
+	System.out.println(pojoJson);
+	
+->  the false value of isSuperUser is converted to a 0.
+
+
+Custom Deserializer
+------------------
+
+-> A custom deserializer must implement the JsonDeserializer interface.
+
+	public class BooleanDeserializer implements JsonDeserializer<Boolean> {
+
+		public Boolean deserialize(JsonElement jsonElement, Type type,
+		JsonDeserializationContext jsonDeserializationContext)
+		throws JsonParseException {
+
+			return jsonElement.getAsInt() == 0 ? false : true;
+		}
+	}
+
+-> Registering this custom deserializer
+
+	GsonBuilder builder = new GsonBuilder();
+	builder.registerTypeAdapter(Boolean.class, new BooleanDeserializer());
+
+	Gson gson = builder.create();
+	
+	String jsonSource = "{\"username\":\"abc\",\"isSuperUser\":1}";
+
+	PojoWithBoolean pojo = gson.fromJson(jsonSource, PojoWithBoolean.class);
+
+	System.out.println(pojo.isSuperUser);
+	
+	
+GSON - JsonReader
+-----------------
+
+GSON - JsonReader -> GSON streaming JSON parser, enables you to read a JSON string or file as a stream of JSON tokens.
+
+-> GSON JsonReader is referred to as a streaming JSON parser because iterating JSON token for token is also referred to as streaming through the JSON tokens.
+
+Two types of streaming parsers
+
+1. Pull parsers -> parser where the code using it pulls the tokens out of the parser when the code is ready to handle the next token. 
+2. Push parsers -> parses through the JSON tokens and pushes them into an event handler. 
+
+-> The GSON JsonReader is a pull parser.
+
+
+Creating a GSON JsonReader
+--------------------------
+
+	String json = "{\"brand\" : \"Toyota\", \"doors\" : 5}";
+
+	JsonReader jsonReader = new JsonReader(new StringReader(json));
+
+
+Iterating the JSON Tokens of a JsonReader
+-----------------------------------------
+
+	while(jsonReader.hasNext() {
+
+	}
+
+
+hasNext() method -> returns true if the JsonReader has more tokens.
+
+peek() method ->  returns the next JSON token, but without moving over it.
+
+beginObject(), nextString() and nextLong() return the value of the current token.
+
+GSON - JsonParser
+-----------------
+
+->  GSON JsonParser class can parse a JSON string or stream into a tree structure of Java objects. 
+
+GSON has two parsers.
+
+1. Gson JSON parser -> can parse JSON into Java objects
+2. JsonReader -> can parse a JSON string or stream into tokens 
+
+Creating a JsonParser
+---------------------
+
+	JsonParser jsonParser = new JsonParser();
+	
+Parsing JSON Into a Tree Structure
+----------------------------------
+
+	JsonParser parser = new JsonParser();
+
+	String json = "{ \"f1\":\"Hello\",\"f2\":{\"f3:\":\"World\"}}";
+
+	JsonElement jsonTree = parser.parse(json);
+	
+Iterating the JSON Tree Structure
+---------------------------------
+
+-> The parsed JSON tree structure consists of objects from the GSON API.
+->  The root of a JSON tree structure is a JsonElement object.
+
+jsonTree.isJsonObject();
+jsonTree.isJsonArray();
+jsonTree.isJsonNull();
+jsonTree.isJsonPrimitive();
+
+
+The JSON string parsed above is a JSON object. Thus, we will expect the JsonElement to represent a JSON object.
+
+->  Using JsonObject instance you can extract fields from it using its get() method.
+	
+-> We can inspect the type of each of these fields
+
+	JsonParser parser = new JsonParser();
+
+	String json = "{ \"f1\":\"Hello\",\"f2\":{\"f3:\":\"World\"}}";
+
+	JsonElement jsonTree = parser.parse(json);
+
+	if(jsonTree.isJsonObject()){
+		JsonObject jsonObject = jsonTree.getAsJsonObject();
+
+		JsonElement f1 = jsonObject.get("f1");
+
+		JsonElement f2 = jsonObject.get("f1");
+
+		if(f2.isJsonObject()){
+			JsonObject f2Obj = f2.getAsJsonObject();
+
+			JsonElement f3 = f2Obj.get("f3");
+		}
+
+	}
+
+
+
+
