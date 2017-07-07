@@ -1,0 +1,59 @@
+												Spring with Data JPA
+												====================
+												
+WHat Spring Data JPA can do?
+
+-> Can replace all the CRUD operations with very few lines of code. (49 to 5)
+
+What is Spring Data JPA?
+
+-> enhances standard JPA with spring
+-> simplifies data access layer.
+-> allows to build intelligent spring repository stereotyped interfaces.	 
+-> spring data Jpa can automatically build the interface implementation.
+-> For SPring JPA to implement the repository interface, it needs Query DSL.
+
+DSL = Domain specific Language.
+
+Query DSL -> allows to create java interface methods that utilize certain keywords along with JPA entity attributes to correctly implement our queries.
+
+-> Auditing, paging can be done.
+
+Prerequisites
+-------------
+
+1. git
+2. JDK 1.8+
+3. Maven 3+
+4. IDE - STS
+
+
+Choosing a Data Access Layer
+----------------------------
+
+1. simple DB's , Native sql - JDBC or spring JDBC are best
+2. High Number of SQL writes - JEE 7 Batch, Spring Batch, Hadoop are the best -> contains batch functionality
+							   spring jpa is not good for high number of writes - large memory 
+  
+3. Data grpahs without excessive relationships - ORM, JAP/Hibernate, Spring Data JPA
+4. Topic or Thread Relational Data - No SQL, Mongo DB, Spring Data Mongo
+
+
+Spring Data
+-----------
+
+-> goal is to work with variety of persistence stores
+
+Spring Data Commons artifact -> Repository
+							 -> Cross - store persistence
+							 -> Dynamic query generation
+							 
+-> spring has 9 data access implementations, spring data jpa is one of those.
+
+Getting started
+---------------
+
+https://github.com/dlbunker/ps-guitar-db
+
+-> This project is a database that holds guitar manufacturers and models and types of guitars they make.
+-> uses standard JPA with H2 embedded database
