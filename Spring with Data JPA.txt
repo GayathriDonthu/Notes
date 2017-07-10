@@ -57,3 +57,23 @@ https://github.com/dlbunker/ps-guitar-db
 
 -> This project is a database that holds guitar manufacturers and models and types of guitars they make.
 -> uses standard JPA with H2 embedded database
+
+Installing Spring Data JPA
+--------------------------
+
+<dependency>
+    <groupId>org.springframework.data</groupId>
+    <artifactId>spring-data-jpa</artifactId>
+    <version>1.7.1.RELEASE</version>
+</dependency>
+
+-> Need to tell spring to configure and load the JPA repositories.
+
+<jpa:repositories base-package="com.guitar.db.repositry" /> -> preferred way when usign spring with XML configuration.
+
+base-package  -> tells which package it should scan to look for JPA repositories.
+
+other way to configure spring data JPA
+--------------------------------------
+
+@EnableJpaRepositories -> preferred way using sring boot or java configuration with spring
