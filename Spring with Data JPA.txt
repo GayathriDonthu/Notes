@@ -77,3 +77,519 @@ other way to configure spring data JPA
 --------------------------------------
 
 @EnableJpaRepositories -> preferred way using sring boot or java configuration with spring
+
+Spring Data JPA Repositories
+============================
+
+Spring Repositories
+-------------------
+
+-> Repositories are data access contracts that client code can depend and bind to.
+-> Spring repository is DAO pattern, by defining an interface the data access layer is free to implement
+
+Ex: we implemented DAO using JPA and then we swtiched it to JDBC, the service layer doesn't care about it and it is not affected.
+
+DAO Pattern -> Define a contract with an interface.
+
+-> Spring repositories don't need an interface as we are using @Repository.
+
+Repository Architectural Overview
+---------------------------------
+
+-> JPA entities map to database tables.
+-> The entities map ont to one with a JPA repository.
+-> With spring data JPA repositories, repository is limited to a single JPA entity.
+-> A service may need data from a couple of repositories or a single repository. 
+
+@Service annotation -> used on classes and interfaces in service layer.	 
+
+Controller Layer -> handles requst routing from a UI, they can utilize one or more services and are responsible for returning a response to the UI or presentation tier.
+
+-> This can be done with a template render on the server side by returning a JSON payload to the caller via an URL endpoint or REST service.
+
+
+Controller Layer -> Service Layer -> Data Access Layer -> Database
+
+Controller 		 -> Service 	  -> JPA Repository/   -> DB Table
+									 Entity
+----------------------------------------------------------> Code bindings									 
+								 
+-> code dependencies and bindings should move to the right in the above picture.
+
+-> COntrollers can inject services or repositories, services can inject repositories but services and repositories should never inject into controllers. This prevents cyclical code dependency issues.
+
+-> services can inject other services and repositories can inject other repositories.
+
+Spring Data JPA Repositories
+----------------------------
+
+JPA repository differences
+
+1. Java interface, not classes
+2. Map 1 to 1 with JPA entity -> each JPA repository can only perform data access operations for that particular entity and its data 	
+								 attributes.
+3. Focus on DAO contract
+
+JAP repository tied to particular JPA entity as below:
+
+	JpaRepository<Entity, Id Type>
+
+-> By supplying JPA entity and its primary key data type, JPA repository knows exactly what database table in columns it can work with, since all information is bundled in entity.
+
+public interface MyJPARepository extends JpaRepository<Entity, Id type>{
+}
+
+-> When application starts up spring data jpa recognizes our JPA repository and automatically generates an implementation for the DAO cntract that's specified in that interface. 
+
+
+Replace the existing Repository( which contains CRUD operations) with below code, that's it
+
+public interface ModelTypeJPARepository extends JpaRepository<ModelType, Long>{
+}
+
+Jpa repository features
+-----------------------
+1. Query DSL
+2. CRUD operations
+3. Paging and sorting
+4. Helpers
+   - count()
+   - exists(Long id)
+   - flush()
+   - deleteInBatch(Iterable entities)
+   
+
+Interfaces Hierarchy :
+
+	Repository<T, ID extends Serializable>				     -------- 
+			     |													 |
+				 |													 |
+				 |													 |
+				 |													 |
+	CrudRepository<T, ID extends Serializable>						 |------> Spring Data project			
+				 |													 |
+				 |													 |
+				 |													 |
+				 |													 |
+	PagingAndSortingRepository<T, ID extends Serializable>	---------
+				 |													 
+				 |													 
+				 |													 
+				 |													 
+	JpaRepository<T, ID extends Serializable>     ----------------------------> Spring Data JPA Project        
+
+
+-> The above features are broken into separate interfaces.( since we can reduce the functionality in our data access layer)
+
+-> Spring JPA Repsoitory interface is the only interface in the spring data JPA project, other features come from the core spring data project. 
+
+Customize JpaRepository Hierarchy
+---------------------------------
+
+-> Auduting methods can be kept in the super class reduces repetetion.
+
+-> If auditing methods needs to be applied on all entities in the repository layer, then don't add everything in the MyJPARepository, instead create a custom repository which has all common methods and then for all other MyJPARepository extend the custom repository.
+-> This prevents repetetion on repository side.
+
+Refactoring existing repositories
+--------------------------------
+
+-> When we need to change the existing repositories into JPA repositories, 
+
+1. Test suite on data access layer -> as we rework code, we ensure that we don't break anything.
+2. Create a new interface MyJPARepository extends JpaRepository
+3. Can do one of these
+	a) Switch client code to new DAO contract/ JPA.
+	b) Leave existing repository and turn it into proxy, inject new JpaRepository(MyJPARepository)
+-> Thsi will make client code unchanged.
+
+-> While replacing the CRUD operations, create and update methods are having same method i.e., saveAndFlush() in the JpaRepository since Spring Data JPA has covered the differences for us under the cover.
+-> We can call save() or saveAndFLush()
+
+Flush -> Flush is a method call on our persistence context.It will take all the changes and push them out to the database befoe our transaction commits.
+ 
+delete method is same
+find -> findOne in JpaRepository
+
+
+Best Practices
+--------------
+
+1. package naming structure
+	
+	-> In data access layer and repository and model packages to put repositories and entities in them.
+	
+2. Put the data JPA repositories in a repository package, becoz we can limit the class path scanning for data JPA repositories to particular packages. This helps start up time and it reduces work frm the spring container side.
+
+3. The actual class name of the repository should have the repository in the classname and for jpa add JpaRepository.
+
+4. normal repositories have @Repository annotation but Spring jap repositories desn't have any @Repository annotation -> this is becoz in our XML configuration or spring boot in java configuration, we gave the below tag. 
+
+<jpa:repositories base-package="com.guitar.db.repository" />
+
+-> Given base package to find any repositories in this package. The package name is restricted to the repository class path becoz when container start, spring will look through all of our classes in interfaces in that particular package and see if anything extends from Spring Data JPA or JPARepository.
+-> It it does, it goaes ahead and creates an implementation for us under the covers. So we don't need @Repository annotation.(even if we put it doesn't hurt)
+
+Query DSL Overview
+==================
+
+-> Query DSL is powerful, flexible, extremely customizable and is based on JPA entity.
+
+Advantages of using Query DSL
+-----------------------------
+
+-> setting up JPA entities, lot of db table information all are removed in Query DSL as it takes care of implementation.
+-> no need of performing later maintenence activity.
+-> Check our queries at startup rather than at run time, saves time to find and test.
+   Application start-up checks also safeguard against refactoring changes, if an entity attribute changes, we cna quickly know if that broke any of our queries when we start up the application. 
+-> Query DSL were used in scripted platforms, Ruby on rails, django since they don't have any type checking functionality.
+-> Spring data JPA lets developers to define the data contract and then the framework can implement the contract. 
+
+
+DSL - Domain Specific Language
+
+-> DSL is a customized extension of a software programming language that addresses a specific business or domain.
+-> In Spring JPA's terms, the frameowkr is enhancing Java to be better suited at creating and working with JPA queries.
+ 
+The Custom finders can be replaced by the JPA interface
+
+public interface LocationJpaRepository extends JpaRepository<Location, Long> {
+List<Location> findByStateLike(String stateName);
+}
+-> no need of writing any query, but in the method name include any attribute of the entity.
+entity - Location, attribute - state
+
+-> if we try to give any name other than attributes then it will throw an error as below:
+
+Invalid derived query! No property states found for type Location
+
+Query method Syntax basics
+--------------------------
+
+Query methods -> methods defined in our JPA repository that spring data jpa will auto-implement on our behalf.
+
+1. Query parser will match the following 
+	- find..By, query..By, read..By, count..By, get..By
+	Ex: findByStateLike
+2. Criteria uses JPA entity attribute names.
+3. Multiple criteria combined with ["And", "Or"]
+
+Query method return types
+-------------------------
+
+-> Once query method executes, we need to tell spring data JPA how to handle the results.
+	single result or collection result or entity itself 
+	Ex: Long findFirstByState(String StateName)or
+		List<Location> findByStateLike(String stateName) or
+		Location countByStateLike(String stateName)
+	
+Keyword And and Or
+------------------
+
+-> combines multiple criteria query filters together using a conditional And or Or
+Ex: findByStateAndCountry("CA", "USA")
+
+when we run the application, spring data jpa develops below query for us
+
+select location0_.id as id1_0_, location0_.country as country2_0_, location0_.state as state3_0_ from Location location0_ where location0_.state=? and location0_.country=?
+
+Keywords: Equals, Is and Not
+----------------------------
+
+-> When we pass a parameter in our findby query method, spring data jpa will by default uses the equals syntax when comparing the criteria with the actual filter value.
+
+findByState = where state=?
+findByStateIs = where state=?
+findByStateEquals = where status=?
+
+-> all are same
+
+findByStateNot = where state <> ?
+
+
+Keywords: Like and Not like
+--------------------------
+
+findByStateLike("Cali%") = where state like ?
+findByStateNotLike("Al%") = where state not like ?
+
+
+Keywords starting with, ending with and containing
+---------------------------------------------------
+
+-> similar to like keyword except that % is automatically added to the filter value.
+
+findByStateStartingWith("Al") = where state like ?
+findByStateEndingWith("Cal") = where state like ?
+findByStateContaining("in") = where state like ?
+
+Keywords: LessThan(Equal) and GreaterThan(Equal)
+------------------------------------------------
+
+<, <=, >, >=
+
+findByPriceLessThan(20)			= where price < ?
+findByPriceLessThanEqual(20)    = where price <= ?
+findByPriceGreaterThan(20)		= where price > ?
+findByPriceGreaterThanEqual(20) = where price >= ?
+
+Keyword: Before, After and Between
+----------------------------------
+
+-> needed when we perform less than, greater than or range comparisions with data/time data types.
+
+findByStartDateBefore(dateObj) = where startDate < ?
+findByStartDateAfter(dateObj)  = where startDate > ?
+findByStartDateBetween(dateObj1, dateObj2) = where startDate between ? and ?
+
+Keyword: True and False
+-----------------------
+
+-> needed when comparing boolean values with Treu and False
+
+findByActiveTrue()   = where active = true
+findByActiveFalse()  = where active = false
+
+
+Keyword: IsNull, IsNotNull and NotNull
+--------------------------------------
+
+-> checks whether a criteria is null or not.
+
+findByStateIsNull() = where state is null
+findByStateIsNotNull() = where state not null
+findByStateNotNull() = where state not null
+
+Keyword: In and NotIn
+---------------------
+
+-> to check if a value is part of a collection or set of values or not.
+
+findByStateIn(Collection<String> states)		= where state in ?
+findByStateNotIn(Collection<String> states)     = where state not in ?
+
+Keyword: IgnoreCase
+-------------------
+
+-> need to perform a case insensitive search
+
+findByStateIgnoreCase("ca")				= where upper(state) = upper(?)
+findByStateStartingWithIgnoreCase("c")  = where upper(state) like upper(?)
+
+Keyword: OrderBy
+----------------
+
+-> used to setup an order by clause on our query
+
+findByStateOrderByCountryAsc()   = where state order by country asc
+findByStateOrderByCountryDesc()  = where state order by country desc
+
+Keyword: first, top and distinct
+--------------------------------
+
+-> used to limit the results returned by the query
+
+findFirstByStateLike("Al") 					= where state like ? limit 1
+findTop5ByStateLike("A")					= where state like ? limit 5
+findDistinctManufacturerByStateLike("A")	= select distinct ... where state like ?
+
+More Fun with Queries
+======================
+
+@Query annoation
+----------------
+
+-> When we add @Query annotation, it's going to ignore the query methods in Query DSL.
+-> With @Query annotation methods, it doesn't matter if we have particular key words inside the method name becoz query DSL completetly ignores this method.
+-> @Query("select ... ")
+-> @Param("parameterName") -> used to define the parameters for the query.
+-> @Query annotation method is defined by the JPQL that we pass in and match the parameter types.
+
+Note: 
+
+"%" + wood + "%"  -> to send parameter as like
+
+-> @Query annotation is useful when we cannot makeup the query methods using Query DSL.
+
+Reasons to choose query annoation over query methods:
+
+1. Reuse existing JPQL in our data access layer.
+2. Advanced query functionality(joins, where clauses etc in queries)
+3. EagerLoadingControl("Fetch")
+	-> using fetch keyword in JPQL removes the extra unneeded queries.
+4. To use the functionality just adding @Query and give it to a JPQL statement.
+	-> Spring Data JPA doesn't try and parse the method and set it up as a query method.
+	-> Parameters defined in JPQL will be matched to the parameters defined on your method.
+	
+@Query Options
+--------------
+
+1. Ability to specify Named parameters in JPQL as they replace the ?number parameter placeholder with a colon parameter name value.
+	
+	Named Parameters
+	
+	@Query("select m from Model m where m.name = :modelName")
+	List<Model> queryByName(@Param("modelname") String name)
+	
+2. Enhanced JPQL syntax
+
+	-> % symbol can be kept before named parameter
+	
+	@Query("select m from Model m where m.name like %?1")
+	List<Model> queryByName(String name);
+	
+3. Native Queries
+	
+	-> By setting the value to native SQL, and specifying native sql to true, flags the query so that Spring Data JPA will execute the SQL and then marshal the result set values back into our entity.
+	-> This option is good when we are customizing the query fr performance reasons.
+	
+	@Query(value = "select * from Model where name = ?0", nativeQuery = true)
+	List<Model> queryByName(String name);
+	
+4. Modifiable queries
+
+	-> We can use @Query annotation to perform updates that modify our database instead of read from it.
+	-> By including the modifying annotation, JPQL will be executed and the return count will be sent back to the caller.
+	
+	@Modifying
+	@Query("update Model m set m.name = ?1")
+	int updateByName(String name);
+	
+	
+	
+JPA Named Queries
+-----------------
+
+-> App startup validates queries rather than at runtime.
+-> By using query methods and query annotations Spring Data JPA will check our queries at application startup time to determine if they are valid or not.
+-> When using JPA we get same functionality when using the named query annotation or equivalent definition in the orm.xml file.
+
+-> Named queries are defined in entity class using @NamedQuery annotation, (name and the JPQL query are defined in JPQL query).
+
+@Entity
+@NamedQuery(
+	name = "Model.namedFindAllModelsByType", 
+	query = "select m from Model m where m.modelType.name = :name")
+public class Model {..}
+
+name -> should start with entity name followed by period and then description.
+
+-> Spring Data JPA will map the named queries to the respective JPA repository with the matching entity JPA entity. The name given in the namedQuery will find the method definition in our JPA repository interface with the same name. The query is having parameter, so we need to set the Param in the method arguments.
+
+@Repository
+public interface MOdelJpaRepository extends JpaRepository<Model, Long> {
+	List<Model> namedFinalAllModelsByType(@Param("name") String type);
+}
+
+other way:
+
+@Query(name = "Model.namedFindAllModelsByType")
+List<Model> finalAllModelsByType(@Param("name") String type);
+
+Native SQL Support
+------------------
+
+-> By specifying nativeSQL=true, the query will be treated as native SQL rather than JPQL.
+
+
+@NamedNativeQuery(name = "Manufacturer.getAllThatSellAcoustics")
+
+ -> we can have Spring Data JPA repositories implement them the same way as Spring Data JPA handles named queries
+ -> As long as we have the name starting with entity and followed by period(.), spring data jpa wll try to match a method name in our repository with the suffix text of the query name.
+
+Interface method :
+
+List<Manufacturer> getAllThatSellAcoustics(String name);
+
+-> The method may throw error since it thinks it is not in the form of Query DSL, so ignore it.
+
+Tips: Where should I put my queries?
+-----------------------------------
+
+-> We can have queries defined in any of the below:
+
+1. Entity
+2. orm.xml
+3. JpaRepository
+
+within Entity and orm.xml 
+------------------------
+
+1. named queries 
+2. named native queries
+
+In JPARepository
+----------------
+
+1. Query DSL
+2. @Query annotation
+
+
+-> In data access, queries should be kept in JPARepository
+
+JpaRepository Query Precedence
+------------------------------
+
+-> Spring Data Jpa has a precedence structure to determine how to treat the method implementation.
+
+1. Methods with @Query annotation take highest precedence.
+2. Methods that match a named or native named query "name"
+3. Methods that follow the query DSL keyword naming structure.
+	-> Any methods that don't have a query annotation and match a named query will be parsed as a Query DSL method.
+	-> If he method name doesn't comply with the Query DSL standards, spring data JPA will raise an exception saying it doesn't understand how to implement that method name.
+	
+	
+Advanced Features
+=================
+
+Paging and sorting
+------------------
+
+-> Spring Data Jpa offers functionality to limit the data which has to be displayed by using built in page and sort objects.
+-> In the repository hierarchy of the JPA respository interface, it contains paging and sorting repository parent.
+
+PagingAndSortingRepository<T, ID extends Serializable> 
+
+defines below methods that takes sort object and pageable object.
+
+1. Iterable<T> findAll(Sort sort);
+2. Page<T> findAll(Pageable pageable);
+
+-> These methods handle the sorting and paging needs in more complex way than the query DSL.
+-> We can pass a combination of the sort and pageable objects to our query methods or to our query annotaton methods.
+-> These can be used outside query DSL and the query methods.
+
+To pass Pageable object in the repository, create an instance as below
+
+Pageable page = new PageRequest();
+
+PageRequest -> is a helper class that SPring Data JPA provides taht implements the pageable object.
+
+It has constructors -> we can pass the page number and the number of records.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
