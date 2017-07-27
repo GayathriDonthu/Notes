@@ -299,7 +299,7 @@ src
 
 InternalResourceViewResolver
 
--> It says " when I ask for this jsp page, I am goingto find it in this directory and serve it up to them"
+-> It says " when I ask for this jsp page, I am going to find it in this directory and serve it up to them"
 
 
 addTime.jsp = http://localhost:8080/fitness/addTIme 
@@ -1519,5 +1519,54 @@ Run the project through tomcat
 Browser -> localhost:8080/FitnessTracker/greeting.html
 
 Output: Hello Gayathri
+
+
+Brief Summary
+=============
+
+2.0 release -> annotations
+3.0 release -> java config
+
+Terms
+-----
+
+1. Dispatcher Servlet 
+2. Controller 
+3. Request Mapping 
+4. View Resolver 
+5. Servlet-config 
+6. POJO 
+7. Bean 
+		
+Maven dependencies
+------------------
+
+1. spring-webmvc
+2. servlet-api
+3. jstl
+
+Create project with Maven archetype as : maven-archetype-webapp
+
+Spring MVC Configuration
+------------------------
+
+1. Configure web.xml
+2. Configure servlet-config.xml
+3. Add Controller
+4. Add View
+
+Folder structure
+----------------
+
+src
+	-> main
+		-> webapp
+			-> WEB-INF
+				-> jsps
+					-> addTime.jsp
+					-> index.jsp
+				-> web.xml
+				
+
 
 

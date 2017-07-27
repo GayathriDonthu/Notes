@@ -563,9 +563,187 @@ To pass Pageable object in the repository, create an instance as below
 
 Pageable page = new PageRequest();
 
-PageRequest -> is a helper class that SPring Data JPA provides taht implements the pageable object.
+PageRequest -> is a helper class that spring Data JPA provides that implements the pageable object.
 
 It has constructors -> we can pass the page number and the number of records.
+
+-> When we return a pageable query, we get a page instead of a list back. Page object wraps our list and it also provides metadata around the paging attributes and bits of information that we need for paging.
+-> Page has total no. of pages and total no. of elements.
+-> Page extends slice and Slice has contains info like page size, no.of elements and content. getContent() contains the old list(list of our model) and that is getting wrapped.
+-> Page and Slice extends Iterable Interface which allows us to iterate over collection of data. Iterable will return our original model objects. 
+-> Benefit of page object is that we get all models back with our paging set to the right number of page and offset with all of the paging metadata.
+-> Pageable interface holds attributes that match the paging metadata coming in for what we are looking for.(previous, first, next)
+-> PageRequest has the ability to store this data.
+-> UI will be updating the next page, state of the paging is held in UI, as we update content and click next page, the page request should get built up with that information coming from UI.
+-> Page request needs to get built and we need to return that into our data access layer.
+->  Spring MVC have some page request helpers and resolvers.
+-> If we are using the pageable parameter, we cannot also use the sort parameter at the same time. 
+-> If we are not using the pageable parameter and we want sort information, we are free to add that sort parameter but we can't have them both together. 
+-> If we add the pageable and the sort together, Spring Data JPA at this time will throw an error saying " it is not allowed, use the sort on the pageable object"
+
+Custom Repositories
+===================
+
+-> we need a custom method or implementation on our repository becoz spring Data JPA will not do what we needed.
+
+custom implementation + spring Data JPA repository information -> into one easily used repository. 
+
+-> As all the spring Data JPA hierarchy is having interfaces, no implementation , we had to rely on spring Data JPA.
+-> If we want to add our own custom code along with the Spring Data JPA offers, we need to do the following
+
+1. Add a new interface for our custom methods. suffix the interface with custom
+	Ex: MyJpaRepositoryCustom
+	
+2. Have the Jpa repository extend the custom interface. This gives client code visibility into both the spring Data JPA methods and our new methods. 
+
+3. Create a class that implements the custom repository and provides the custom method definitions. 
+	The implementation class must be named exactly as our JPA repository interface but with suffix IMPL at the end of our class name. - default way of spring data jpa to match with the spring data jpa repository.
+	
+	Ex: MyJPARepositoryImpl
+	
+-> If we want to change the suffix of our implementation class we can do that in our spring data JPA configuration.
+
+<jpa:repositories base-package="com.guitar.db.repository" />
+<jpa:repositories base-package="com.guita.db.repository" repository-impl-postfix="CustomClass"/>
+
+repository-impl-postfix="CustomClass" -> This is telling spring data jpa to find a class implementation with that suffix instead of the default impl suffix. 
+
+-> 	After application satrt up, Spring Data JPA will create an implementation class taht will implement our JPA repository and extend our custom impl class which will combine the built-in spring data jpa features with our custom implementation features.
+
+Auditing Support
+----------------
+
+-> Auditing system require auditing and tracking in their data access layers escpecially when writes happen to data. 
+-> Typical information that is audited is 
+
+1. who created the record, 
+2. when was it created, 
+3. who modified the record, 
+4. when was the record last modified.
+
+-> We have these 4 attributes on every database table. 
+
+-> Spring Data Jpa provides below 4 annotations corresponding to the four basic auditing attributes.
+-> These annotations are places in our JPA entity class on the attributes that represent our database audit columns. 
+
+Spring Data JPA annotations
+
+1. @CreatedBy
+2. @CreatedDate
+3. @LastModifiedBy
+4. @LastModifiedDate
+
+Ex:
+
+public class Model{
+	
+	@CreatedBy
+	private User user;
+	
+	@CreatedDate
+	private DateTime createdDate;
+
+}
+
+
+-> created by and modified by should map to our related user relationship or string or number data type containing text that identifies that user or the user id.
+-> date audit fields are set to a date time data type.
+-> @CreatedDate and @LastModifiedDate are automatically updated by spring data jpa.
+-> @CreatedBY and @LastModifiedBy are hard for spring data jpa to set becoz the security implementation and user info can vary from app to app. 
+-> To handle this, framework provides an auditor aware interface that we can implement with the correct way to obtain the current user's information.
+-> If using spring security we can access the authorized principal in the get current auditor method. 
+
+Ex: 
+
+public class SecurityAuditorAware implements AuditorAware<User> {
+	
+	public User getCurrentAuditor(){
+	
+	//
+		return user;
+	}
+}
+
+-> If using another framework, we access the current user in this method with appropriate logic.
+-> When data is modified spring data jpa will use the returned user to update the appropriate audit values. 
+-> The auditor aware uses generics, if we return a string or long we can set the code to match our user auditing needs. 
+
+-> To enable auditing with spring data jpa, add below in XML
+
+<jpa:auditing auditor-aware-refactoring="securityAuditorAware" />
+
+or
+
+enable JPA auditing annotation using java configuration
+
+@Configuration
+@EnableJpaAudting
+public class SecurityAuditorAware implements AuditorAware<User> {
+	
+	public User getCurrentAuditor(){
+	
+	//
+		return user;
+	}
+}	
+
+Locking
+-------
+
+Locking stratergies for our data access layer and how to use them in spring data jpa.
+
+-> Locking revolves around concurrently accessed data. If we have lot of users trying to access and modify our data all at the same time, we need to implement a lockign stratergy to prevent one user's data getting overwritten by another user's data in a last one to write the data wins scenario.
+
+@Version annotation -> provided by JPA, that we can assign to a persisted attribute on our entity that gets updated by the persistence manager every time the data is written. 
+
+@Entity
+public class Model{
+
+	@Version
+	private int version;
+	
+
+}
+
+-> If we setup lockign persistence manager can check to see if the lastest version number is ahead of its own and prevent the write from happening. 
+
+-> There are 2 basic lock types.
+
+1. optimistic 
+2. pessimistic
+
+Optimistic locking
+-----------------
+
+-> If version number doesn't match throws OptimisticLockException, then rolls back the transaction and our client code has to handle the error.
+
+Pessimistic Locking
+-------------------
+
+-> Long term locks the data for the transaction duration, preventing others from accessing the data until the transaction commits.
+-> This prevents esception handling but also causes performance bottlenecks since data will be locked and inaccessible until other users are done with that data. 
+
+-> To set the lock stratergy on our queries, spring data jpa provides a lock annotation  which we can set the lock type to match our data needs.
+
+
+@Lock(LockModelType.PESSIMISTIC_WRITE)
+List<Model> findByModelTypeNameIn(List<String types);
+
+Things
+
+1. Make sure our queries are runnign in a transaction or we will get an exception when usign our data access layer.
+2. We can override base JPA repository method definitions such as the find all or find one methods, then specify the lock mode for those base methods if we need them to be something different than what the default unlock nature provides.
+
+
+
+
+
+
+
+
+
+
+
 
 
 
