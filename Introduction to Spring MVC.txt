@@ -563,7 +563,7 @@ We represent the tiers with Spring/ Spring MVC using 3 components.
 
 Controller  -> Route where we are going and interpret the user's request. 
 Service -> where our business logic goes, where our transactions will probably start  if we're accessing more than one database table as well. 
-Repository -> Repository is referred to as DAO or Data Access Object. They usually have a 1-1 mapping with out database table. 
+Repository -> Repository is referred to as DAO or Data Access Object. They usually have a 1-1 mapping with our database table. 
 
 Controller
 ---------
@@ -1568,5 +1568,214 @@ src
 				-> web.xml
 				
 
+InternalResourceViewResolver -> find the jsp page in the above directory and serve it up
+
+web.xml 
+-------
+
+-> write configurations in web.xml
+-> provide dispatcher servlet 
+-> <init-param> -tells exact location of the configuration file, i.e., servlet-config.xml
+
+servlet-config.xml namespaces
+-----------------------------
+
+1. beans
+2. context
+3. mvc
+
+-> add <mvc:annotation-driven/>
+-> add <context:componen-scan >
+
+Create Controller
+-------------------
+
+-> add @Controleller
+-> create a method that has a Model object parameter
+-> add @RequestMapping to that method, with value - as URL (value = "/greeting")
+
+create JSP and configuration
+----------------------------
+
+-> create jsp page name as return value in controller
+-> display ${} - which is the value used in model.addAttribute
+-> Add bean in servlet-config.xml for the InternalResourceViewResolver and provide prefix and suffix
+
+Run application
+---------------
+
+URL :localhost:8080/FitnessTracker/greeting.html
+
+hostname:port/servlet-name/requestMappingvalue.html
+
+Controller  -> Route where we are going and interpret the user's request. 
+Service -> where our business logic goes, where our transactions will probably start  if we're accessing more than one database table as well. 
+Repository -> Repository is referred to as DAO or Data Access Object. They usually have a 1-1 mapping with our database table. 
+
+Controller
+----------
+
+Request ------->
+				Controller 	<-----> Service Tier 
+Response <------
 
 
+@ModelAttribute -> send or receive data from controller, used with HTTP GET and POST
+
+View
+----
+
+Adding static files
+
+servlet-config.xml
+
+<mvc:resources location="pdfs" mapping="/pdfs/**"/>
+
+web.xml
+
+Add servlet mapping with url-pattern as /pdfs/**
+
+Tags
+----
+
+spring.tld -> evaluating errors
+spring-form.tld -> processing form data
+
+servlet-config
+
+<spring:message code="goal.text" /> tag -externalizing strings
+
+web.xml
+
+<bean id="messageSource" class ="org.springframework.context.support.ResourceBundleMessageSource" p:basename="messages">
+
+basename = messages.properties file name, make sure p namespace is checked in the xml file.
+
+Interceptors - registered as part of request life cycle and involved in intercepting data that comes from our jsp page that goes to controller. used for language changing.
+
+create property files wrt to languages : english or spanish
+Ex: messages_en.properties
+
+jsp file
+
+Language: <a href="?language=en">English</a>
+servlet-config.xml
+
+<mvc:interceptors>
+	<bean class="org.springframework.web.sevlet.i18n.LocaleChangeInterceptor" p:paramName="language"/>
+</mvc:interceptors>
+
+<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver" p:defaultLocale="en" />
+
+ p:paramName="language" -> language in href
+ 
+spring-form -> meant to bind objects from our model and carry error info
+
+-> In order to make a method to handle http requests of GET, then we need to add below
+
+@RequestMapping(value= "addGoal", method = RequestMethod.GET)
+
+@SessionAttributes("goal") -> to save attributes
+
+-> In order to make a method to handle http requests of POST, then we need to add below
+
+@RequestMapping(value= "addGoal", method = RequestMethod.POST)
+
+Validation
+-----------
+
+-> using tab libraries and model object, we can validate data passed to the controller.
+
+<form:error path="firstName" > -> display errors that might have occured on first name.
+
+1. Validator interface - implemented by us
+2. ValidatorHelperClass - null checks, does using BindingResult class
+3. BindingRsult class
+4. SimpleFormController - pre-annotation way of setting up controllers.
+
+-> All form tags have an error class associated with them.
+
+JSR-303 -> standard validation, annotation based, POJO based.
+
+1. Add JSR-303 maven dependency(hibernate-validator)
+2. Add @Range(min, max) for the attribute to be validated.
+3. Use @valid before @ModelAttribute, if we want an attribute to be valid when submitted back to us as @valid will check whether the attribute is valid or not.
+4. Use BindingResult parameter to store the response from validation.
+5. Add routing navigation logic, if(result.hasErrors()){ return "addGoal";}
+6. Add <form:error path ="*"> message in the addGoal.jsp, with any styles needed. Path = * - has all errors.
+
+Ajax
+----
+
+-> producing RESTful services with spring MVC.
+-> spring mvc allows to return JSON 
+
+Rest:
+
+-> CRUD
+GET - read, 
+POST - create an object and update,
+PUT - used with updates,
+DELETE - deleting
+
+ContentNegotiatinViewResolver - makes it possible to return various content types from our application based on the request.
+
+-> It accepts XML, JSON, HTML
+-> can be combined with other view resolvers.
+
+dispatcher servlet needs to open allow access to various request types.
+
+InternalViewResolver - for jsps
+MVCResolver - for pdfs
+ContentNegotiatingViewResolver - for json and xml
+
+
+1. Add Maven dependency jackson-mapper-asl, xstream, spring-oxm, jackson-core, jackson-databind
+2. In servlet-config , 
+	-> make order of InternalResourceViewResolver from 1 to 2( since it has to be the last view resolver to be called)
+	-> Add bean for ContentNegotiatingViewResolver.
+		1. set property order as 1
+		2. set property ContentNegotiatingManager ( it says what types are we going to accept in our application)
+		   -> Add bean for ContentNegotiatingManager	
+				-> Add constructor argument , with bean name as PathExtensionContentNegotiationStrategy (tells which path types we're going to accept)
+					-> Add Constructor argument and add map entries for json and xml
+		3. set property for defaultViews
+			-> create a list and add bean name as MappingJackson2JsonView
+			-> Add bean for MarshallingView
+				-> Add constructor arugument with bean name as XStreamMarshaller
+					-> set autodetectAnnotations property as true.
+3. Create Activity POJO, with instance variable as desc.
+4. Add a method in MinutesController with 
+	-> method as GET
+	-> @ResponseBody(the return element is the actual content that we want to expose)
+	-> create activity objects and add them to list of acivities.
+	-> return type list of activities
+5. In web.xml, add servlet mapping for json
+6. Run http://localhost:8080/FitnessTracker/activities.json
+	Output -> list of activities in json format.
+
+JQuery
+------
+
+-> can esaily consume json and create html on fly.
+
+1. download Jquery from website
+2. Place the file in webapp folder of our project.
+3. Inside addMinutes.jsp, add column for activity using
+	-> <form:select id="activities" path="activity">
+	-> change colspan to 3
+	-> Add <script type="text/javascript" sec ="jquery">
+	-> Add another script tag to write jquery code which will show the options.
+4. In Exercise class, add variable activity becoz, the form tag for activity is added under exercise tag
+5. Dispaly exercise activity in Minutes controller
+	
+Extra few pieces
+----------------
+
+1. create a package with service tier
+2. create ExerciseServiceImpl class, annotate with @Service("exerciseService")
+	pull code from MinutesController for findAllActivities and paste in this class.
+3. Extract interface, ExerciseService from this class.
+4. Add the ExerciseService in the MinutesController and add @Autowired.
+5. Add @Range for Minutes, @NotNull for activity inside the Exercise class.
+5. Check everything is working fine.

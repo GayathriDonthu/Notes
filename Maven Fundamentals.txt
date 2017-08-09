@@ -329,7 +329,7 @@ Dependencies
 ------------
 
 -> Dependencies are what we want to use inside of our application.
--> they are imported by their naming convention, we need to know artifactId, groupId and vresion which we wnat to use.
+-> they are imported by their naming convention, we need to know artifactId, groupId and version which we want to use.
 -> Good thing is that it will pull the transitive dependencies for us.
 -> These are added in the dependencies section in the pom.xml file.
 	<dependencies>
@@ -440,7 +440,7 @@ Versions
 
 		-> SNAPSHOT should be all caps, doesn't work if it is lower case.
 
-	b) CHanges always donloaded
+	b) changes always downloaded
 	c) Saves us from releasing versions for development.
 	d) Never deploy to production with a SNAPSHOT.
 		-> becoz we cannot reproduce or recreate that code.
@@ -466,7 +466,7 @@ Types
 -----
 
 -> Types refer to the type of resource that we want to include inside of our application.
--> Most of the time, we want to incluse a jar but there are few others also.
+-> Most of the time, we want to include a jar but there are few others also.
 
 1. Current core packaging types are:
 	
@@ -476,11 +476,11 @@ Types
 	
 2. The type of pom is referred to as dependency pom.
 	-> downloads dependencies from that pom.
-	-> Ex: if we have webservices, and to group all these dependencies, Jersey libraries/ Metro/ XML dependencies, we can put those like a RESTFul services pom and reference that pom and it will download that into our applciation.
-	-> types refere to packaging inside of our application.
+	-> Ex: if we have web services, and to group all these dependencies, Jersey libraries/ Metro/ XML dependencies, we can put those like a RESTFul services pom and reference that pom and it will download that into our applciation.
+	-> types refer to packaging inside of our application.
 	-> If we are building an artifact for other people to consume, we specifically refer what our packaging is there. 
 	Ex: <packaging>jar</packaging>
-	i.e., the artifact we want to use has a pom and its pom has a packaging set on it, of jar, war, war etc and that's waht gets pulled into our application.
+	i.e., the artifact we want to use has a pom and its pom has a packaging set on it, of jar, war, war etc and that's what gets pulled into our application.
 	-> packaging and the type that someone is going what our artifactId is are the same thing.
 	
 	
@@ -488,10 +488,10 @@ Transitive Dependencies
 -----------------------
 
 1. Main reason people using Maven
-2. If we add a dependency, like hibernateit will goahead and pull any and all transitive dependencies that the hibernate needs.
+2. If we add a dependency, like hibernate it will go ahead and pull any and all transitive dependencies that the hibernate needs.
 	-> If we have any conflicts, it'll also resolve those too by always choosing the newer version. 
 	-> We don't know from where all these transitive dependencies are coming from.
-	-> People who program the code know very well as what dependencies are needed for a perticular jar. So, the pom that we downloaded from them actuallydefines the dependencies that it's looking for.
+	-> People who program the code know very well as what dependencies are needed for a perticular jar. So, the pom that we downloaded from them actually defines the dependencies that it's looking for.
 	
 	
 Scopes
@@ -624,13 +624,13 @@ Maven plugins
 Goals
 -----
 
-1. The default goals are plugins configured in the maven install.
+1. The default goals are plug-ins configured in the maven install.
 	-> clean, compile, test, package, install, deploy.
 	
 2. super pom has these goals defined in it, which are added to your effective pom
-	-> clean plugin is a very basic plugin but we may want it ot run during certain phases or always. we can change which phase it is tied to.
+	-> clean plug-in is a very basic plug-in but we may want it to run during certain phases or always. we can change which phase it is tied to.
 	
-3. GOals are tied to a phase.
+3. Goals are tied to a phase.
 
 Phases
 -------
@@ -800,16 +800,133 @@ Effective Pom tab in pom.xml
 -> it is a debugging tool, to see what pom is doing.
 -> It has everything about the defaults about repositories, plugins and all those type of things that we're using inside of our application.
 
+Overall Summary
+===============
+
+MAVEN_HOME = C:\Users\gayathri.guttikonda\Desktop\Gayathri\Softwares\apache-maven-3.3.9-bin\apache-maven-3.3.9
+
+PATH = %PATH%;%MAVEN_HOME%\bin
+
+Command to check if Maven is installed correctly 
+
+mvn -version 
+
+-> pom stands for project object model.
+
+<groupId> - company web address, com.accenture
+<artifactId> -> is the name of our application.
+<version> -> version of our application
+
+mvn -clean -> downloads bunch stuff into maven repo, deletes everything and cleans anything.
+
+mvn compile -> downloads all the plugins it needs to run, target directory and classes directory are created.
+
+mvn exec:java -> for execution
+
+mvn package -> download plugins need to build the app, compile classes and bundle everything into a jar in target folder.
+
+-> HelloMaven-1.0-SNAPSHOT.jar is created
+
+mvn -package creates below folders
+
+classes
+maven-archiver
+surefire
+test-classes
+HelloWorld-1.0-SNAPSHOT.jar
+
+maven-archiver -> it is what we are referring to for our package.
+surefire and test-classes -> how our code gets unit tested.
+
+target -> It compiles all our code to a target directory. 
+
+Dependencies -> Dependencies are the actual artifacts that we want to use inside of our application.
+	
+Build -> It refers to what plug-ins that we want to use, what we need to do build our code, directory strcuture , names of target or location,or where to find resources, or some xml files.
+		
+Repositories -> Respositories are where we want to download artifacts from.
+	
+Goals -> Goals are what we expect to have just from basic functionality that we would add in here
+
+1. Clean -> clean goal deletes the target directory and any of its generated resources.
+	
+2. Compile -> Compiles all source code, generates any files, copies resources to classes directory.
+	
+3. package -> Runs the compile command first, runs any tests, packages the app based on its packaging type.
+	
+4. install -> Runs the package command and then installs it in our local repo.
+	
+5. deploy -> Runs the install command and then deploys it to a corporate repo. It copies from internal repository.
 
 
+local repo -> c:\Users\username\.m2\repository
+
+where maven stores everything it downloads. So, it looks locally to see if we have this code. ANd if it doesn't, it will go and download that from a remote repository. Avoids duplication by copying it in every project and storing it.
+
+changing final artifact name 
+
+<build>
+	<firstName>HelloGayathri</finalName>
+</build>
+
+types -> types refer to packaging inside of our application.
+Ex: <packaging>jar</packaging>
+
+Transitive Dependencies -> If we add a dependency, maven will also pull the dependencies needed for that dependency.
+
+Scopes -> There are 6 scopes available for dependencies.
 
 
+1. compile - default scope, artifacts available everywhere
 
+2. provided - like compile, means the artifact is going to be provided where it is deployed(entire build cycle)
+		
+3. runtime - not needed for compilation, but needed for execution, not included in final artifact.
+	
+4. test - only available for the test compilation and execution phase, not included in final artifact.
+	
+5. system - similar to provided, we specify a jar on the file system(hard code a path to a jar )
+	
+6. import - deals with dependency management sections, sharing resources across multiple poms.
 
+super pom.xml ->  It is located inside of our Maven installation, http://repo.maven.org.apache.org/maven2
+			  -> we can override it, either though global parent file or through our project's pom.xml
+			  -> has 95% of what we want to download.
 
+Dependency Repository -> where we download all of our dependencies from.
 
+Plugin Repository -> identical to dependency repository, but they just deal with plug-ins
+  
+Maven plugins -> plugins are what maven uses to build and package our application as well as do anything outside of just downloading and storing artifacts for us.
 
+Goals -> plug-ins configured in the maven install. Goals are tied to a phase.
+		 Ex: clean, compile, test, package, install, deploy.
+		 
+		 
+Phases
+-------
 
+1. validate phase -> validate the project is correct and all necessary information is available.
+					 
+2. compile phase -> compile the source code of the project.
 
+3. test phase -> test the compiled source code. 
 
+4. Package phase -> packages the code in its defined package, such as JAR.
+	
+5. integration-test phase -> allows us to deploy and run integration test. 
+	
+6. verify phase	-> Run checks against package to verify integrity. 
+	
+7. install phase -> install and package it in local repository.
+	
+8. deploy phase	-> copy final package to a remote repository.
+	
+	
+Plug-ins
+---------
 
+1. Compiler plugin -> used to compile code and test code, defaults to 1.5
+2. Jar plugin -> used to package code into a jar, tied to package phase, builds the manifest file for us automatically.
+3. Source plugin -> used to attach source code to jar, tied to package phase
+4. Javadoc plugin -> takes javadoc and packages them to jar file, tied to package phase.

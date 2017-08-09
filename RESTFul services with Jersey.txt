@@ -84,7 +84,7 @@ Downloading Jersey
 -> Jersey has an archetype to hep start things. 
 Archetype - It is just a preset of files that are put together in a structure that makes sense for us, and usually some boilerplate code that's eleimnated for us. It's got dependecnies we need included in our project already configured and a basic folder structure setup for us.
 
-Type below Archetype on the Maven command line and it will go through  and download our resounces and help us setup our project. 
+Type below Archetype on the Maven command line and it will go through  and download our resources and help us set up our project. 
 
 mvn archetype:generate -DarchetypeGroupId=org.glassfish.jersey.archetypes -DarchetypeArtifactId=jersey-quickstart-webapp -DarchetypeVersion=2.25.1
 
@@ -217,7 +217,7 @@ We use level2, since Level 3 is still nonstandard between libraries, and not sup
 -> Create, Read, Update and Delete are the CRUD functions.
 -> Web doesn't use Put and Delete.
 -> Level 3 includes level2, but puts a focus on Discoverability.
-	HATEOS - Hypertext As the Engine Of Application State
+	HATEOS - HyperMedia As the Engine Of Application State
 	
 HATEOS
 ------
@@ -268,7 +268,7 @@ XML
 -> Easy to validate and easy to confirm that it's well formed.
 -> To use XML, annotate method with below
 
-@Produces(MediaType.APPLCIATION_XML)
+@Produces(MediaType.APPLICATION_XML)
 
 Binary
 ------
@@ -411,7 +411,7 @@ If we want to produce both XML and JSON?
 -> @Produces can take a single String or and Array of Strings.
 	-> To do that, define as below
 	
-	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLCIATION_XML})
+	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	
 -> This may cause a problem, we need to use something besides our browser to set an accept header of what we want to see.
 	-> Most browsers support some type of posting tool like plugins.
@@ -977,3 +977,44 @@ First Class Searching
 	
 Searching using a post demo
 ---------------------------
+
+
+Overall Summary
+================
+
+
+1. mvn archetype:generate -DarchetypeGroupId=org.glassfish.jersey.archetypes -DarchetypeArtifactId=jersey-quickstart-webapp -DarchetypeVersion=2.25.1
+2. import to STS, add javax.servlet in pom.xml, convert web.xml to 3.0, change the compiler to 1.8 in pom.xml
+
+Creating a service
+
+1. @Path
+2. @Get
+3. @Produces
+
+Run the application
+
+http://localhost:8080/exercise-services/webapi/myresource
+
+HATEOAS - Hypermedia as the Engine of Application State
+
+CRUD
+
+Create - Post
+Read - Get
+Update - Put
+Delete - Delete
+
+JSON -> easy to use, but difficult to validate
+To use JSON - @Produces(MediaType.APPLICATION_JSON)
+
+XML - easy to validate
+To use XML -> @Produces(MediaType.APPLICATION_XML)
+
+Binary -> file, image or pdf
+To use Binary -> @Produces(APPLICATION_OCTET_STREAM)
+
+-> Annotated with @GET
+-> Mapping is defined with @Path
+-> URL is defined through our context/ servlet mapping/ @Path
+-> Content retuned is defined with @Produces
