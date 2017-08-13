@@ -1015,6 +1015,54 @@ Binary -> file, image or pdf
 To use Binary -> @Produces(APPLICATION_OCTET_STREAM)
 
 -> Annotated with @GET
--> Mapping is defined with @Path
+-> Mapping is defined with @Path (appended at the end of URL)
 -> URL is defined through our context/ servlet mapping/ @Path
 -> Content retuned is defined with @Produces
+
+Create service to retreive all activities
+-----------------------------------------
+
+1. Create Activity
+2. Create AvtivityRepository
+3. Create ActivityResource ( annotate with GET)
+4. URL - http://localhost:8080/exercise-services/webapi/activities
+
+
+Activity
+
+-> attributes: description, duration
+
+AvtivityRepositoryStub
+
+-> findAllActivities method -> create activities and add them to a list, return it.
+
+AvtivityRepository
+
+-> Extract interface out of AvtivityRepositoryStub
+
+ActivityResource
+
+-> Add @Path("activities") to ActivityResource class
+-> create ActivityRepository object.
+-> create method getAllActivities, with @GET and @Produces-xml
+
+
+Exception: MessageBodyWriter not found for media type = xml 
+Fix : Add @XmlRootElement on the Activity class.
+
+http://localhost:8080/exercise-services/webapi/activities
+
+Output -> with activities
+
+
+
+
+
+
+
+
+
+
+
+
+
