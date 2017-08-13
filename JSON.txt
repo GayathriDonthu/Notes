@@ -435,32 +435,43 @@ Read Annotations
 
 5. @JsonDeserialize -> @JsonDeserialize is used to specify a custom de-serializer class for a given field in a Java object.
 					-> need to add the @JsonDeserialize annotation to the field you want to use the custom deserializer for.
+					@JsonDeserialize(using = OptimizedBooleanDeserializer.class)
+					-> OptimizedBooleanDeserializer class extends JsonDeserializer 
+					
+					
+Write Annotations
+------------------
 
+1. @JsonInclude -> @JsonInclude tells Jackson only to include properties under certain circumstances.
+				-> properties should only be included if they are non-null, non-empty, or have non-default values. 
+				
+2. @JsonGetter -> @JsonGetter Jackson annotation is used to tell Jackson that a certain field value should be obtained from calling a getter method instead of 
+			      via direct field access.
 
-@JsonAnyGetter ->  @JsonAnyGetter Jackson annotation enables you to use a Map as container for properties that you want to serialize to 
+3. @JsonAnyGetter ->  @JsonAnyGetter Jackson annotation enables you to use a Map as container for properties that you want to serialize to 
 				   JSON. 	
 				   
-@JsonPropertyOrder -> @JsonPropertyOrder Jackson annotation can be used to specify in what order the fields of your Java object should be 
+4. @JsonPropertyOrder -> @JsonPropertyOrder Jackson annotation can be used to specify in what order the fields of your Java object should be 
 					  serialized into JSON.
 					  
-@JsonRawValue -> @JsonRawValue Jackson annotation tells Jackson that this property value should written directly as it is to the JSON output. 
+5. @JsonRawValue -> @JsonRawValue Jackson annotation tells Jackson that this property value should written directly as it is to the JSON output. 
 			  -> If the property is a String Jackson would normally have enclosed the value in quotation marks, but if annotated with the   @JsonRawValue property Jackson won't do that.
 				   
-Ex: 
+	Ex: 
 
-without @JsonRawValue
+	without @JsonRawValue
 
-personJson = {"id":0,"address":"{ \"street\" : \"Cafe Streer\", \"number\" : 23}"}
+	personJson = {"id":0,"address":"{ \"street\" : \"Cafe Streer\", \"number\" : 23}"}
 
-with @JsonRawValue
+	with @JsonRawValue
 
-personJson = {"id":0,"address":{ "street" : "Cafe Streer", "number" : 23}}
+	personJson = {"id":0,"address":{ "street" : "Cafe Streer", "number" : 23}}
 
 
-@JsonValue ->  @JsonValue tells Jackson that Jackson should not attempt to serialize the object itself, but rather call a method on the
+6. @JsonValue ->  @JsonValue tells Jackson that Jackson should not attempt to serialize the object itself, but rather call a method on the
 			   object which serializes the object to a JSON string.	
 			   
-@JsonSerialize -> @JsonSerialize Jackson annotation is used to specify a custom serializer for a field in a Java object. 
+7. @JsonSerialize -> @JsonSerialize Jackson annotation is used to specify a custom serializer for a field in a Java object. 
 			   -> The OptimizedBooleanSerializer will serialize a true value to 1 and a false value 0. 
 			   
 			   
