@@ -1054,6 +1054,90 @@ http://localhost:8080/exercise-services/webapi/activities
 
 Output -> with activities
 
+16th August
+-----------
+
+Retrieving list of activities
+-----------------------------
+
+1. create method get() in ActivityClient class
+2. add target, and response as below
+	List<Activity> response = target.path("activities").request(MediaType.APPLICATION_JSON_TYPE).get(List.class);
+3. return response;
+4. create method testGetList() in ActivityClientTest class, call get()
+
+Exception : MessageBodyProviderNotFoundException
+Solution: 
+
+-> .get(List.class) will not work
+-> wrap with .get(new GenericType<List<Activity>>(){} )
+
+Run the junit test , it will work.
+
+Handling errors
+---------------
+
+HTTp response codes -> return a response object.	
+
+1. In the getActivity() of ActivityResource class, change the return type from Activity to Response
+2. Add validation for activitId and return Response.status(Status.BAD_REQUEST).build();
+	if activitId is not found return Status.NOT_FOUND, else return Response.ok().entity(activity).build();
+3. In the ActivityClient class, get(String id) method change the response class from Activity to Response class and add below validation.
+	if(response.getStatus() != 200){
+		throw new RuntimeException(response.getStatus() + ": error on server");
+	}
+4. Run the testGet() junit test and it will succeed. 
+
+test case for failure scenario
+
+1. Create method testGetWithBadRequest, add @Test(expected = RuntimeException.class)
+2. call ActivityClient method .get("123")
+3. When we run this, the junit will pass since the wrong id throwing runtime exception is expected.
+4. If we remove the expected, then the test case will fail.
+5. checking activity not found error  : add if activityId = "7777" , retunr null- any number, in findActivity() of ActivityRepositoryStub class, then create method testGETNotFound() in ActivityClientTest class and then run it. 
+
+Post in client
+---------------
+
+-> use .post()
+-> Entity.entity(acivity, MediaType.APPLICATION_JSON)
+-> response is same as GET
+
+
+1. In ActivityClientTest, create method testCreate()
+2. create activity object with desc as swimming and duration as 30
+3. call create(activity) of ActivityClient class.
+4. Add method create(activity) in the ActivityClient class.
+5. add target, response and exception 
+   Response response = target.path("activities/activity")
+							 .request(MediaType.APPLICATION_JSON)
+							 .post(Entity.entity(activity, MediaType.APPLICATION_JSON));
+6. return response.readEntity(Activity.class)
+   
+put in client
+-------------
+
+-> create and update records, it is idempotent(create at first and update everytime), id is passed in put.(id is passed by server in post)
+
+URL: http://localhost:8080/exercise-services/webapi/activities/1234
+
+1. create unit test case method put() in the class ActivityClientTest class.
+2. create Activity object and setId("3456"), setDescription, setDuration.
+3. call update(activity) method in ActivityClient class.
+4. create update(activity) method in Actiivty class, add below response code
+	Response response = target.path("activities/activity" + activity.getId())
+							  .request(MediaType.APPLICATION_JSON)
+							  .put(Entity.entity(activity, MediaType.APPLICATION_JSON));
+5. Add exception handling
+3. server to retrieve the functionality
+4. Repository/stub layer
+
+
+
+
+
+
+
 
 
 
