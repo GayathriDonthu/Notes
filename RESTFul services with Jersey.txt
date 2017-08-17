@@ -1054,8 +1054,139 @@ http://localhost:8080/exercise-services/webapi/activities
 
 Output -> with activities
 
-16th August
------------
+
+-> Jersey uses JAXB is used to do Java to XML and then transforms XML to JSON.
+
+@XmlElement(namw="desc") -> can be used on any of the get method of the attributes, to display the same name as tag in the xml output.
+
+
+With Json
+---------
+
+Exception: @Produces(MediaType.APPLICATION_JSON) -> MessageBodyWriter not found 
+
+Solution: JSON requires another jar for pom.xml, jersey-media-moxy
+
+
+-> xml annotations effect json i.e, @XmlElement. so desc will be present in output instead of the desciption
+
+for both xml and Json
+----------------------
+
+-> @Produces can produce multiple outputs, array syntax -> @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+-> Postman, Poster are used by browser to set the accept header(xml/json)
+
+Add postman plugin, 
+
+URL - http://localhost:8080/exercise-services/webapi/activities
+Header -> Accept - application/json
+
+-> Can see the output xml/json by using header
+
+retrieving specific objects
+----------------------------
+
+
+-> @Pathparam("paramname") to grab params
+Ex: URL - http://localhost:8080/exercise-services/webapi/activities/1234
+
+-> can nest path references
+Ex: URL - http://localhost:8080/exercise-services/webapi/activities/1234/user
+
+1. Add getActivity Method to ActivityResource class similar to getAllActivities.
+2. Add @Path("{activitId}") , adding curly braces so to append the URL
+3. Add parameter as @PathParam("activityId") String activitId
+4. Create method findActivity in ActivityRepsoitory, activityId as parameter.
+5. Add id attribute to Activity class with getters and setters.
+6. Implement findActivity method in the ActivityRepositoryStub class by creating an activity(id as 1234) and return that activity.
+
+Nested object
+
+1. Add getActivityUser method to ActivityResource class with returntype as User.
+2. Add @Path("{activityId}/user")
+3. Create User class, wit name and id as atttributes.
+4. Add User as attribute to Activity class.
+5. Create new user in findActivity method and call setUser method on the activity.
+6. In the getActivityUser method, return findActivity().getUser().
+7. Add @XmlRootElement for the User class to make it work for xml.
+
+Post
+-----
+
+-> key to submit data at the backend
+
+
+@Consumes -> determine what a method will consume.
+
+application/x-www-form-urlencoded - taking basic form information from html page
+application/json
+application/xml
+
+@Consumes(MediaType.APPLICATION_FORM_URLENCODED) -> using this to bring in all parameters, by taking them as name value pairs and stored in MultivaluedMap<String, String> formParams.
+
+1. create method createActivityParams, annotate with @POST, @Path("activity")  in ActivityResource class.
+2. Add @Consumes(MediaType.APPLICATION_FORM_URLENCODED), @Produces
+3. Pass MultivaluedMap as parameter
+4. print the description and duration using formParams.getFirst
+5. Run in postman URL : http://localhost:8080/exercise-services/webapi/activities/activity
+6. Under x-www-form-urlencoded tab, provide the description and duration, click send and see the output on console.
+
+7. Create Activity object in the above method and set the description and duration with the formParams.
+8. call create method in ActivityRepository class to save the object in database.
+9. Implement create method in ActivityRepositoryStub(dummy);
+10. return activity.
+ 
+Binding to an object
+--------------------
+
+-> cleans up lot of above boiler plate code for us by binding an object, datatype mismatch is also taken care.
+-> can use @Consumes(MediaType.APPLICATION_JSON)
+-> binds to xml element names ( we have to pass desc, becoz it will use @XmlElementNames for binding)
+
+1. Create method createActivity, add @POST, @Path("activity") , @Consumes(MediaType.APPLICATION_JSON), @Produces(xml and json), 
+2. Pass Avtivity object as parameter and return activity.
+3. print the activity object and call create method in activityRepository.
+4. Run postman URL: http://localhost:8080/exercise-services/webapi/activities/activity
+5. Header content-Type = application/json. 
+6. Under raw tab, select JSON and provide the json data for activity. 
+
+{"description":"walk", "duration":30} -> error, the value will be null
+{"desc":"walk", "duration":30} -> valid json
+
+Building Restful client in Jersey
+---------------------------------
+
+-> using client features available with Jersey distribution to build client API.
+-> helps enforce a contract
+-> build client to retreive an actvity
+
+URL : http://localhost:8080/exercise-services/webapi/activities/1234
+
+request(MediaType.APPLICATION_JSON_TYPE) - do all requests in JSON
+
+1. create package com.restJersey.client, create ActvityClient class
+2. Create instance of Client(comes from Jersey) and create its object in ActvityClient constructor
+	Client client = ClientBuilder.newClient();
+3. create method get, return type Activity, id as parameter, 
+4. provide url to hit - WebTarget
+	WebTarget target = client.target("http://localhost:8080/exercise-services/webapi/");
+5. Append the activities to the URL and get the Activity object.
+	Activity resource = target.path("activities/" + id).request().get(Activity.class);
+6. return response;
+7. run with junit, add junit dependency in pom.xml
+8. Create Junit test case from ActivityClient class and keep folder as src/test/java
+9. Inside testGet() of ActiivtyClientTest class, create ActiivtyClient object
+10. print the activity object and do assertNotNull(activity)
+11. Add print statements in the findActivity method and run the test case
+
+GET using JSON 
+--------------
+
+1. Change the class of response object from Activity to String, make return type as null and print the response.
+2. The output will be the Activity object in xml format.
+3. To get the output in JSON format, request(MediaType.APPLICATION_JSON_TYPE)
+	String resource = target.path("activities/" + id).request(MediaType.APPLICATION_JSON_TYPE).get(String.class);
+4. After that change the String class back to Actiivty class, make return type as activity and run to check json output.
 
 Retrieving list of activities
 -----------------------------
@@ -1131,22 +1262,3 @@ URL: http://localhost:8080/exercise-services/webapi/activities/1234
 5. Add exception handling
 3. server to retrieve the functionality
 4. Repository/stub layer
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
