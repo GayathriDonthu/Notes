@@ -714,7 +714,7 @@ Using Generics in the return type
 1. Returning a list is strange,  
 	-> .get(List.class) won't work. Becoz when we add a generics in Java, it broke parsing.
 	-> To do this, we need to wrap it with a new Generic Type, and then pass in our Type inside of that. 
-	GenericType<List<Actiivty>>(){}
+	GenericType<List<Activity>>(){}
 	-> generic type is given by Jersey
 	
 2. Maps and sets have the same issue.
@@ -726,7 +726,7 @@ Code change:
 	List<Activity> response = target.path("activities").request(MediaType.APPLICATION_JSON).get(new GenericType<List<Activity>>() {});
 	
 	
-GenericType<List<Actiivty>>(){}
+GenericType<List<Activity>>(){}
 
 {} -> are becoz we are creating an instance of this implementation 
 The response object
@@ -1156,6 +1156,13 @@ Binding to an object
 Building Restful client in Jersey
 ---------------------------------
 
+
+1. Unit Test - ActivityClientTest
+2. Client Code - ActivityClient
+3. Server - ActivityResource
+4. Repository/Stub - ActivityRepositoryStub
+
+
 -> using client features available with Jersey distribution to build client API.
 -> helps enforce a contract
 -> build client to retreive an actvity
@@ -1175,7 +1182,7 @@ request(MediaType.APPLICATION_JSON_TYPE) - do all requests in JSON
 6. return response;
 7. run with junit, add junit dependency in pom.xml
 8. Create Junit test case from ActivityClient class and keep folder as src/test/java
-9. Inside testGet() of ActiivtyClientTest class, create ActiivtyClient object
+9. Inside testGet() of ActivityClientTest class, create ActivityClient object
 10. print the activity object and do assertNotNull(activity)
 11. Add print statements in the findActivity method and run the test case
 
@@ -1186,7 +1193,7 @@ GET using JSON
 2. The output will be the Activity object in xml format.
 3. To get the output in JSON format, request(MediaType.APPLICATION_JSON_TYPE)
 	String resource = target.path("activities/" + id).request(MediaType.APPLICATION_JSON_TYPE).get(String.class);
-4. After that change the String class back to Actiivty class, make return type as activity and run to check json output.
+4. After that change the String class back to Activity class, make return type as activity and run to check json output.
 
 Retrieving list of activities
 -----------------------------
@@ -1248,14 +1255,14 @@ Post in client
 put in client
 -------------
 
--> create and update records, it is idempotent(create at first and update everytime), id is passed in put.(id is passed by server in post)
+-> create and update records, it is idempotent(call multiple times but it shouldn't effect), id is passed in put.(id is passed by server in post)
 
 URL: http://localhost:8080/exercise-services/webapi/activities/1234
 
 1. create unit test case method put() in the class ActivityClientTest class.
 2. create Activity object and setId(3456), setDescription, setDuration.
 3. call update(activity) method in ActivityClient class.
-4. create update(activity) method in Actiivty class, add below response code
+4. create update(activity) method in Activity class, add below response code
 	Response response = target.path("activities/activity" + activity.getId())
 							  .request(MediaType.APPLICATION_JSON)
 							  .put(Entity.entity(activity, MediaType.APPLICATION_JSON));
@@ -1271,3 +1278,128 @@ Patch
 
 -> used to do partial updates, not built in jersey yet
 -> no need of sending entire object to update 1 field, can send only the feilds to be updated and patch will do that.
+
+DELETE in client
+----------------
+
+-> used to delete records.
+URL: http://localhost:8080/exercise-services/webapi/activities/1234
+-> can be recursive and idempotent
+
+1. In ActivityClient Test, create method testDelete, call delete("1234") method in ActivityClient class.
+2. create method delete in ActivityClient, return void, pass activityId as parameter and add below response
+	Response response = target.path("activities/" + activitId)
+							  .request(MediaType.APPLICATION_JSON)
+							  .delete();
+3.  Add exception handling.
+4. In the ActivityResource class, create method delete with @DELETE, @Path("{activityId}"), @Consumes, @Produces, return Response, pass @PathParam ("activityId") as parameter.
+5. print the activitId and call delete(activityId) in the ActivityRepsoitory
+6. return Response.ok().build();
+7. create a dummy method, delete in ActivityRepositoryStub.
+
+RESTFul Searching
+-----------------
+
+2 approaches
+
+1. use query parameters and append them onto the URL for the object that we are searching on.
+2. searching a top level object.
+
+QueryParams
+-----------
+
+-> Implementing queryparams is just appending them at the end of the URL.
+-> used with GET.
+	http://localhost:8080/exercise-services/webapi/activities?duration=55&description=swimming
+-> cacheable since it is a GET. 
+-> Shortcomings 
+	- no way to represent constraints.(<, >, =, >=, <=, [])
+	- no clean way to navigate subdirectories activity/user
+	- no DSL for searching
+
+Ex:
+
+-> For search, we are using UriBuilder, becoz it is used to attach to query params.
+
+1. create separate client, ActivitySearchClient, create Client reference and add ActivitySearchClient, where we will create object for client inside that. (ClientBuilder.newClient())	
+2. create method search, with return type as List of activities, param and searchValues as parameters.
+3. URI uri = UriBuilder.fromUri("http://localhost:8080/exercise-services/webapi")
+					   .path("search/activities")
+					   .queryParam(param, searchValues)
+					   .build();
+	WebTarget target = client.target(uri);
+	
+	List<Activity> response = target.request(MediaType.APPLICATION_JSON).get(new GenericType<List<	>> () {});
+	
+4. print the response and return response;
+5. Create a new class for the server, ActivitySearchResource add @Path("search/activities")
+6. create object for ActivityRepository
+7. create method searchForActivities, with @GET, @Produces, returntype as Response, 
+	pass @QueryParam(value = "description") List<String> descriptions)
+8. print the descriptions 
+9. call findByDescription(descriptions) in ActivityRepository.
+10. chck if activities are null or size is 0, return Response.status(Staus.NOT_FOUND).build();
+11. return Response.ok().entity(new GenericEntity<List<Activity>>(activities) {}).build();
+12. create dummy method findByDescription(descriptions) in ActivityRepositoryStub class with returntype as List<Activity>.
+	create a list if activities,  add 2 activities inside that, return the list
+13. create method testSearch() in ActivityClientTest class, assign param = "description", searchValues as swimming, running
+	call search method in ActivitySearchClient and print the activities. assertNotNull(activities). 
+	
+Ranges
+------
+-> For simple cases time duration
+	- from Queryparam
+	- to Queryparam
+	
+	http://localhost:8080/exercise-services/webapi/activities?durationFrom=30&durationTo=60
+	
+	duration from 30 to 60 minutes
+
+In the demo add the durationFrom and durationTo as second and third Pamas, and follow the code changes all along above steps.
+client.search(param, searchValues, secondParam, durationFrom, thirdParam, durationTo)
+
+First Class Searching
+---------------------
+
+-> more powerful than queryparams, 
+	- create search class
+	- Build criteria in search class
+	- type searches as well(ENUMS)
+	
+-> Used with a POST(creating a search)
+	http://localhost:8080/exercise-services/webapi/activities
+	
+-> A little more cumbersome
+	- The client and server agree on more than just the url, since we are passing the API along.
+	- buildign a search API into our application.
+	
+Searching by passing an object using a post demo
+------------------------------------------------
+
+1. Create a class ActivitySearch in model package.
+2. Add attributes of the queryParam: durationFrom and durationTo, List of descriptions, generate getters and setters.
+3. In ActivityClientTest class, create a test method testSearchObject, add list of searchValues as swimming, running
+	create ActivitySearch object and set values for durationFrom and durationTo, List of descriptions
+4. call search() method, by passing ActivitySearch object as parameter which returns activities.
+5. print activities and assertNotNull(activities)
+6. create method Search(obj) in ActivitySearchClient class, add below code(no query params)
+	 URI uri = UriBuilder.fromUri("http://localhost:8080/exercise-services/webapi")
+					   .path("search/activities")
+					   .build();
+	WebTarget target = client.target(uri);
+	Response response = target.request(MediaType.APPLICATION_JSON).post(Entity.entity(obj, MediaType.APPLICATION_JSON));
+7. exceptional handling and return same as above search steps
+8. create method searchForActivities(obj) in ActivitySearchResource class, with @POST, @Produces,
+9. print obj.desciption, durationFrom and call findByConstraints() in ActivityRepository
+
+Typing a search using Enums
+---------------------------
+
+1. create new Enum with name ActivitySearchType in model package.
+3. Add below attributes
+	SEARCH_BY_DURATION_RANGE, SEARCH_BY_DESCRIPTION
+4. In ActivitySeach object, add ActivitySearchType searchType.
+5. In testSearchObject, ActivityClientTest class add search.setSearchType(ActivitySearchType.SEARCH_BY_DESCRIPTION)
+6. In ActivityRepositoryStub, print search.getSearchType()
+
+-> This will not effect other layers, very powerful.
