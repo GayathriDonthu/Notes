@@ -1253,12 +1253,21 @@ put in client
 URL: http://localhost:8080/exercise-services/webapi/activities/1234
 
 1. create unit test case method put() in the class ActivityClientTest class.
-2. create Activity object and setId("3456"), setDescription, setDuration.
+2. create Activity object and setId(3456), setDescription, setDuration.
 3. call update(activity) method in ActivityClient class.
 4. create update(activity) method in Actiivty class, add below response code
 	Response response = target.path("activities/activity" + activity.getId())
 							  .request(MediaType.APPLICATION_JSON)
 							  .put(Entity.entity(activity, MediaType.APPLICATION_JSON));
-5. Add exception handling
-3. server to retrieve the functionality
-4. Repository/stub layer
+5. Add exception handling and return response.readEntity(Activity.class)
+6. server to retrieve the functionality
+	In ActivityResource create method update, with @PUT, @Path("{activitId}"), @Consumes, @Produces, returntype Response, activity as parameter
+7. print the id of activity and call the update(activity) method in ActivityRepositoryStub class.
+8. return Response.ok().entity(activity).build();
+9. Repository/stub layer - create dummy update method and return activity
+
+Patch
+-----
+
+-> used to do partial updates, not built in jersey yet
+-> no need of sending entire object to update 1 field, can send only the feilds to be updated and patch will do that.
