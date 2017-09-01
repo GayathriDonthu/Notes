@@ -893,10 +893,10 @@ static view -> pdfs/ images
 
 <mvc:resources location="pdfs" mapping="/pdfs/**"/>
 
-pdfs -> folder name
+webapp -> pdfs -> folder name
 /pdfs/** -> ** means inside the foler pdfs look recursively
 
-http://localhost:8080/FitnessTracker/pdfs/Divya_LIC_Receipt.pd
+http://localhost:8080/FitnessTracker/pdfs/Divya_LIC_Receipt.pdf
 
 
 pdf file is opened
@@ -1592,7 +1592,7 @@ Create Controller
 
 -> add @Controleller
 -> create a method that has a Model object parameter
--> add @RequestMapping to that method, with value - as URL (value = "/greeting")
+-> add @RequestMapping to that method, with value - as URL (value = "/wishes")
 
 create JSP and configuration
 ----------------------------
@@ -1604,7 +1604,7 @@ create JSP and configuration
 Run application
 ---------------
 
-URL :localhost:8080/FitnessTracker/greeting.html
+URL :localhost:8080/FitnessTracker/wishes.html
 
 hostname:port/servlet-name/requestMappingvalue.html
 
@@ -1627,6 +1627,8 @@ View
 
 Adding static files
 
+webapp -> pdf -> Divya_LIC_Receipt.pdf
+
 servlet-config.xml
 
 <mvc:resources location="pdfs" mapping="/pdfs/**"/>
@@ -1634,6 +1636,8 @@ servlet-config.xml
 web.xml
 
 Add servlet mapping with url-pattern as /pdfs/**
+
+http://localhost:8080/FitnessTracker/pdfs/Divya_LIC_Receipt.pdf
 
 Tags
 ----

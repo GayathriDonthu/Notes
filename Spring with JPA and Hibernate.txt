@@ -162,9 +162,9 @@ persistence.xml
 	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence_2_0.xsd"
 	version="3.0">
 	
-	<persstence-unit name="punit">
+	<persistence-unit name="punit">
 		
-	</persstence-unit>
+	</persistence-unit>
 	
 </persistence>
 
@@ -616,6 +616,172 @@ Solution:
 2. Request processing failed; nested exception is org.springframework.transaction.CannotCreateTransactionException: Could not open JPA EntityManager for transaction; nested exception is org.hibernate.exception.GenericJDBCException: Unable to acquire JDBC Connection
 
 Solution: need to close the h2db UI
+
+
+Overall Summary:
+===============
+
+why hibernate or jpa?
+
+-> configuration is good with JPA, transactions, testing, datasource configuration, removes boiler plate code.
+-> Helps deveolopers to build objects and JPA bridges the gap between relational database and OO code.
+-> Annotation based development.
+
+Open the FitnessTracker Application, we have done in Spring MVC.
+
+Jars required for jpa
+---------------------
+
+- h2, hibernate-entitymanager, jta, spring-jdbc, spring-orm
+
+1. h2
+2. hibernate-entitymanager -> actual provider of JPA.
+3. jta - used to implement transactions
+4. spring-jdbc -> contains libraries to get datasource and connect using h2 jars.
+5. spring-orm -> provides interface to configure JPA from within the spring.
+
+persistence.xml 
+----------------
+
+JPA without spring, we specify
+
+1. datasource
+2. allowed operations
+3. caching
+
+why spring?
+
+-> Can override settings per environment
+-> easier to test
+-> inject into other resources
+
+Though spring is used, we need an empty persistence.xml
+
+web.xml
+-------
+
+-> To load Spring we need to tell our application where to find the spring configuration files, 
+1. dispatcher servlet 
+2. listener, context-param(contextConfigLocation, classpath:/jpaContext) where classpath is src/main/resouces
+
+listener -> this class is started by container and listener looks for context parameter named contextConfigLocation
+context-param -> tells where on classpath to find the jpaContext file.
+
+We are using 2nd way since JPA has nothing to do with dispatcher servlet.
+
+jpaContext.xml(any name)
+--------------
+
+-> used instead of persistence.xml, so everything is placed in jpaContext.xml and loaded by spring from classpath.
+-> loaded from classpath, configured in web.xml and loaded by context loader listener.
+-> contains 
+	1. EntityManagerFactory (where we define Jpa vendor and Jpa Properties), 
+	2. Transaction manager,
+	3. Annotation configuration, 
+	4. Datasource configuration 
+	
+EntityManagerFactory
+--------------------
+
+-> used to start up and Hibernate inside our application.
+-> LocalContainerEntityManagerFactoryBean located in spring-orm.jar, references our persistence unit, datasource, jpa vendor.
+
+Datasource
+----------
+
+DriverManagerDataSource	-> spring-jdbc.jar
+driverClassName	-> org.h2.Driver
+url	-> jdbc:h2://localhost:8080/fitnessTracker?autoReconnect=true
+username -> sa
+password -> sa
+
+Configuration of Spring and JPA
+-------------------------------
+
+1. Add h2, hibernate-entitymanager, jta, spring-jdbc, spring-orm dependencies in pom.xml
+2. Create persistence.xml under src/main/resouces/META-INF folder.
+3. Add below code
+	<persistence xmlnamespace="http://java.sun.com/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence_2_0.xsd"
+	version="3.0">
+		<persistence-unit name="punit">
+		</persistence-unit>
+	</persistence>
+4. In web.xml add contextConfigLocation
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:/jpaContext.xml</param-value>
+	</context-param>
+5. Add ContextLoaderListener
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+6. Create spring Bean configuration file named as jpaContext.xml file under src/main/resouces folder and select namespaces Tx, beans, context.
+7. Add below code 
+	<context:annotation-config/>
+	<bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
+8. Add entityManagerFactory bean
+	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="persistenceUnitName" value="punit"/>
+		<property name="dataSource" ref="datasource"/>
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+				<property name="showSql" value="true"/>
+			</bean>
+		</property>
+		
+		<property name="jpaPropertyMap">
+			<map>
+				<entry key="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+				<entry key="hibernate.hbm2ddl.auto" value="none"/>
+				<entry key="hibernate.format_sql" value="true"/>
+			</map>
+		</property>
+	</bean>
+	
+9. Add Transaction manager
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory"/>
+	</bean>
+	
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+10. Add dataSource
+	<bean id=""dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="org.h2.Driver" />
+		<property name="url" value="jdbc:h2://localhost:8080/fitnessTracker?autoReconnect=true" />
+		<property name="username" value="sa" />
+		<property name="password" value="sa"/>
+	</bean>
+	
+
+-> JPA is an interface to ORM(or a specific provider) and ORM is an implementation of JPA.	
+-> JPA is a specification for accessing, persisting, managing data b/w Java objects and relational database.
+-> JPA used JPQL 
+
+Why JPA over Hibernate?
+
+-> We can switch the providers.
+
+Entity
+-------
+
+-> Entity is a POJO, to make it to work with JPA and hibernate, add @Entity, @Id
+
+1. jpaPropertyMap is present in LocalContainerEntityManagerFactoryBean
+2. hibernate.dialect - what vendor of database Ex: H2 database
+3. hibernate.format_sql - in the logs the queries are displayed
+4. hibernate.hbm2ddl.auto - creates database for us.
+
+Steps:
+
+1. In Goal class, annotate with @Entity, add id attribute, generate getters and setters and add @Id, @GeneratedValue to id.
+2. In jpaContext.xml, set value of hibernate.hbm2ddl.auto to create.
+3. Run the app in server and check if table Goal is created in logs and check the table in h2 db.
+
+
+
+
 
 
 
