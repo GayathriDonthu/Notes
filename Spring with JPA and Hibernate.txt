@@ -780,6 +780,43 @@ Steps:
 3. Run the app in server and check if table Goal is created in logs and check the table in h2 db.
 
 
+JPA Annotations and how to use them
+-----------------------------------
+
+annotations - mark object with the desired functionality
+
+Entity annotations - @Entity, @Table, @Id, @GeneratedValue(IDENTITY, AUTO, SEQUENCE/@SequenceGenerator, TABLE/@TableGenerator)
+
+@Column - override column names
+
+Steps:
+
+1. In Goal.java, add @Table(name = "goals") above the class and below @Entity.
+2. In jpaContext.xml file, make sure that hibernate.hbm2ddl.auto = "create"
+3. Run the app in server and check if table goals is created in logs and check the table in h2 db.
+4. In Goal.java, for minutes attribute add @Column(name = "MINUTES"), id attribute add @Column(name="GOAL_ID")
+5. Run the app in server and check if above changes reflected in logs and also in h2 db.
+6. In jpaContext.xml file, make sure that hibernate.hbm2ddl.auto = "create-drop", then the table goals is deleted in h2 db. change it back to create.
+
+How to use annotations:
+----------------------
+
+1. @PersistenceContext - injects EntityManager in our code
+2. @Service - business logic located at.
+3. @Repository - spring DAO object where database interaction occurs.
+4. @Transactional - used to start a transaction.
+
+Steps:
+
+1. Create interface GoalService in service package and add save(Goal goal) with return type as Goal.
+2. Create class GoalServiceImpl and add interface GoalService, add @Service("goalService") to class.
+3. In GoalController, create GoalService ref with @Autowired and in updateGoal(), add else code after result.hasErrors() as goalService.save(goal)
+4. Create a package repository, create interface GoalRepository and add save(Goal goal).
+5. Create class GoalRepositoryImpl and add interface GoalRepository, add @Repository("goalRepository").
+6. create EntityManager ref and annotate with @PersistenceContext, in save() call em.persist(goal) and return goal.
+7. In GoalServiceImpl, autowire GoalRepository an return goalRepository in save().
+
+	
 
 
 
