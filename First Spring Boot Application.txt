@@ -744,9 +744,9 @@ CREATE TABLE SHIPWRECK(
 	ID INT AUTO_INCREMENT,
 	NAME VARCHAR(255),
 	DESCRIPTION VARCHAR(2000),
-	CONDITION VARHAR(255),
+	CONDITION VARCHAR(255),
 	DEPTH INT,
-	LATTITUDE DOUBLE,
+	LATITUDE DOUBLE,
 	LONGITUDE DOUBLE,
 	YEAR_DISCOVERED INT
 );
@@ -1164,5 +1164,323 @@ Web Integration test == calling REST API.
 -> Assertion to make sure that we get 200 OK back. If we don't get the 200OK back test will fail immediately.
 -> Converting the response into an actual JSON object, and perform some assertions on that to make sure that the return JSON is in a state that makes sense.
 -> Since we don't have any shipwrecks in database currently, we check to make sure we get an empty array returned as JSON payload. ([])
+
+
+Overall Summary
+===============
+
+1. create maven project with maven-archetype-quickstart, 1.1
+	groupId - com.boot
+	artifactId - das-boot
+	package - com.boot
+2. In pom.xml, add spring boot as parent dependency. 
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.3.1.RELEASE</version>
+	</parent>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-web</artifactId>
+	</dependency>
+3. In App.java class of com.boot package, add @SpringBootApplication at the top of the class, and print below line in the main method.
+	SpringApplication.run(App.class, args);
+4. Create packages controller, model, respository and service under com.boot.
+5. Add spring MVC controller with name HomeController under com.boot.controller and add @RestController at the top of the class.
+6. create a method home with @RequestMapping and return string "Das boot reporting for duty";
+7. Run App.java class as Java application.
+8. In browser, URL : http://localhost:8080
+	Output: Das boot reporting for duty
+
+
+Spring Boot Initializers
+------------------------
+
+1. Web Initializer -> easy to create a project
+
+http://start.spring.io -> select desired options and click on generate project -> download zip file
+
+2. Spring Boot CLI -> calls same website start.spring.io and works similar to above (need to be cownloaded)
+
+Create a project usign below command
+
+> spring init --dependencies mySpringBootApp
+
+3 points
+
+1. Java - -> The application is started from a java main class.	
+	
+2. Spring Application -  Spring Boot Initializes Spring context, spring environment, Initalizers
+
+3. Embedded server - An embedded servlet container is started and auto configured.Default is tomcat, Auto configured.
+
+@SpringBootApplication -> directs Spring Boot how to initialize and start up Spring, sets up other annotations
+
+@Configuration 					->    Spring configuration on startup.
+									  								  
+@EnableAutoConfiguration 		->    Auto configures framework.
+										
+@ComponentScan					->	  Scans project for Spring components
+									  
+Above three annotations are the main annotations that the SpringBootApplication provides.They are not present explicitely in the code, but they are present.
+
+SpringApplication.run();		->    Starts Spring, creates spring context, applies annotations and sets up embedded
+									  container.
+
+RestFul Web app
+---------------
+
+server side -> Spring Boot, Spring Core and Spring MVC( provides RESTful API endpoints that our user interface will communicate with).
+user interface -> web browser, angular 1 UI
+client 
+
+clone code from https://github.com/dlbunker/ps-spring-boot-resources.git
+
+-> copy www folder contents in this location to das-boot/src/main/resources/public
+
+setting up UI -> das-boot -> update maven project -> run the application
+
+URL: http://localhost:8080/index.html
+
+output displayed.
+
+-> check the UI changes, put header in home.html and see that in browser.
+
+Build rest api functionality:
+
+-> Rest API is located in Spring Boot app(provided by spring MVC), entry point in and out of server for web client.
+
+5 end points
+
+- GET /api/v1/shipwrecks(list)
+- POST /api/v1/shipwrecks(add)
+- GET /api/v1/shipwrecks/{id}(view)
+- PUT /api/v1/shipwrecks/{id}(update)
+- DELETE /api/v1/shipwrecks/{id}(delete)
+
+1. Create ShipwreckController in com.boot.controller package and add @RestController, @RequestMapping("api/v1/") on top of the class.
+2. Add a method list add return type List<Shipwreck>, add @RequestMapping(value = "shipwrecks", method = RequestMethod.GET) 
+3. Copy Shipwreck class from git code to com.boot.model package and ShipwreckStub class to controller package.
+4. return ShipwreckStub.list();
+5. Create other end point methods similar to above and return respective methods(create, get, update, delete)
+6. Run the application and check the output in browser.
+
+working after adding spring-boot-starter-web in pom.xml, spring boot
+
+1. sets up ViewResolvers - to respond based on content type.
+2. sets up static resource serving - located in src/main/resources
+3. sets up HttpMessageConverter - convert JSON objects into Java and vice versa.
+
+-> we can override the defaults.
+
+properties -> application.properties placed on classpath root(src/main/resources) and spring boot will load this file and applies properties when application starts.
+
+environment configuration  -> application-{profile}.properties (for db)
+
+1. create application.properties file in src/main/resources and add below code
+	logging.level.org.springframework.web=DEBUG
+2. run aplication and see if it reflects.
+3. changing  server port and check it in browser http://localhost:8181, (change back to 8080)
+	server.port=8181
+4. Add 2 property files in src/main/resources
+	application-test.properties(server.port=9090), application-prod.properties(server.port=80)
+5. Run configurations -> Arguments tab : -Dspring.profiles.active=test -> Run
+
+all other properties present in spring docs
+
+Configuring and accessing data source
+-------------------------------------
+
+1. add below dependencies in pom.xml
+
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-data-jpa</artifactId>
+	</dependency>
+
+	<dependency>
+		<groupId>com.h2database</groupId>
+		<artifactId>h2</artifactId>
+	</dependency>
+	
+2. clear vm arguments in run configurations, run application, hibernate logging statements are seen.
+3. In application.properties file, add below code
+	spring.h2.console.enabled=true
+	spring.h2.console.path=/h2
+4. run app and in browser login to h2 database.
+	http://localhost:8080/h2
+	
+
+Datasource pooling -> tomcat-jdbc is default pooling stratergy 
+
+1. In application.properties file, add below code
+	
+	spring.datasource.url=jdbc:h2:file:~/dasboot
+	spring.datasource.username=sa
+	spring.datasource.password=
+	spring.datasource.driver-class-name=org.h2.Driver
+	
+2. Run the application and check in browser
+	http://localhost:8080/h2
+	enter above credentials and click connect.
+3. create a table TEST, relogin and check if that TEST table is present.
+
+
+-> spring-data-starter-data-jpa includes tomcat-jdbc pool.
+
+1. Add below code for database pooling properties
+	
+	spring.datasource.max-active=10
+	spring.datasource.max-idle=8
+	spring.datasource.max-wait=10000
+	spring.datasource.min-evictable-idle-time-millis=1000
+	spring.datasource.min-idle=8
+	spring.datasource.time-between-eviction-runs-millis=1
+	
+
+Add Flyway DB
+-------------
+
+1. Add below dependency in pom.xml
+	
+	<dependency>
+		<groupId>org.flywaydb</groupId>
+		<artifactId>flyway-core</artifactId>
+	</dependency>
+	
+2. create file V2__create_shipwreck.sql under src/main/resources/db/migration, create table inside that.
+	CREATE TABLE SHIPWRECK(
+		ID INT AUTO_INCREMENT,
+		NAME VARCHAR(255),
+		DESCRIPTION VARCHAR(2000),
+		CONDITION VARCHAR(255),
+		DEPTH INT,
+		LATTITUDE DOUBLE,
+		LONGITUDE DOUBLE,
+		YEAR_DISCOVERED INT
+	);
+3. In application.properties file, add below line
+	flyway.baseline-on-migrate=true
+	spring.jpa.hibernate.ddl-auto=false;
+4. restart application, connect to db and we can find SHIPWRECK table.
+
+
+Spring Boot Java configuration
+------------------------------
+
+
+1. create config package under com.boot, create class PersistenceConfiguration
+	
+	@Configuration
+	public class PersistenceConfiguration {
+		 
+		@Bean
+		@ConfigurationProperties(prefix="spring.datasource")
+		@Primary
+		public DataSource dataSource(){
+			return DataSourceBuilder.create().build();
+		}		
+	}
+
+2. create method flywaydatasource similar to above, prefix="datasource.flyway", add @FlywayDataSource
+3. In application.properties, add below code
+	datasource.flyway.url=jdbc:h2:file:~/flyway
+	datasource.flyway.username=flyway
+	datasource.flyway.password=
+	datasource.flyway.driver-class-name=org.h2.Driver
+4. start the app
+
+Adding Spring JPA and Data JPA
+------------------------------
+
+1. Add @Entity on Shipwreck class, add @Id and @GeneratedValue(stratergy = GenerationType.AUTO) to Long id;
+2. Create interface ShipwreckRepository under com.boot.repository and do extends JpaRepository<Shipwreck, Long>
+3. Run the app
+4. Replace ShipwreckStub with ShipwreckRepository
+5. create reference for ShipwreckRepository in ShipwreckController and add @Autowired to it.
+6. replace all shipwreckstub methods with shipwreckRepository.
+	list -> findAll(), 
+	create(Shipwreck) -> saveAndFlush(shipwreck), 
+	get(id) -> findOne(id)
+	update(id, shipwreck) -> s1 = findOne(id); BeanUtils.copyProperties(shipwreck, s1), saveAndFlush(s1)
+	delete(id) -> s1 = findOne(id); delete(s1);
+7. Run app and add new shipwreck, check CRUD operations.
+
+Spring Boot Testing
+-------------------
+
+spring-boot-starter-test dependency, below dependencies are pulled in.
+
+Testing frameworks -> Junit, Hamcrest, Mockito, Spring Test
+
+Unit testing with JUnit:
+
+1. In pom.xml remove junit dependency and add below dependency
+
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-test</artifactId>
+		<scope>test</scope>
+	</dependency>
+	
+2. In AppTest class, remove comments and extends TestCase, keep only testApp()
+3. Add @Test annotation to testApp() and create object of HomeController, call home() and do assertEquals("Das-boot, it is starting!");
+4. Run the testcase
+
+Unit testing with Mockito:
+
+1. Create class ShipwreckControllerTest in com.boot package in src/test/java
+2. Add a method testShipwreckGet with @Test, create a method ShipwreckController, call get(1L), assertEquals(1L, wreck.getId().longValue());
+3. The test fails since the dependency ShipwreckRepository is not injected.
+4. create reference for ShipwreckController and add @InjectMocks
+5. Create reference for ShipwrecckRepository and add @Mock
+6. To initialize above ref, create a method init() with @Before and add
+	MockitoAnnotations.initMocks(this);
+7. In testShipwreckGet(), create Shipwreck object, setId(1L), when(shipwreckRepository.findOne(1L)).thenReturns(sw);
+
+Unit Testing with Hamcrest:
+
+1. In ShipwreckControllerTest class, testShipwreckGet(), replace assertEquals(1L, wreck.getId().longValue()) with 
+	assertThat(wreck.getId(), is(1L));
+	
+Integration testing
+-------------------
+
+-> @RunWith(SpringJunit4ClassRunner.class)
+-> @SpringApplicationConfiguration
+
+1. Create class ShipwreckRepositoryIntegrationTest in src/test/java com.boot package
+2. Add @RunWith(SpringJunit4ClassRunner.class) and @SpringApplicationConfiguration(App.class) annotatons on top of the class.
+3. create a method testFindAll() with @Test annotation, call findAll() in shipwreckRepository
+	assertThat(wrecks.size(), is(greaterThanOrEqualTo(0)));
+4. Autowire shipwrecckRepository object.
+
+Web Integration Test
+--------------------
+
+@WebIntegrationTest
+
+-> creating resttemplate for calling APIs
+-> if response is 200 OK, then convert the response into JSON object.
+
+1. Create class ShipwreckControllerWebIntegrationtest in src/test/java com.boot package.
+2. Add @RunWith and @SpringApplicationConfiguration and @WebIntegrationTest annotations.
+3. Add below code:
+	
+	RestTemplate restTemplate = new TestRestTemplate();
+		
+	ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:8080/api/v1/shipwrecks", String.class);
+	
+	assertThat( response.getStatusCode() , equalTo(HttpStatus.OK));
+	
+	ObjectMapper objectMapper = new ObjectMapper();
+	JsonNode responseJson = objectMapper.readTree(response.getBody());
+	
+	assertThat( responseJson.isMissingNode(), is(false));
+	assertThat( responseJson.toString() , equalTo("[]"));
+
+
+
+
 
 

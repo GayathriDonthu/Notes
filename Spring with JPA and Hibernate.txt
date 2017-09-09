@@ -815,7 +815,10 @@ Steps:
 5. Create class GoalRepositoryImpl and add interface GoalRepository, add @Repository("goalRepository").
 6. create EntityManager ref and annotate with @PersistenceContext, in save() call em.persist(goal) and return goal.
 7. In GoalServiceImpl, autowire GoalRepository an return goalRepository in save().
-
+8. Run application and add gaol, put a breakpoint at goalService.save(goal) and run debug mode. The goal data is not saved in db table.
+9. In servlet-config.xml add the controller package in component-scan.
+10. add component-scan, package com.pluralsight in jpaContext.xml and in GoalRepositoryImpl, add em.flush() after persist. Add @Transactional to save() in GoalServiceImpl.
+10. Run application, add goal and check the data in db table.
 	
 
 
