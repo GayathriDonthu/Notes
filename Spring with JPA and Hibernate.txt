@@ -819,8 +819,39 @@ Steps:
 9. In servlet-config.xml add the controller package in component-scan.
 10. add component-scan, package com.pluralsight in jpaContext.xml and in GoalRepositoryImpl, add em.flush() after persist. Add @Transactional to save() in GoalServiceImpl.
 10. Run application, add goal and check the data in db table.
-	
 
+
+Join Types
+----------	
+
+@OneToMany
+ Ex: 1 goal many exercises
+ 
+ @OneToMany(mappedBy="goal", cascade=cascadeType.ALL)
+ private List<Exercise> exercises = new ArrayList<Exercise>();
+ 
+1. In Exercise class, add @Entity to class, add id and add @Id, @GeneratedValue, generate getters and setters.
+2. In Goal class, add below code
+ @OneToMany(mappedBy="goal", cascade=cascadeType.ALL)
+ private List<Exercise> exercises = new ArrayList<Exercise>();
+3. In Exercise class, add Goal ref and generate getters and setters and add @ManytoOne
+4. In MinutesController class, addMinutes() method, add parameter HttpSession and add below code for else part of hasErrors()
+	Goal goal = (Goal)session.getAttribute("goal");
+	exercise.setGoal(goal);
+	exerciseService.save(exercise);
+	
+5. create method save(exercise) in ExerciseService and add this in ExerciseServiceImpl also.
+6. Create ExerciseRepository interface in repository package, add above save(exercise) method.
+7. Create class ExerciseRepositoryImpl and add interface ExerciseRepository, add @Repository("exerciseRepository")
+8. create EntityManager and add @PersistenceContext. In save method add below code
+	em.persist(exercise);
+	em.flush();
+	
+9. Autowire ExerciseRepository in ExerciseServiceImpl, and in save() call exercise = exerciseRepository.save(exercise), add @Transactional to save()
+10. Run the application and check the mappings.(gaol_GOAL_ID) In the Exercise table, we can see the goal Id mapping w.r.t the exercise.
+
+
+	
 
 
 
