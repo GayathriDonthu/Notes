@@ -851,9 +851,42 @@ Join Types
 10. Run the application and check the mappings.(gaol_GOAL_ID) In the Exercise table, we can see the goal Id mapping w.r.t the exercise.
 
 
+JPQL
+-----
+
+1. Create getGoals.jsp page and add the code using JPQL using FetchType = Eager
+
+ID Minutes
+1   45 		Exercise Id Exercise Minutes Exercise Activity
+			1			34				 Swim
+			2			12				 Bike
+			
+
+2. If fetchtype = LAZY, we get error so use OpenEntityManagerInViewFilter in web.xml(it extends the JPA session from repository to controller)	
 	
+<filter>
+	<filter-name>SpringOpenEntityManagerInViewFilter</filter-name>
+	<filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter</filter-class>
+</filter>
+
+<filter-mapping>
+	<filter-name>SpringOpenEntityManagerInViewFilter</filter-name>
+	<url-pattern>/*</url-pattern>
+</filter-mapping>
+
+Projection
+----------
+
+-> select fields and build an object based on the request.
+-> Need a constructor for projection.
+
+Ex: String jpql = "select new com.pluralsight.model.GoalReport(g.minutes, e.minutes, e.activity) " + "from Goal g, Exercise e where g.id=e.goal.id";
+
+1. Create GoalReport class and add goalMinutes, exerciseMinutes, exerciseActivity attributes. generate getters and setters and create a parameterized constructor.
 
 
+Named Queries
+-------------
 
-
+-> can be placed anywhere, usually placed in the associated objects.
 
