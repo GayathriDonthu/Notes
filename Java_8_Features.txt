@@ -1,0 +1,5 @@
+@Target - custom annotation
+@Retention - to make custom annotation available at runtime via reflection
+@interface - to declare custom annotation
+TYPE_PARAMETER - allows an annotation to be applied at type variables Ex: to Class<T>
+TYPE_USE - can be applied at any type use
