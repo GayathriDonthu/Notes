@@ -3,3 +3,11 @@
 @interface - to declare custom annotation
 TYPE_PARAMETER - allows an annotation to be applied at type variables Ex: to Class<T>
 TYPE_USE - can be applied at any type use
+
+-> To run a javscript file 
+jjs func.js
+
+-> To view dependencies( open cmd in jar location)
+jdeps commons.collections-3.2.1.jar
+
+The PermGen space is gone and has been replaced with Metaspace
