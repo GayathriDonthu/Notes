@@ -24,7 +24,7 @@ Demo : App is a basic CRUD app that starts off with a list of shipwrecks.(add/vi
 In general we add dependencies in dependency section, but for spring boot we add it as parent to our project. 
 <parent>
 	<groupId>org.springframework.boot</groupId>
-	<artifactId>spring-boot-starter-web</artifactId>
+	<artifactId>spring-boot-starter-parent</artifactId>
 </parent>
 -> Add spring-boot-starter-web dependency - it will integrate Spring MVC and auto configure it for us.
 
