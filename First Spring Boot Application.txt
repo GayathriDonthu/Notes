@@ -19,7 +19,11 @@ App name: Das Boot
 
 Demo : App is a basic CRUD app that starts off with a list of shipwrecks.(add/view/update/delete a shipwreck)
 
--> Create Maven project in STS. 
+-> Create Maven project in STS.  (or) 
+-> Create Maven Quickstart archetype from command line. 
+
+Ex: mvn archetype:generate -DgroupId=com.exam.app -DartifactId=exam-app -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=0.0.1-SNAPSHOT -DinteractiveMode=false
+
 -> Add Spring Boot dependency in pom.xml
 In general we add dependencies in dependency section, but for spring boot we add it as parent to our project. 
 <parent>
