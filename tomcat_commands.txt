@@ -11,3 +11,8 @@ set class path
 set MAVEN_HOME=C:\Users\gayathri.guttikonda\Desktop\Gayathri\Softwares\apache-maven-3.3.9-bin\apache-maven-3.3.9
 
 set JAVA_HOME=C:\Users\gayathri.guttikonda\Desktop\Gayathri\Softwares\jdk1.8.0_121
+
+StackOverflowException 
+
+1. Start -> Run -> %tmp% -> delete all temp data
+2. Run -> Run Configurations -> Java Application -> VM Arguments -> -Xss1m (increases stack size in mb)
