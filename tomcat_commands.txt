@@ -3,6 +3,8 @@ Command to kill tomcat process
 
 netstat -o -n -a | findstr 8080
 
+jps -lv
+
 taskkill /F /PID 4712
 
 set class path
