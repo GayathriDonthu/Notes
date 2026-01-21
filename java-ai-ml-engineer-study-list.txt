@@ -1,0 +1,79 @@
+cloud - aws
+AWS - Solutions Architect Associate - Certification -- udemy: Course: Ultimate AWS Certified Solutions Architect Associate 2025 | Udemy Business
+AWS - Solutions Architect Associate - Certification -- udemy - Practice Exams | AWS Certified Solutions Architect Associate
+AWS - Solutions Architect Professional - Certification -- udemy - Ultimate AWS Certified Solutions Architect Professional 2026
+AWS - Solutions Architect Professional - Certification -- udemy - Practice Exam AWS Certified Solutions Architect Professional
+------------------------------------
+GenAI - 
+GenAI - udemy -- AI Engineer Core Track: LLM Engineering, RAG, QLoRA, Agents
+GenAI - udemy -- AI Engineer Agentic Track: The Complete Agent & MCP Course
+GenAI - udemy -- LLM Mastery: ChatGPT, Gemini, Claude, Llama, OpenAI & APIs
+------------------------------------
+Java & Linux
+Basics
+Collections
+FileIO
+Multi Threading
+Shell scripting
+Maven
+------------------------------------
+SQL
+udemy - SQL and PostgreSQL: The Complete Developer's Guide
+
+------------------------------------
+Spring Boot
+udemy - Microservices with Java Spring Boot and Spring Cloud
+
+------------------------------------
+Security
+
+spring security
+
+jwt
+
+oauth
+
+hashicorp
+
+------------------------------------
+AI/ML -
+Python: udemy: Python for beginners
+AI full course - youtube - https://www.youtube.com/watch?v=JMUxmLyrhSk
+youtube - AI ML full course - https://www.youtube.com/watch?v=EHBNe31y65s
+------------------------------------
+CI/CD
+
+------------------------------------
+DSA
+Algorithms and Data Structures Tutorial - Full Course for Beginners - https://www.youtube.com/watch?v=8hly31xKli0&ab_channel=freeCodeCamp.org
+------------------------------------
+System Design
+System Design: System Design of payment apps - https://www.scaler.com/event/low-level-design-of-payment-apps-009/ 
+System Design: Top 10 System Design Concepts Every Programmer Should Learn - https://dev.to/rkipchumba/top-10-system-design-concepts-every-programmer-should-learn-37p3
+------------------------------------
+Before interview
+
+Kafka: udemy: Apache Kafka for absolute beginners
+Kafka: udemy: Apache Kafka Series - Learn Apache Kafka for Beginners v3
+Kafka: udemy: Apache Kafka Series - Kafka Streams for Data Processing
+Docker
+Kubernetes
+Camel: udemy: Learn Apache Camel Framework with Spring Boot
+Terraform: udemy: Terraform for the Absolute Beginners with Labs
+Terraform: udemy: Terraform for AWS - Beginner to Expert
+Internals of JVM
+MongoDB
+PostgreSQL
+Splunk
+
+------------------------------------
+Opensource projects
+
+------------------------------------
+LinkedIn Profile Building
+- Clean all junk in present profile
+- Keep good photo
+- Post certifications and udemy course completions
+- Post owned open source projects progress. Promote this project
+- Leetcode ranking
+------------------------------------
